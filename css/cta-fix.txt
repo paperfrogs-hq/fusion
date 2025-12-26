@@ -1,0 +1,23 @@
+.cta-button {
+  background: linear-gradient(135deg, #00e5c1, #3b82f6);
+  color: #0b1220;
+  border: 1px solid rgba(0, 229, 193, 0.3);
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: "Inter", "IBM Plex Sans", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeIn 1s ease-out 0.2s both;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  box-shadow: 0 0 15px rgba(0, 229, 193, 0.2);
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 229, 193, 0.15);
+}
+
