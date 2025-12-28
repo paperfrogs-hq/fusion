@@ -12,14 +12,6 @@ environment = { NODE_VERSION = "18" }
 # VITE_SUPABASE_URL = your_supabase_url
 # VITE_SUPABASE_ANON_KEY = your_supabase_anon_key
 
-# Redirect old domain to new custom domain
-[[redirects]]
-from = "https://playfusion.netlify.app/*"
-to = "https://fusion.paperfrogs.dev/:splat"
-status = 301
-force = true
-
-# Redirect all non-matching routes to index.html for SPA (React)
 [[redirects]]
 from = "/*"
 to = "/index.html"

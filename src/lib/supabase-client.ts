@@ -11,17 +11,25 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const addEmailToWaitlist = async (email: string) => {
   try {
+    if (!email || !email.includes("@")) {
+      throw new Error("Invalid email address");
+    }
+
     const { data, error: dbError } = await supabase
       .from("early_access_signups")
       .insert([
         {
-          email,
-          signed_up_at: new Date().toISOString(),
+          email: email.toLowerCase(),
           confirmed: false,
         },
       ]);
 
-    if (dbError) throw dbError;
+    if (dbError) {
+      console.error("Database insert error:", dbError);
+      throw dbError;
+    }
+
+    console.log("Email saved successfully:", email);
 
     try {
       const { error: emailError } = await supabase.functions.invoke(
