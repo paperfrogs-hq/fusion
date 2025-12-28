@@ -4,7 +4,7 @@
 [build]
 command = "npm run build"
 publish = "dist"
-environment = { NODE_VERSION = "18" }
+environment = { NODE_VERSION = "22" }
 
 # Note: Environment variables should be set in Netlify dashboard, not here
 # Go to: Site Settings → Build & Deploy → Environment → Edit Variables
