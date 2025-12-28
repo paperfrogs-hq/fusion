@@ -9,6 +9,28 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+const sendConfirmationEmail = async (email: string) => {
+  try {
+    const response = await fetch("/.netlify/functions/send-welcome", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.warn("Email sending failed:", error);
+      return;
+    }
+
+    console.log("Confirmation email sent successfully to:", email);
+  } catch (error) {
+    console.error("Error sending confirmation email:", error);
+  }
+};
+
 export const addEmailToWaitlist = async (email: string) => {
   try {
     if (!email || !email.includes("@")) {
@@ -31,28 +53,8 @@ export const addEmailToWaitlist = async (email: string) => {
 
     console.log("Email saved successfully:", email);
 
-    try {
-      const { error: emailError } = await supabase.functions.invoke(
-        "send-confirmation-email",
-        {
-          body: {
-            email,
-            confirmationUrl: `${window.location.origin}/confirm?email=${encodeURIComponent(
-              email
-            )}`,
-          },
-        }
-      );
-
-      if (emailError) {
-        console.warn("Email sending failed, but signup recorded:", emailError);
-      }
-    } catch (emailFunctionError) {
-      console.warn(
-        "Email function not yet deployed, but email signup is recorded:",
-        emailFunctionError
-      );
-    }
+    // Send confirmation email via Netlify function
+    await sendConfirmationEmail(email);
 
     return { success: true, data };
   } catch (error) {

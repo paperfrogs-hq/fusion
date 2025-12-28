@@ -14,6 +14,7 @@ SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY"
 # Add these variables:
 # VITE_SUPABASE_URL = your_supabase_url
 # VITE_SUPABASE_ANON_KEY = your_supabase_anon_key
+# RESEND_API_KEY = your_resend_api_key (server-side only)
 
 # Redirects are handled by public/_redirects file
 
