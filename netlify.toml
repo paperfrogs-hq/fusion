@@ -4,10 +4,9 @@
 [build]
 command = "npm run build"
 publish = "dist"
-environment = { NODE_VERSION = "22" }
 
-# Omit public Supabase keys from secrets scanning (they're meant to be public)
 [build.environment]
+NODE_VERSION = "22"
 SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY"
 
 # Note: Environment variables should be set in Netlify dashboard, not here
