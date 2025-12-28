@@ -3,6 +3,7 @@ import SectionBadge from "./SectionBadge";
 import AudioWaveform from "./AudioWaveform";
 import { ArrowRight, Shield, Zap, Globe, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   const handleJoinWaitlist = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -83,11 +84,13 @@ const HeroSection = () => {
               Join the Waitlist
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <a href="/whitepaper">
-              <Button variant="hero-outline" size="xl">
-                Read the Whitepaper
+            <Link to="/whitepaper">
+              <Button variant="hero-outline" size="xl" asChild>
+                <span>
+                  Read the Whitepaper
+                </span>
               </Button>
-            </a>
+            </Link>
           </motion.div>
 
           <motion.div 
