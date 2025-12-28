@@ -38,10 +38,8 @@ const Header = () => {
 
   const getLinkClass = (sectionId: string) => {
     const isActive = activeSection === sectionId;
-    return `px-4 py-2 text-sm transition-all rounded-lg ${
-      isActive
-        ? "text-primary font-semibold border-b-2 border-primary bg-primary/10"
-        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+    return `px-4 py-2 text-sm relative transition-colors ${
+      isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
     }`;
   };
 
@@ -73,6 +71,7 @@ const Header = () => {
           <nav className="hidden md:flex items-center gap-1">
             {["How It Works", "Solutions", "Features"].map((item) => {
               const sectionId = item.toLowerCase().replace(/\s+/g, "-");
+              const isActive = activeSection === sectionId;
               return (
                 <motion.a
                   key={item}
@@ -82,6 +81,13 @@ const Header = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   {item}
+                  <motion.div
+                    className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: isActive ? 1 : 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    style={{ originX: 0 }}
+                  />
                 </motion.a>
               );
             })}
