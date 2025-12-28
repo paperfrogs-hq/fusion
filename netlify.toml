@@ -12,10 +12,7 @@ environment = { NODE_VERSION = "18" }
 # VITE_SUPABASE_URL = your_supabase_url
 # VITE_SUPABASE_ANON_KEY = your_supabase_anon_key
 
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
+# Redirects are handled by public/_redirects file
 
 # Cache headers for assets
 [[headers]]
