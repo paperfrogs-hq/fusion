@@ -81,7 +81,7 @@ const HeroSection = () => {
           </motion.p>
 
           <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20 pointer-events-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
@@ -90,7 +90,7 @@ const HeroSection = () => {
               Join the Waitlist
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="hero-outline" size="xl" onClick={handleReadWhitepaper}>
+            <Button variant="hero-outline" size="xl" onClick={handleReadWhitepaper} type="button">
               Read the Whitepaper
             </Button>
           </motion.div>
