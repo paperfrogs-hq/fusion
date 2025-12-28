@@ -83,9 +83,11 @@ const HeroSection = () => {
               Join the Waitlist
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="hero-outline" size="xl">
-              Read the Whitepaper
-            </Button>
+            <a href="/whitepaper">
+              <Button variant="hero-outline" size="xl">
+                Read the Whitepaper
+              </Button>
+            </a>
           </motion.div>
 
           <motion.div 
