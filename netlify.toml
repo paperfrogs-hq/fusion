@@ -2,7 +2,7 @@
 # This file configures how Netlify builds and deploys your Fusion project
 
 [build]
-command = "npm run build"
+command = "bun run build"
 publish = "dist"
 
 [build.environment]

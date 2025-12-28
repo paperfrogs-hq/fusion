@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -43,7 +43,7 @@
     --gradient-start: 265 85% 65%;
     --gradient-mid: 280 80% 60%;
     --gradient-end: 320 80% 65%;
-    
+
     /* Sidebar tokens */
     --sidebar-background: 240 15% 3%;
     --sidebar-foreground: 0 0% 98%;
@@ -93,55 +93,90 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Outfit', sans-serif;
+    font-family: "Outfit", sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Syne', sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Syne", sans-serif;
   }
 }
 
 @layer utilities {
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(265 85% 70%), hsl(280 80% 65%), hsl(320 80% 70%));
+    background-image: linear-gradient(
+      135deg,
+      hsl(265 85% 70%),
+      hsl(280 80% 65%),
+      hsl(320 80% 70%)
+    );
   }
 
   .gradient-border {
     @apply relative;
     background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
-                linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--glow-tertiary))) border-box;
+      linear-gradient(
+          135deg,
+          hsl(var(--primary)),
+          hsl(var(--accent)),
+          hsl(var(--glow-tertiary))
+        )
+        border-box;
     border: 1px solid transparent;
   }
 
   .glow-primary {
     box-shadow: 0 0 60px -15px hsl(var(--primary) / 0.6),
-                0 0 100px -30px hsl(var(--accent) / 0.4);
+      0 0 100px -30px hsl(var(--accent) / 0.4);
   }
 
   .glow-subtle {
     box-shadow: 0 0 80px -30px hsl(var(--primary) / 0.4),
-                0 0 40px -20px hsl(var(--accent) / 0.3);
+      0 0 40px -20px hsl(var(--accent) / 0.3);
   }
 
   .glow-card {
     box-shadow: 0 8px 40px -12px hsl(var(--primary) / 0.2),
-                0 0 0 1px hsl(var(--primary) / 0.1);
+      0 0 0 1px hsl(var(--primary) / 0.1);
   }
 
   .bg-radial-gradient {
-    background: radial-gradient(ellipse 100% 70% at 50% -30%, hsl(var(--primary) / 0.2), transparent 70%);
+    background: radial-gradient(
+      ellipse 100% 70% at 50% -30%,
+      hsl(var(--primary) / 0.2),
+      transparent 70%
+    );
   }
 
   .bg-radial-bottom {
-    background: radial-gradient(ellipse 100% 70% at 50% 130%, hsl(var(--accent) / 0.15), transparent 70%);
+    background: radial-gradient(
+      ellipse 100% 70% at 50% 130%,
+      hsl(var(--accent) / 0.15),
+      transparent 70%
+    );
   }
 
   .bg-mesh {
-    background-image: 
-      radial-gradient(ellipse 80% 50% at 20% 40%, hsl(var(--primary) / 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 60%, hsl(var(--accent) / 0.06) 0%, transparent 50%),
-      radial-gradient(ellipse 50% 30% at 50% 80%, hsl(var(--glow-tertiary) / 0.05) 0%, transparent 50%);
+    background-image: radial-gradient(
+        ellipse 80% 50% at 20% 40%,
+        hsl(var(--primary) / 0.08) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 40% at 80% 60%,
+        hsl(var(--accent) / 0.06) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse 50% 30% at 50% 80%,
+        hsl(var(--glow-tertiary) / 0.05) 0%,
+        transparent 50%
+      );
   }
 
   .text-balance {
@@ -158,7 +193,7 @@
 
   /* Noise texture overlay */
   .noise::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
@@ -169,73 +204,123 @@
 
 /* Keyframe animations */
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-25px) rotate(2deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-25px) rotate(2deg);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 1;
     box-shadow: 0 0 40px -10px hsl(var(--primary) / 0.5);
   }
-  50% { 
+  50% {
     opacity: 0.8;
     box-shadow: 0 0 80px -10px hsl(var(--primary) / 0.8);
   }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes spin-slow {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes blob {
-  0%, 100% { 
-    transform: translate(0, 0) scale(1); 
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
   }
-  25% { 
-    transform: translate(20px, -30px) scale(1.1); 
+  25% {
+    transform: translate(20px, -30px) scale(1.1);
   }
-  50% { 
-    transform: translate(-10px, 20px) scale(0.95); 
+  50% {
+    transform: translate(-10px, 20px) scale(0.95);
   }
-  75% { 
-    transform: translate(-20px, -10px) scale(1.05); 
+  75% {
+    transform: translate(-20px, -10px) scale(1.05);
   }
 }
 
 @keyframes wave-animation {
-  0% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
-  100% { transform: scaleY(0.3); }
+  0% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(0.3);
+  }
 }
 
 .wave-bar {
   animation: wave-animation 1.4s ease-in-out infinite;
 }
 
-.wave-bar:nth-child(1) { animation-delay: 0s; }
-.wave-bar:nth-child(2) { animation-delay: 0.1s; }
-.wave-bar:nth-child(3) { animation-delay: 0.2s; }
-.wave-bar:nth-child(4) { animation-delay: 0.3s; }
-.wave-bar:nth-child(5) { animation-delay: 0.4s; }
-.wave-bar:nth-child(6) { animation-delay: 0.5s; }
-.wave-bar:nth-child(7) { animation-delay: 0.6s; }
-.wave-bar:nth-child(8) { animation-delay: 0.7s; }
-.wave-bar:nth-child(9) { animation-delay: 0.8s; }
-.wave-bar:nth-child(10) { animation-delay: 0.9s; }
-.wave-bar:nth-child(11) { animation-delay: 1.0s; }
-.wave-bar:nth-child(12) { animation-delay: 1.1s; }
+.wave-bar:nth-child(1) {
+  animation-delay: 0s;
+}
+.wave-bar:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.wave-bar:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.wave-bar:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.wave-bar:nth-child(5) {
+  animation-delay: 0.4s;
+}
+.wave-bar:nth-child(6) {
+  animation-delay: 0.5s;
+}
+.wave-bar:nth-child(7) {
+  animation-delay: 0.6s;
+}
+.wave-bar:nth-child(8) {
+  animation-delay: 0.7s;
+}
+.wave-bar:nth-child(9) {
+  animation-delay: 0.8s;
+}
+.wave-bar:nth-child(10) {
+  animation-delay: 0.9s;
+}
+.wave-bar:nth-child(11) {
+  animation-delay: 1s;
+}
+.wave-bar:nth-child(12) {
+  animation-delay: 1.1s;
+}
 
 /* Utility animation classes */
 .animate-float {
