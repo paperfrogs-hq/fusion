@@ -1,13 +1,48 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const Header = () => {
+  const [activeSection, setActiveSection] = useState<string>("");
+
+  useEffect(() => {
+    const sections = ["how-it-works", "solutions", "features"];
+
+    const handleScroll = () => {
+      let currentSection = "";
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 200) {
+            currentSection = sectionId;
+          }
+        }
+      }
+
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleJoinWaitlist = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const waitlistSection = document.getElementById("waitlist-section");
     if (waitlistSection) {
       waitlistSection.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const getLinkClass = (sectionId: string) => {
+    const isActive = activeSection === sectionId;
+    return `px-4 py-2 text-sm transition-all rounded-lg ${
+      isActive
+        ? "text-primary font-semibold border-b-2 border-primary bg-primary/10"
+        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+    }`;
   };
 
   return (
@@ -36,17 +71,20 @@ const Header = () => {
           </motion.a>
 
           <nav className="hidden md:flex items-center gap-1">
-            {["How It Works", "Solutions", "Features"].map((item) => (
-              <motion.a
-                key={item}
-                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {item}
-              </motion.a>
-            ))}
+            {["How It Works", "Solutions", "Features"].map((item) => {
+              const sectionId = item.toLowerCase().replace(/\s+/g, "-");
+              return (
+                <motion.a
+                  key={item}
+                  href={`#${sectionId}`}
+                  className={getLinkClass(sectionId)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {item}
+                </motion.a>
+              );
+            })}
           </nav>
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
