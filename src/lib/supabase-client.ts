@@ -39,7 +39,7 @@ export const addEmailToWaitlist = async (email: string) => {
 
     const { data, error: dbError } = await supabase
       .from("early_access_signups")
-      .insert([
+      .upsert([
         {
           email: email.toLowerCase(),
           confirmed: false,
@@ -47,7 +47,7 @@ export const addEmailToWaitlist = async (email: string) => {
       ]);
 
     if (dbError) {
-      console.error("Database insert error:", dbError);
+      console.error("Database upsert error:", dbError);
       throw dbError;
     }
 
