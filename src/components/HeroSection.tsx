@@ -5,6 +5,14 @@ import { ArrowRight, Shield, Zap, Globe, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 const HeroSection = () => {
+  const handleJoinWaitlist = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const waitlistSection = document.getElementById("waitlist-section");
+    if (waitlistSection) {
+      waitlistSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
@@ -71,7 +79,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
           >
-            <Button variant="hero" size="xl" className="group">
+            <Button variant="hero" size="xl" className="group" onClick={handleJoinWaitlist}>
               Join the Waitlist
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
