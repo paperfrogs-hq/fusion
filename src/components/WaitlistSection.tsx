@@ -5,6 +5,7 @@ import SectionBadge from "./SectionBadge";
 import { ArrowRight, Check, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { addEmailToWaitlist } from "@/lib/supabase-client";
 
 const WaitlistSection = () => {
   const [email, setEmail] = useState("");
@@ -18,20 +19,46 @@ const WaitlistSection = () => {
 
     setIsLoading(true);
     
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    setIsLoading(false);
-    setIsSubmitted(true);
-    setEmail("");
-    
-    toast({
-      title: "You're on the list!",
-      description: "We'll notify you when Fusion launches.",
-    });
+    try {
+      // Add email to Supabase and trigger confirmation email
+      await addEmailToWaitlist(email);
+      
+      setIsSubmitted(true);
+      setEmail("");
+      
+      toast({
+        title: "You're on the list!",
+        description: "Check your email for a confirmation message from Fusion.",
+      });
+
+      // Reset submitted state after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+      }, 3000);
+    } catch (error: any) {
+      console.error("Error subscribing to waitlist:", error);
+      
+      // Check if email already exists
+      if (error.message?.includes("duplicate")) {
+        toast({
+          title: "Already on the list",
+          description: "This email is already registered for early access.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Something went wrong",
+          description: "Please try again or contact us.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <section className="py-32 relative overflow-hidden">
+    <section id="waitlist-section" className="py-32 relative overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] animate-pulse-glow" />
         <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px] animate-blob animation-delay-2000" />

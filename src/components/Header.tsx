@@ -1,6 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+
 const Header = () => {
+  const handleJoinWaitlist = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const waitlistSection = document.getElementById("waitlist-section");
+    if (waitlistSection) {
+      waitlistSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <motion.header
       className="fixed top-0 left-0 right-0 z-50"
@@ -41,7 +50,7 @@ const Header = () => {
           </nav>
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="hero" size="sm">
+            <Button variant="hero" size="sm" onClick={handleJoinWaitlist}>
               Join Waitlist
             </Button>
           </motion.div>

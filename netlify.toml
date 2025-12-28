@@ -1,0 +1,38 @@
+# Netlify Configuration File
+# This file configures how Netlify builds and deploys your Fusion project
+
+[build]
+command = "npm run build"
+publish = "dist"
+environment = { NODE_VERSION = "18" }
+
+# Note: Environment variables should be set in Netlify dashboard, not here
+# Go to: Site Settings → Build & Deploy → Environment → Edit Variables
+# Add these variables:
+# VITE_SUPABASE_URL = your_supabase_url
+# VITE_SUPABASE_ANON_KEY = your_supabase_anon_key
+
+# Redirect all non-matching routes to index.html for SPA (React)
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+# Cache headers for assets
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/"
+[headers.values]
+Cache-Control = "public, max-age=3600, must-revalidate"
+
+# Development context (for preview deployments)
+[context.develop]
+command = "npm run dev"
+
+# Deploy preview context
+[context.deploy-preview]
+environment = { NODE_VERSION = "18" }
