@@ -12,7 +12,7 @@ const Header = () => {
         <div className="container mx-auto px-6 h-20 flex items-center justify-between rounded-2xl glass-strong">
           <a href="/" className="flex items-center gap-3 group">
             <img
-              src="/img/Fusion_Icon-No-BG-01.png"
+              src="/Fusion_Icon-No-BG-01.png"
               alt="Fusion Logo"
               className="h-14 w-auto group-hover:opacity-80 transition-opacity"
             />

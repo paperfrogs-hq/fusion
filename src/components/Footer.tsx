@@ -11,8 +11,8 @@ const Footer = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-2">
-            <span className="font-display font-bold text-lg text-foreground">
+          <div className="flex flex-col items-start gap-0">
+            <span className="font-display font-bold text-lg" style={{color: "#0DFF0D"}}>
               Fusion
             </span>
             <span className="text-muted-foreground text-sm">
