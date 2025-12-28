@@ -9,12 +9,12 @@ const Header = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <div className="mx-4 mt-4">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between rounded-2xl glass-strong">
+        <div className="container mx-auto px-6 h-20 flex items-center justify-between rounded-2xl glass-strong">
           <a href="/" className="flex items-center gap-3 group">
             <img
-              src="/Fusion-Logo.png"
+              src="/img/Fusion_Icon-No-BG-01.png"
               alt="Fusion Logo"
-              className="h-16 w-auto group-hover:opacity-80 transition-opacity"
+              className="h-14 w-auto group-hover:opacity-80 transition-opacity"
             />
           </a>
 
