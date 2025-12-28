@@ -2,8 +2,11 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SectionBadge from "@/components/SectionBadge";
+import { useNavigate } from "react-router-dom";
 
 const Whitepaper = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header with back button */}
@@ -14,12 +17,12 @@ const Whitepaper = () => {
         transition={{ duration: 0.6 }}
       >
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
+          <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <ArrowLeft className="w-5 h-5 text-primary" />
             <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Back to Home
             </span>
-          </a>
+          </button>
           <h1 className="text-xl font-bold text-foreground">Whitepaper</h1>
           <div className="w-20" />
         </div>
@@ -258,11 +261,9 @@ print(result.timestamp)`}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <a href="/">
-                <Button variant="hero-outline" size="lg">
-                  ← Back to Home
-                </Button>
-              </a>
+              <Button variant="hero-outline" size="lg" onClick={() => navigate("/")}>
+                ← Back to Home
+              </Button>
             </motion.div>
           </motion.div>
         </div>

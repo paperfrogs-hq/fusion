@@ -3,15 +3,21 @@ import SectionBadge from "./SectionBadge";
 import AudioWaveform from "./AudioWaveform";
 import { ArrowRight, Shield, Zap, Globe, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   const handleJoinWaitlist = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const waitlistSection = document.getElementById("waitlist-section");
     if (waitlistSection) {
       waitlistSection.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const handleReadWhitepaper = () => {
+    navigate("/whitepaper");
   };
 
   return (
@@ -84,13 +90,9 @@ const HeroSection = () => {
               Join the Waitlist
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Link to="/whitepaper">
-              <Button variant="hero-outline" size="xl" asChild>
-                <span>
-                  Read the Whitepaper
-                </span>
-              </Button>
-            </Link>
+            <Button variant="hero-outline" size="xl" onClick={handleReadWhitepaper}>
+              Read the Whitepaper
+            </Button>
           </motion.div>
 
           <motion.div 
