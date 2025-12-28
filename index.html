@@ -3,251 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>
+      Fusion - Cryptographic Audio Provenance | The Trust Layer for Audio
+    </title>
     <meta
       name="description"
-      content="Fusion - Cryptographically Verifiable Proof of Audio Origin"
+      content="Fusion embeds immutable proof of audio origin at creation time, enabling platforms and creators to verify authenticity anywhere, instantly—solving the deepfake crisis at scale."
     />
+    <meta name="author" content="Paperfrogs Labs" />
     <meta
       name="keywords"
-      content="Audio Provenance, Cryptographic Verification, AI Detection, Audio Authentication"
+      content="audio provenance, deepfake detection, cryptographic verification, audio authenticity, voice verification, AI audio, audio security"
     />
-    <meta property="og:site_name" content="Fusion" />
-    <title>Fusion - Audio Provenance & Verification</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
+    <link rel="canonical" href="https://fusion.audio" />
+
+    <meta
+      property="og:title"
+      content="Fusion - The Trust Layer for Audio in the AI Era"
     />
-    <link rel="shortcut icon" href="./img/favicon-01.png" type="image/x-icon" />
-    <link rel="stylesheet" href="./css/app.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta
+      property="og:description"
+      content="Embed immutable proof of audio origin at creation time. Verify authenticity anywhere, instantly—solving the deepfake crisis at scale."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://fusion.audio" />
+    <meta property="og:site_name" content="Fusion by Paperfrogs Labs" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@paperfrogslabs" />
+    <meta
+      name="twitter:title"
+      content="Fusion - Cryptographic Audio Provenance"
+    />
+    <meta
+      name="twitter:description"
+      content="The trust layer for audio in the AI era. Embed proof at creation, verify anywhere."
+    />
   </head>
+
   <body>
-    <div class="particles" id="particles"></div>
-
-    <div class="container">
-      <header>
-        <div class="logo-section">
-          <img src="./img/Fusion Icon - No BG-01.png" alt="Fusion" />
-        </div>
-        <nav>
-          <ul class="nav-links">
-            <li><a href="#why-fusion">Why Fusion</a></li>
-            <li><a href="#for-creators">For Creators</a></li>
-            <li><a href="#technology">Technology</a></li>
-            <li>
-              <button
-                class="cta-button"
-                onclick="document.getElementById('early-access').scrollIntoView({behavior: 'smooth'});"
-              >
-                Get Early Access
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </header>
-
-      <section class="hero">
-        <div class="hero-content">
-          <div class="status-badge">Coming Soon</div>
-          <h1>Cryptographic Audio Proof</h1>
-          <p>
-            Fusion establishes trust in audio at the infrastructure level.
-            <span class="highlight"
-              >Verify origin, detect deepfakes, and prove authenticity</span
-            >— whether content is AI-generated, artist-created, or
-            platform-uploaded.
-          </p>
-
-          <div class="feature-grid">
-            <div class="feature-item">
-              <div class="feature-text">
-                <h4>Cryptographic Embedding</h4>
-                <p>Provenance metadata embedded at creation</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-text">
-                <h4>Instant Verification</h4>
-                <p>Detect and verify provenance anywhere</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-text">
-                <h4>Confidence Scores</h4>
-                <p>Audit logs for compliance & moderation</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-text">
-                <h4>Built for Scale</h4>
-                <p>Platforms, AI companies, creators</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-image">
-          <div class="floating-card">
-            <svg
-              class="audio-visualizer"
-              viewBox="0 0 200 200"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <linearGradient
-                  id="waveGradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="100%"
-                >
-                  <stop
-                    offset="0%"
-                    style="stop-color: #00e5c1; stop-opacity: 0.9"
-                  />
-                  <stop
-                    offset="50%"
-                    style="stop-color: #3b82f6; stop-opacity: 0.9"
-                  />
-                  <stop
-                    offset="100%"
-                    style="stop-color: #00e5c1; stop-opacity: 0.9"
-                  />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                  <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-
-              <circle
-                cx="100"
-                cy="100"
-                r="80"
-                fill="none"
-                stroke="url(#waveGradient)"
-                stroke-width="1"
-                opacity="0.3"
-                class="orbit orbit-1"
-              />
-              <circle
-                cx="100"
-                cy="100"
-                r="60"
-                fill="none"
-                stroke="url(#waveGradient)"
-                stroke-width="1"
-                opacity="0.5"
-                class="orbit orbit-2"
-              />
-              <circle
-                cx="100"
-                cy="100"
-                r="40"
-                fill="none"
-                stroke="url(#waveGradient)"
-                stroke-width="1"
-                opacity="0.7"
-                class="orbit orbit-3"
-              />
-
-              <g class="wave-group">
-                <rect
-                  x="70"
-                  y="60"
-                  width="8"
-                  height="40"
-                  fill="url(#waveGradient)"
-                  rx="4"
-                  filter="url(#glow)"
-                  class="wave-bar wave-1"
-                />
-                <rect
-                  x="85"
-                  y="50"
-                  width="8"
-                  height="60"
-                  fill="url(#waveGradient)"
-                  rx="4"
-                  filter="url(#glow)"
-                  class="wave-bar wave-2"
-                />
-                <rect
-                  x="100"
-                  y="40"
-                  width="8"
-                  height="80"
-                  fill="url(#waveGradient)"
-                  rx="4"
-                  filter="url(#glow)"
-                  class="wave-bar wave-3"
-                />
-                <rect
-                  x="115"
-                  y="50"
-                  width="8"
-                  height="60"
-                  fill="url(#waveGradient)"
-                  rx="4"
-                  filter="url(#glow)"
-                  class="wave-bar wave-4"
-                />
-                <rect
-                  x="130"
-                  y="60"
-                  width="8"
-                  height="40"
-                  fill="url(#waveGradient)"
-                  rx="4"
-                  filter="url(#glow)"
-                  class="wave-bar wave-5"
-                />
-              </g>
-
-              <circle
-                cx="100"
-                cy="100"
-                r="12"
-                fill="url(#waveGradient)"
-                filter="url(#glow)"
-                class="core-pulse"
-              />
-            </svg>
-          </div>
-        </div>
-      </section>
-
-      <section class="coming-soon" id="early-access">
-        <h2>The Post-AI Internet Demands Trust</h2>
-        <p>Join the revolution in audio authentication and verification</p>
-
-        <form class="email-signup" name="fusion-notify">
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            required
-            autocomplete="off"
-          />
-          <button type="submit">Get Early Access</button>
-        </form>
-      </section>
-
-      <footer>
-        <div class="footer-content">
-          <p class="footer-text">Built by Paperfrogs Labs</p>
-          <p class="footer-subtext">
-            Advancing cryptographic infrastructure for the digital age
-          </p>
-          <p class="footer-copyright">© 2026 Fusion. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
-
-    <script src="./js/supabase-config.js"></script>
-    <script src="./js/app.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
