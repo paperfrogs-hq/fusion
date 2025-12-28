@@ -14,7 +14,7 @@ const Header = () => {
             <img
               src="/Fusion-Logo.png"
               alt="Fusion Logo"
-              className="h-12 w-auto group-hover:opacity-80 transition-opacity"
+              className="h-16 w-auto group-hover:opacity-80 transition-opacity"
             />
           </a>
 

@@ -12,11 +12,9 @@ const Footer = () => {
           transition={{ duration: 0.6 }}
         >
           <div className="flex items-center gap-2">
-            <img 
-              src="../././imgs/Fusion-Logo.png" 
-              alt="Fusion Logo" 
-              className="h-10 w-auto"
-            />
+            <span className="font-display font-bold text-lg text-foreground">
+              Fusion
+            </span>
             <span className="text-muted-foreground text-sm">
               by Paperfrogs HQ
             </span>
