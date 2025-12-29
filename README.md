@@ -5,6 +5,7 @@
 - In a Nutshell: Fusion provides cryptographically verifiable proof of audio origin—whether AI-generated, artist-created, or platform-uploaded. It is built for platforms, AI companies, and creators.
 
 [![Status: Early Development](https://img.shields.io/badge/status-early%20development-b8a99a?style=flat&logo=github&logoColor=white)](https://github.com/your-org/your-repo)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/d29cafa4-1e80-4921-ab8b-7a3bd8be6913/deploy-status)](https://app.netlify.com/projects/playfusion/deploys)
 ---
 
 ## The Problem
