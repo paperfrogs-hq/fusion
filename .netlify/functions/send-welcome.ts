@@ -1,4 +1,75 @@
 import { Handler } from "@netlify/functions";
+import { createClient } from "@supabase/supabase-js";
+import { Resend } from "resend"; 
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.VITE_SUPABASE_ANON_KEY!
+);
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const handler: Handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: "Method Not Allowed" };
+  }
+
+  try {
+    const { email } = JSON.parse(event.body || "{}");
+
+    if (!email || !email.includes("@")) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Invalid email" }) };
+    }
+
+    // 1. Save to 'early_access_signups'
+    const { error: dbError } = await supabase
+      .from("early_access_signups") // 👈 MATCHED YOUR TABLE NAME
+      .insert([
+        { 
+          email: email.toLowerCase(),
+          confirmed: false // 👈 Added based on your previous code
+        }
+      ]);
+
+    if (dbError) {
+      if (dbError.code === "23505") { // Unique violation code
+        return { statusCode: 400, body: JSON.stringify({ error: "Email already registered" }) };
+      }
+      throw dbError;
+    }
+
+    // 2. Send Email
+    await resend.emails.send({
+      from: "Fusion Dev Team <info@fusion.paperfrogs.dev>",
+      to: [email],
+      replyTo: "help@paperfrogs.dev",
+      subject: "Welcome to Fusion Early Access! 🎵",
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; color: #333;">
+          <h1>Welcome to Fusion!</h1>
+          <p>You have been added to the early access list.</p>
+        </div>
+      `,
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ success: true }),
+    };
+
+  } catch (error) {
+    console.error("Error:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Internal Server Error" }),
+    };
+  }
+};
+
+export { handler };
+/*
+import { Handler } from "@netlify/functions";
+import { createClient } from "@supabase/supabase-js";
 
 interface RequestBody {
   email: string;
@@ -115,3 +186,4 @@ const handler: Handler = async (event) => {
 };
 
 export { handler };
+*/

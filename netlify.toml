@@ -35,4 +35,7 @@ command = "npm run dev"
 
 # Deploy preview context
 [context.deploy-preview]
-environment = { NODE_VERSION = "18" }
+environment = { NODE_VERSION = "20" }
+
+[build.environment]
+  NODE_VERSION = "20"
