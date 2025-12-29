@@ -1,24 +1,3 @@
-// src/lib/supabase-client.ts
-export const addEmailToWaitlist = async (email: string) => {
-  const response = await fetch('/.netlify/functions/send-welcome', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    // This catches "Email already registered" from the backend
-    throw new Error(data.message || data.error || 'Failed to join waitlist');
-  }
-
-  return data;
-};
-
-/*
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -83,4 +62,3 @@ export const addEmailToWaitlist = async (email: string) => {
     throw error;
   }
 };
-*/
