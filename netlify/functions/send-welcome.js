@@ -7,13 +7,20 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
+console.log("Initializing send-welcome function");
+console.log("Supabase URL present:", !!supabaseUrl);
+console.log("Supabase Key present:", !!supabaseKey);
+console.log("Resend API Key present:", !!process.env.RESEND_API_KEY);
+
 if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Missing Supabase environment variables");
+  throw new Error(`Missing Supabase environment variables. URL: ${!!supabaseUrl}, Key: ${!!supabaseKey}`);
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 exports.handler = async (event) => {
+  console.log("Send-welcome function called");
+  
   // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return {
@@ -26,6 +33,8 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body || "{}");
     const { email } = body;
 
+    console.log("Processing email:", email);
+
     // Validate email
     if (!email || !email.includes("@")) {
       return {
@@ -35,6 +44,7 @@ exports.handler = async (event) => {
     }
 
     // Insert email into Supabase
+    console.log("Inserting into Supabase...");
     const { data: dbData, error: dbError } = await supabase
       .from("early_access_signups")
       .upsert(
@@ -59,7 +69,10 @@ exports.handler = async (event) => {
       throw dbError;
     }
 
+    console.log("Supabase insert successful");
+
     // Send email using Resend
+    console.log("Sending email via Resend...");
     const response = await resend.emails.send({
       from: "Paperfrogs <info@fusion.paperfrogs.dev>",
       to: email,
@@ -108,6 +121,8 @@ exports.handler = async (event) => {
         </html>
       `,
     });
+
+    console.log("Email sent successfully:", response.id);
 
     return {
       statusCode: 200,
