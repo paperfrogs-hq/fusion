@@ -149,7 +149,7 @@ exports.handler = async (event) => {
           <body>
             <div class="container">
               <div class="box">
-                <p class="greeting">Hi <strong@${emailUsername}</strong>,</p>
+                <p class="greeting">Hi <strong>@${emailUsername}</strong>,</p>
                 
                 <p>Thanks for your interest in <strong>Fusion</strong>.</p>
                 
