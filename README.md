@@ -2,7 +2,7 @@
 
 > **Developer infrastructure for audio provenance and verification**
 
-Fusion provides cryptographically verifiable proof of audio origin—whether AI-generated, artist-created, or platform-uploaded. It is built for platforms, AI companies, and creators.
+- In a Nutshell: Fusion provides cryptographically verifiable proof of audio origin—whether AI-generated, artist-created, or platform-uploaded. It is built for platforms, AI companies, and creators.
 
 [![Status: Early Development](https://img.shields.io/badge/status-early%20development-b8a99a?style=flat&logo=github&logoColor=white)](https://github.com/your-org/your-repo)
 ---
@@ -21,7 +21,6 @@ In the post-AI internet, audio is no longer trustworthy by default:
 ---
 
 ## What Fusion Does
-
 Fusion establishes an end-to-end **audio provenance lifecycle**:
 
 * Cryptographically embeds provenance metadata into audio at creation time
@@ -48,14 +47,11 @@ print(f"Confidence: {result.confidence_score}")
 print(f"Created at: {result.timestamp}")
 ```
 
----
 
 ## Contributing
 
 External contributions are not open yet, but will be welcomed in a future release.
 Contribution guidelines will be published before the public beta.
-
----
 
 ## Project Timeline
 
@@ -64,14 +60,11 @@ Contribution guidelines will be published before the public beta.
 * **January 2025** — Stepped back from the original direction
 * **November 2025** — Project direction redefined
 * **December 2025** — Fusion v2 development begins
-
----
+* **December 2025** — Fusion project insider preview launched 
 
 ## Upcoming Milestones
 
 * **Q1 2026** — Public beta launch (planned)
-* **Q2 2026** — Platform integrations and enterprise pilots
-* **Q3 2026** — Infrastructure scaling and expanded use cases
+* **Q2 2026** — Public Preview Final
+* **Q3 2026** — Platform integrations and enterprise pilots
 * **Q4 2026** — Market expansion and ecosystem growth
-
----
