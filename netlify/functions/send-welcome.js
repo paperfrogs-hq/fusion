@@ -76,45 +76,98 @@ exports.handler = async (event) => {
     const response = await resend.emails.send({
       from: "Paperfrogs <info@fusion.paperfrogs.dev>",
       to: email,
-      subject: "Welcome to Paperfrogs!",
+      subject: "You're on the Fusion waitlist",
       html: `
         <!DOCTYPE html>
         <html>
           <head>
             <meta charset="utf-8">
-            <title>Welcome to Paperfrogs</title>
+            <title>You're on the Fusion waitlist</title>
             <style>
+              * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+              }
               body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.6;
                 color: #333;
+                background: #f5f5f5;
+                padding: 20px;
               }
               .container {
                 max-width: 600px;
                 margin: 0 auto;
-                padding: 20px;
+              }
+              .box {
+                background: white;
+                border-radius: 12px;
+                padding: 40px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
               }
               h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
                 color: #0066cc;
               }
+              p {
+                margin-bottom: 16px;
+                font-size: 15px;
+                line-height: 1.7;
+              }
+              ul {
+                margin: 20px 0 20px 20px;
+                list-style-position: inside;
+              }
+              li {
+                margin-bottom: 10px;
+                font-size: 15px;
+                line-height: 1.7;
+              }
+              strong {
+                color: #0066cc;
+                font-weight: 600;
+              }
               .footer {
-                color: #666;
-                font-size: 12px;
                 margin-top: 30px;
-                border-top: 1px solid #eee;
                 padding-top: 20px;
+                border-top: 1px solid #eee;
+                font-size: 13px;
+                color: #666;
+              }
+              .signature {
+                margin-top: 20px;
               }
             </style>
           </head>
           <body>
             <div class="container">
-              <h1>Welcome to Paperfrogs! 🐸</h1>
-              <p>Thank you for joining our early access waitlist.</p>
-              <p>We're building something special and we can't wait to share it with you.</p>
-              <p>We'll notify you as soon as we launch.</p>
-              <p>Stay tuned!</p>
-              <div class="footer">
-                <p>Paperfrogs Labs © 2025</p>
+              <div class="box">
+                <h1>Hi,</h1>
+                
+                <p>Thanks for your interest in <strong>Fusion</strong>.</p>
+                
+                <p><strong>Fusion</strong> is being built as long-term infrastructure for audio provenance and verification — focused on integrity, traceability, and real-world use. We're currently developing core systems, testing capabilities, and shaping the foundation before broader access.</p>
+                
+                <p>As we move forward:</p>
+                <ul>
+                  <li>Early access invitations will be sent in phases</li>
+                  <li>You'll receive updates as major milestones ship</li>
+                  <li>Feedback from early users will help guide what Fusion becomes</li>
+                </ul>
+                
+                <p>No action is required from you right now. When it's time, you'll hear from us.</p>
+                
+                <p>Thanks for being here early and for supporting work that values authenticity by design.</p>
+                
+                <div class="footer">
+                  <div class="signature">
+                    <p>—</p>
+                    <p><strong>Fusion Developer Team</strong><br>
+                    Audio Provenance Infrastructure</p>
+                  </div>
+                </div>
               </div>
             </div>
           </body>
