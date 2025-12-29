@@ -61,7 +61,7 @@ exports.handler = async (event) => {
 
     // Send email using Resend
     const response = await resend.emails.send({
-      from: "Paperfrogs <onboarding@resend.dev>",
+      from: "Paperfrogs <team@fusion.paperfrogs.dev>",
       to: email,
       subject: "Welcome to Paperfrogs!",
       html: `
