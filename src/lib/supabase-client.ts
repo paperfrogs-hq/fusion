@@ -9,8 +9,15 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const sendConfirmationEmail = async (email: string) => {
+export const addEmailToWaitlist = async (email: string) => {
   try {
+    if (!email || !email.includes("@")) {
+      throw new Error("Invalid email address");
+    }
+
+    // Call the Netlify function which handles everything:
+    // - Inserting into Supabase
+    // - Sending the welcome email via Resend
     const response = await fetch("/.netlify/functions/send-welcome", {
       method: "POST",
       headers: {
@@ -19,43 +26,17 @@ const sendConfirmationEmail = async (email: string) => {
       body: JSON.stringify({ email }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const error = await response.json();
-      console.warn("Email sending failed:", error);
-      return;
+      // Check for duplicate email error
+      if (response.status === 409 || data.message?.includes("already registered")) {
+        throw new Error("duplicate");
+      }
+      throw new Error(data.message || data.error || "Failed to join waitlist");
     }
 
-    console.log("Confirmation email sent successfully to:", email);
-  } catch (error) {
-    console.error("Error sending confirmation email:", error);
-  }
-};
-
-export const addEmailToWaitlist = async (email: string) => {
-  try {
-    if (!email || !email.includes("@")) {
-      throw new Error("Invalid email address");
-    }
-
-    const { data, error: dbError } = await supabase
-      .from("early_access_signups")
-      .upsert([
-        {
-          email: email.toLowerCase(),
-          confirmed: false,
-        },
-      ]);
-
-    if (dbError) {
-      console.error("Database upsert error:", dbError);
-      throw dbError;
-    }
-
-    console.log("Email saved successfully:", email);
-
-    // Send confirmation email via Netlify function
-    await sendConfirmationEmail(email);
-
+    console.log("Email registered successfully:", email);
     return { success: true, data };
   } catch (error) {
     console.error("Error adding email to waitlist:", error);
