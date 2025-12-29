@@ -71,10 +71,13 @@ exports.handler = async (event) => {
 
     console.log("Supabase insert successful");
 
+    // Extract username from email
+    const emailUsername = email.split('@')[0];
+
     // Send email using Resend
     console.log("Sending email via Resend...");
     const response = await resend.emails.send({
-      from: "Paperfrogs <info@fusion.paperfrogs.dev>",
+      from: "Fusion Developer Team <info@fusion.paperfrogs.dev>",
       to: email,
       subject: "You're on the Fusion waitlist",
       html: `
@@ -91,64 +94,66 @@ exports.handler = async (event) => {
               }
               body {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                line-height: 1.6;
-                color: #333;
-                background: #f5f5f5;
+                line-height: 1.5;
+                color: #2d2d2d;
+                background: #f8f8f8;
                 padding: 20px;
               }
               .container {
-                max-width: 600px;
+                max-width: 580px;
                 margin: 0 auto;
               }
               .box {
                 background: white;
-                border-radius: 12px;
-                padding: 40px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-              }
-              h1 {
-                font-size: 24px;
-                margin-bottom: 20px;
-                color: #0066cc;
+                border-radius: 8px;
+                padding: 32px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
               }
               p {
+                margin-bottom: 12px;
+                font-size: 14px;
+                line-height: 1.6;
+              }
+              .greeting {
                 margin-bottom: 16px;
-                font-size: 15px;
-                line-height: 1.7;
-              }
-              ul {
-                margin: 20px 0 20px 20px;
-                list-style-position: inside;
-              }
-              li {
-                margin-bottom: 10px;
-                font-size: 15px;
-                line-height: 1.7;
               }
               strong {
-                color: #0066cc;
+                color: #000;
                 font-weight: 600;
               }
+              ul {
+                margin: 14px 0 14px 20px;
+                list-style: disc;
+              }
+              li {
+                margin-bottom: 8px;
+                font-size: 14px;
+                line-height: 1.6;
+              }
+              .divider {
+                margin: 16px 0;
+                color: #999;
+              }
               .footer {
-                margin-top: 30px;
-                padding-top: 20px;
-                border-top: 1px solid #eee;
-                font-size: 13px;
-                color: #666;
+                margin-top: 20px;
+                padding-top: 12px;
+                border-top: 1px solid #f0f0f0;
+                font-size: 12px;
+                color: #888;
               }
               .signature {
-                margin-top: 20px;
+                margin-top: 14px;
               }
             </style>
           </head>
           <body>
             <div class="container">
               <div class="box">
-                <h1>Hi,</h1>
+                <p class="greeting">Hi <strong>@${emailUsername}</strong>,</p>
                 
                 <p>Thanks for your interest in <strong>Fusion</strong>.</p>
                 
-                <p><strong>Fusion</strong> is being built as long-term infrastructure for audio provenance and verification — focused on integrity, traceability, and real-world use. We're currently developing core systems, testing capabilities, and shaping the foundation before broader access.</p>
+                <p>Fusion is being built as long-term infrastructure for audio provenance and verification — focused on integrity, traceability, and real-world use. We're currently developing core systems, testing capabilities, and shaping the foundation before broader access.</p>
                 
                 <p>As we move forward:</p>
                 <ul>
@@ -161,11 +166,13 @@ exports.handler = async (event) => {
                 
                 <p>Thanks for being here early and for supporting work that values authenticity by design.</p>
                 
+                <p class="divider">—</p>
+                
+                <p>Regards,<br><strong>Fusion Developer Team</strong><br>Audio Provenance Infrastructure</p>
+                
                 <div class="footer">
                   <div class="signature">
-                    <p>—</p>
-                    <p><strong>Fusion Developer Team</strong><br>
-                    Audio Provenance Infrastructure</p>
+                    <p>Paperfrogs Labs © 2025</p>
                   </div>
                 </div>
               </div>
