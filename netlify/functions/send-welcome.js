@@ -1,13 +1,8 @@
-import { Handler } from "@netlify/functions";
-import { Resend } from "resend";
+const { Resend } = require("resend");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-interface RequestBody {
-  email: string;
-}
-
-const handler: Handler = async (event) => {
+exports.handler = async (event) => {
   // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return {
@@ -17,7 +12,7 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    const body: RequestBody = JSON.parse(event.body || "{}");
+    const body = JSON.parse(event.body || "{}");
     const { email } = body;
 
     // Validate email
@@ -78,5 +73,3 @@ const handler: Handler = async (event) => {
     };
   }
 };
-
-export { handler };
