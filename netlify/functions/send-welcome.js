@@ -73,6 +73,7 @@ exports.handler = async (event) => {
 
     // Extract username from email
     const emailUsername = email.split('@')[0];
+    console.log("Email username extracted:", emailUsername);
 
     // Send email using Resend
     console.log("Sending email via Resend...");
