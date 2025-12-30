@@ -4,10 +4,17 @@ import { useNavigate } from "react-router-dom";
 const Footer = () => {
   const navigate = useNavigate();
 
-  const handleWhitepaperClick = (e: React.MouseEvent) => {
+  const handleNavigation = (path: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate("/whitepaper");
+    navigate(path);
   };
+
+  const links = [
+    { label: "Privacy", path: "/privacy" },
+    { label: "Terms", path: "/terms" },
+    { label: "Contact", path: "/contact" },
+    { label: "Whitepaper", path: "/whitepaper" },
+  ];
 
   return (
     <footer className="py-16 border-t border-border/50 relative">
@@ -29,18 +36,18 @@ const Footer = () => {
           </div>
 
           <nav className="flex items-center gap-8">
-            {["Privacy", "Terms", "Contact", "Whitepaper"].map((item) => (
+            {links.map((link) => (
               <motion.a
-                key={item}
-                href="#"
-                onClick={(e) => item === "Whitepaper" ? handleWhitepaperClick(e) : e.preventDefault()}
+                key={link.label}
+                href={link.path}
+                onClick={handleNavigation(link.path)}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 whileHover={{
                   scale: 1.05,
                   color: "hsl(var(--primary))",
                 }}
               >
-                {item}
+                {link.label}
               </motion.a>
             ))}
           </nav>
