@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import SectionBadge from "./SectionBadge";
-import AudioWaveform from "./AudioWaveform";
 import { ArrowRight, Shield, Zap, Globe, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -47,15 +46,6 @@ const HeroSection = () => {
               <Sparkles className="w-3.5 h-3.5" />
               Cryptographic Audio Provenance
             </SectionBadge>
-          </motion.div>
-
-          <motion.div 
-            className="my-6 sm:my-10 w-full max-w-2xl mx-auto"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <AudioWaveform />
           </motion.div>
 
           <motion.h1 
