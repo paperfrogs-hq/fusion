@@ -50,19 +50,19 @@ const Header = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <div className="mx-4 mt-4">
-        <div className="container mx-auto px-6 h-28 flex items-center justify-between rounded-2xl glass-strong">
+      <div className="mx-2 sm:mx-4 mt-2 sm:mt-4">
+        <div className="container mx-auto px-3 sm:px-6 h-20 sm:h-28 flex items-center justify-between rounded-xl sm:rounded-2xl glass-strong">
           <motion.a 
             href="/" 
-            className="flex items-center gap-3"
-            whileHover={{ scale: 1.15, rotate: 5 }}
+            className="flex items-center gap-2 sm:gap-3"
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             <motion.img
               src="/Fusion_Icon-No-BG-01.png"
               alt="Fusion Logo"
-              className="h-24 w-auto"
+              className="h-16 sm:h-24 w-auto"
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -94,8 +94,8 @@ const Header = () => {
           </nav>
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="hero" size="sm" onClick={handleJoinWaitlist}>
-              Join Waitlist
+            <Button variant="hero" size="sm" className="text-xs sm:text-sm px-2 sm:px-4" onClick={handleJoinWaitlist}>
+              Join
             </Button>
           </motion.div>
         </div>
