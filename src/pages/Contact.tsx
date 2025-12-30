@@ -13,6 +13,8 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -22,13 +24,48 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Open email client
-    const mailtoLink = `mailto:hello@paperfrogs.dev?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
-    )}`;
-    window.location.href = mailtoLink;
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const response = await fetch("/.netlify/functions/send-contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: "success",
+          message: data.message || "Message sent successfully!",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        setSubmitStatus({
+          type: "error",
+          message: data.error || "Failed to send message. Please try again.",
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setSubmitStatus({
+        type: "error",
+        message: "An error occurred. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -110,6 +147,22 @@ const Contact = () => {
             {/* Contact Form */}
             <div className="space-y-6 bg-card/50 p-8 rounded-lg border border-border/50">
               <h2 className="text-3xl font-bold text-foreground">Send us a Message</h2>
+              
+              {submitStatus && (
+                <motion.div
+                  className={`p-4 rounded-lg ${
+                    submitStatus.type === "success"
+                      ? "bg-green-500/10 border border-green-500/50 text-green-600"
+                      : "bg-red-500/10 border border-red-500/50 text-red-600"
+                  }`}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  {submitStatus.message}
+                </motion.div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
@@ -176,8 +229,8 @@ const Contact = () => {
                 </div>
 
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button type="submit" variant="hero" size="lg" className="w-full">
-                    Send Message
+                  <Button type="submit" variant="hero" size="lg" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </motion.div>
               </form>
