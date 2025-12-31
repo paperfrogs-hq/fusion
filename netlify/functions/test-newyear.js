@@ -6,7 +6,7 @@ exports.handler = async (event) => {
   console.log("Test New Year email function triggered");
   
   try {
-    const testEmail = "gopalmajumdarjoy@gmail.com";
+    const testEmail = "niloy@paperfrogs.dev";
 
     console.log(`Sending test New Year email to: ${testEmail}`);
 
