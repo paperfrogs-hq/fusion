@@ -102,7 +102,7 @@ const Contact = () => {
             <div className="space-y-6">
               <SectionBadge>Get in Touch</SectionBadge>
               <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-                Contact Paperfrogs HQ
+                Contact Fusion Support
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
                 Have a question or feedback? We'd love to hear from you. Reach out to the Fusion team.
@@ -121,7 +121,7 @@ const Contact = () => {
                   <div>
                     <h3 className="text-lg font-bold text-foreground mb-2">Email</h3>
                     <a href="mailto:hello@paperfrogs.dev" className="text-muted-foreground hover:text-primary transition-colors">
-                      hello@paperfrogs.dev
+                      fusion@paperfrogs.dev
                     </a>
                   </div>
                 </div>
