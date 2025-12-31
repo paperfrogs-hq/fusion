@@ -22,7 +22,7 @@ exports.handler = async (event) => {
     const { data: waitlistData, error: fetchError } = await supabase
       .from("early_access_signups")
       .select("email")
-      .eq("confirmed", false);
+      .eq("confirmed", true);
 
     if (fetchError) {
       console.error("Error fetching emails:", fetchError);

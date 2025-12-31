@@ -51,7 +51,7 @@ exports.handler = async (event) => {
         [
           {
             email: email.toLowerCase(),
-            confirmed: false,
+            confirmed: true,
           },
         ],
         { onConflict: "email" }
