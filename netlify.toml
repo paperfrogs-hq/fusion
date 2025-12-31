@@ -41,3 +41,7 @@ environment = { NODE_VERSION = "22" }
 # Scheduled function for monthly updates
 [functions."send-updates"]
 schedule = "0 15 1 * *"
+
+# Scheduled function for New Year email - runs at 00:00 UTC on January 1st
+[functions."send-newyear"]
+schedule = "0 0 1 1 *"
