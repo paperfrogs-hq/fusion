@@ -244,10 +244,10 @@ print(result.timestamp)`}
                 For platform integrations, enterprise pilots, research collaboration, or early access:
               </p>
               <a 
-                href="mailto:hello@paperfrogs.dev"
+                href="mailto:fusion@paperfrogs.dev"
                 className="inline-block text-2xl font-bold text-primary hover:text-accent transition-colors"
               >
-                hello@paperfrogs.dev
+                fusion@paperfrogs.dev
               </a>
               <p className="text-sm text-muted-foreground/70">
                 Fusion is in early development. Responses may be limited prior to public beta.

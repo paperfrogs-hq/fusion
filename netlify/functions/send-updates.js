@@ -141,7 +141,7 @@ exports.handler = async (event) => {
                     <p>Regards,<br><strong>Fusion Developer Team</strong><br>Audio Provenance Infrastructure</p>
                     
                     <div class="footer">
-                      <p>Paperfrogs Labs © 2025</p>
+                      <p>Paperfrogs Labs © 2026</p>
                     </div>
                   </div>
                 </div>

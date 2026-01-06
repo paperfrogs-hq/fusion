@@ -53,7 +53,7 @@ const Footer = () => {
           </nav>
 
           <p className="text-sm text-muted-foreground">
-            © 2025 Paperfrogs HQ. All rights reserved.
+            © 2026 Paperfrogs HQ. All rights reserved.
           </p>
         </motion.div>
 
