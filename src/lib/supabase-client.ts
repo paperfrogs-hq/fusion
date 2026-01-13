@@ -33,7 +33,7 @@ export const addEmailToWaitlist = async (email: string) => {
       if (response.status === 409 || data.message?.includes("already registered")) {
         throw new Error("duplicate");
       }
-      throw new Error(data.message || data.error || "Failed to join waitlist");
+      throw new Error(data.error || data.message || "Failed to join waitlist");
     }
 
     console.log("Email registered successfully:", email);

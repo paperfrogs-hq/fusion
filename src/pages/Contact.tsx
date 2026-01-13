@@ -147,14 +147,13 @@ const Contact = () => {
             {/* Contact Form */}
             <div className="space-y-6 bg-card/50 p-8 rounded-lg border border-border/50">
               <h2 className="text-3xl font-bold text-foreground">Send us a Message</h2>
-              
+
               {submitStatus && (
                 <motion.div
-                  className={`p-4 rounded-lg ${
-                    submitStatus.type === "success"
+                  className={`p-4 rounded-lg ${submitStatus.type === "success"
                       ? "bg-green-500/10 border border-green-500/50 text-green-600"
                       : "bg-red-500/10 border border-red-500/50 text-red-600"
-                  }`}
+                    }`}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
