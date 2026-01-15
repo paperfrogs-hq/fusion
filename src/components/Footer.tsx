@@ -30,9 +30,14 @@ const Footer = () => {
             <span className="font-display font-bold text-lg" style={{color: "#0DFF0D"}}>
               Fusion
             </span>
-            <span className="text-muted-foreground text-sm">
+            <a 
+              href="https://paperfrogs.dev/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-muted-foreground text-sm hover:text-foreground transition-colors"
+            >
               by Paperfrogs HQ
-            </span>
+            </a>
           </div>
 
           <nav className="flex items-center gap-8">
