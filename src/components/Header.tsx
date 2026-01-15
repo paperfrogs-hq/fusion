@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 
 const Header = () => {
   const [activeSection, setActiveSection] = useState<string>("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const sections = ["how-it-works", "solutions", "features"];
@@ -30,9 +32,19 @@ const Header = () => {
 
   const handleJoinWaitlist = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setMobileMenuOpen(false);
     const waitlistSection = document.getElementById("waitlist-section");
     if (waitlistSection) {
       waitlistSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleNavClick = (sectionId: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -76,6 +88,7 @@ const Header = () => {
                 <motion.a
                   key={item}
                   href={`#${sectionId}`}
+                  onClick={handleNavClick(sectionId)}
                   className={getLinkClass(sectionId)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -93,13 +106,66 @@ const Header = () => {
             })}
           </nav>
 
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+
+          <motion.div className="hidden md:block" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button variant="hero" size="sm" className="text-xs sm:text-sm px-2 sm:px-4" onClick={handleJoinWaitlist}>
               Join Waitlist
             </Button>
           </motion.div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden mx-2 sm:mx-4 mt-2 overflow-hidden"
+          >
+            <div className="container mx-auto px-4 py-4 rounded-xl backdrop-blur-md bg-background/95 border border-border/50">
+              <nav className="flex flex-col gap-2">
+                {["How It Works", "Solutions", "Features"].map((item) => {
+                  const sectionId = item.toLowerCase().replace(/\s+/g, "-");
+                  const isActive = activeSection === sectionId;
+                  return (
+                    <a
+                      key={item}
+                      href={`#${sectionId}`}
+                      onClick={handleNavClick(sectionId)}
+                      className={`px-4 py-3 text-sm rounded-lg transition-colors ${
+                        isActive 
+                          ? "bg-primary/10 text-primary font-medium" 
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
+                    >
+                      {item}
+                    </a>
+                  );
+                })}
+                <Button 
+                  variant="hero" 
+                  size="sm" 
+                  className="w-full mt-2" 
+                  onClick={handleJoinWaitlist}
+                >
+                  Join Waitlist
+                </Button>
+              </nav>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };
