@@ -15,25 +15,30 @@ export const addEmailToWaitlist = async (email: string) => {
       throw new Error("Invalid email address");
     }
 
-    // Call the Netlify function which handles everything:
-    // - Inserting into Supabase
-    // - Sending the welcome email via Resend
-    const response = await fetch("/.netlify/functions/send-welcome", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    });
+    console.log("Adding email directly to Supabase:", email);
 
-    const data = await response.json();
+    // Insert directly into Supabase (bypass Netlify function for now)
+    const { data, error } = await supabase
+      .from("early_access_signups")
+      .upsert(
+        [
+          {
+            email: email.toLowerCase(),
+            confirmed: true,
+          },
+        ],
+        { onConflict: "email" }
+      );
 
-    if (!response.ok) {
-      // Check for duplicate email error
-      if (response.status === 409 || data.message?.includes("already registered")) {
+    if (error) {
+      console.error("Supabase error:", error);
+      
+      // Check for duplicate key error
+      if (error.code === "23505" || error.message.includes("duplicate")) {
         throw new Error("duplicate");
       }
-      throw new Error(data.error || data.message || "Failed to join waitlist");
+      
+      throw new Error(error.message || "Failed to join waitlist");
     }
 
     console.log("Email registered successfully:", email);
