@@ -35,11 +35,11 @@ const WaitlistSection = () => {
       setTimeout(() => {
         setIsSubmitted(false);
       }, 3000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error subscribing to waitlist:", error);
       
       // Check if email already exists
-      if (error.message?.includes("duplicate")) {
+      if (error instanceof Error && error.message?.includes("duplicate")) {
         toast({
           title: "Already on the list",
           description: "This email is already registered for early access.",
