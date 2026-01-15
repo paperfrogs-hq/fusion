@@ -20,7 +20,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-16 sm:pt-20 px-4 sm:px-6 overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center pt-20 sm:pt-24 md:pt-20 px-4 sm:px-6 overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-48 sm:w-64 md:w-96 lg:w-[500px] h-48 sm:h-64 md:h-96 lg:h-[500px] bg-primary/20 rounded-full blur-[80px] sm:blur-[100px] animate-blob" />
         <div className="absolute top-1/3 right-1/4 w-40 sm:w-56 md:w-80 lg:w-[400px] h-40 sm:h-56 md:h-80 lg:h-[400px] bg-accent/20 rounded-full blur-[80px] sm:blur-[100px] animate-blob animation-delay-2000" />
@@ -35,7 +35,7 @@ const HeroSection = () => {
         }}
       />
       
-      <div className="container mx-auto px-3 sm:px-6 relative z-10 w-full">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10 w-full">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -76,7 +76,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
           >
-            <Button variant="hero" size="lg" className="group w-full sm:w-auto" onClick={handleJoinWaitlist}>
+            <Button variant="hero" size="lg" className="group w-full sm:w-auto text-sm sm:text-base" onClick={handleJoinWaitlist}>
               Join the Waitlist
               <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform" />
             </Button>

@@ -62,10 +62,10 @@ const itemVariants = {
 
 const SolutionsSection = () => {
   return (
-    <section id="solutions" className="py-32 relative">
+    <section id="solutions" className="py-16 sm:py-24 md:py-32 relative">
       <div className="absolute inset-0 bg-radial-bottom" />
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div 
           className="text-center mb-20"
           initial={{ opacity: 0, y: 30 }}

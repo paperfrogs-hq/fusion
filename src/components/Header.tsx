@@ -51,7 +51,7 @@ const Header = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <div className="mx-2 sm:mx-4 mt-2 sm:mt-4">
-        <div className="container mx-auto px-3 sm:px-6 h-20 sm:h-28 flex items-center justify-between rounded-xl sm:rounded-2xl backdrop-blur-md bg-background/80 border border-border/50">
+        <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 md:h-24 lg:h-28 flex items-center justify-between rounded-xl sm:rounded-2xl backdrop-blur-md bg-background/80 border border-border/50">
           <motion.a 
             href="/" 
             className="flex items-center gap-2 sm:gap-3"
@@ -62,7 +62,7 @@ const Header = () => {
             <motion.img
               src="/Fusion_Icon-No-BG-01.png"
               alt="Fusion Logo"
-              className="h-16 sm:h-24 w-auto"
+              className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto"
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />

@@ -17,8 +17,8 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="py-16 border-t border-border/50 relative">
-      <div className="container mx-auto px-6">
+    <footer className="py-12 sm:py-16 border-t border-border/50 relative">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           className="flex flex-col lg:flex-row items-center justify-between gap-8"
           initial={{ opacity: 0, y: 20 }}

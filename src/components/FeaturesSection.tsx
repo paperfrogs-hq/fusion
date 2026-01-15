@@ -60,10 +60,10 @@ const itemVariants = {
 
 const FeaturesSection = () => {
   return (
-    <section id="features" className="py-32 relative">
+    <section id="features" className="py-16 sm:py-24 md:py-32 relative">
       <div className="absolute inset-0 bg-mesh opacity-50" />
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div 
           className="text-center mb-20"
           initial={{ opacity: 0, y: 30 }}
@@ -82,7 +82,7 @@ const FeaturesSection = () => {
         </motion.div>
 
         <motion.div 
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"

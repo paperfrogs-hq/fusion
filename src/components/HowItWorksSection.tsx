@@ -46,8 +46,10 @@ const itemVariants = {
   }
 };
 const HowItWorksSection = () => {
-  return <section id="how-it-works" className="py-32 relative">
+  return <section id="how-it-works" className="py-16 sm:py-24 md:py-32 relative">
       <div className="absolute inset-0 bg-mesh" />
+      
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div className="text-center mb-20" initial={{

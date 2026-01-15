@@ -58,14 +58,14 @@ const WaitlistSection = () => {
   };
 
   return (
-    <section id="waitlist-section" className="py-32 relative overflow-hidden">
+    <section id="waitlist-section" className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
       <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] animate-pulse-glow" />
-        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px] animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-primary/10 rounded-full blur-[80px] sm:blur-[100px] md:blur-[120px] animate-pulse-glow" />
+        <div className="absolute top-1/3 left-1/4 w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] bg-accent/10 rounded-full blur-[60px] sm:blur-[80px] md:blur-[100px] animate-blob animation-delay-2000" />
       </div>
 
       <motion.div 
-        className="container mx-auto px-6 relative z-10"
+        className="container mx-auto px-4 sm:px-6 relative z-10"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -73,7 +73,7 @@ const WaitlistSection = () => {
       >
         <div className="max-w-3xl mx-auto">
           <motion.div 
-            className="relative p-10 md:p-14 rounded-3xl glass-strong text-center overflow-hidden"
+            className="relative p-6 sm:p-8 md:p-10 lg:p-14 rounded-2xl sm:rounded-3xl glass-strong text-center overflow-hidden"
             whileHover={{ scale: 1.01 }}
             transition={{ type: "spring", stiffness: 200 }}
           >
