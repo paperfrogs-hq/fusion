@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Supabase Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <button onclick="testInsert()">Test Insert</button>
+    <div id="result"></div>
+
+    <script>
+        const supabaseUrl = 'https://czcumwmsruqftsfkunpn.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6Y3Vtd21zcnVxZnRzZmt1bnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5NDM0OTcsImV4cCI6MjA4MjUxOTQ5N30.aK-0ptzxz2N52MXHqHeEm3u8pIjGy3JA1H8P1KnzaZI'
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+        
+        async function testInsert() {
+            console.log('Testing insert...')
+            const email = `test${Date.now()}@example.com`
+            
+            try {
+                const { data, error } = await supabase
+                    .from('early_access_signups')
+                    .insert([{
+                        email: email,
+                        confirmed: true
+                    }])
+                
+                console.log('Result:', { data, error })
+                document.getElementById('result').innerHTML = 
+                    `<h2>Result:</h2><pre>${JSON.stringify({ data, error }, null, 2)}</pre>`
+            } catch (err) {
+                console.error('Error:', err)
+                document.getElementById('result').innerHTML = 
+                    `<h2>Error:</h2><pre>${JSON.stringify(err, null, 2)}</pre>`
+            }
+        }
+    </script>
+</body>
+</html>

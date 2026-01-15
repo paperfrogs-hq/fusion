@@ -15,33 +15,31 @@ export const addEmailToWaitlist = async (email: string) => {
       throw new Error("Invalid email address");
     }
 
-    console.log("Adding email directly to Supabase:", email);
+    console.log("Adding email to waitlist:", email);
 
-    // Insert directly into Supabase (bypass Netlify function for now)
+    // Insert directly into Supabase
     const { data, error } = await supabase
       .from("early_access_signups")
-      .upsert(
-        [
-          {
-            email: email.toLowerCase(),
-            confirmed: true,
-          },
-        ],
-        { onConflict: "email" }
-      );
+      .insert([
+        {
+          email: email.toLowerCase().trim(),
+          confirmed: true,
+          created_at: new Date().toISOString(),
+        }
+      ]);
 
     if (error) {
       console.error("Supabase error:", error);
       
       // Check for duplicate key error
-      if (error.code === "23505" || error.message.includes("duplicate")) {
+      if (error.code === "23505" || error.message.includes("duplicate") || error.message.includes("already exists")) {
         throw new Error("duplicate");
       }
       
       throw new Error(error.message || "Failed to join waitlist");
     }
 
-    console.log("Email registered successfully:", email);
+    console.log("Email registered successfully:", email, data);
     return { success: true, data };
   } catch (error) {
     console.error("Error adding email to waitlist:", error);
