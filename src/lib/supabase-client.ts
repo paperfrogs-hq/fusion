@@ -40,6 +40,28 @@ export const addEmailToWaitlist = async (email: string) => {
     }
 
     console.log("Email registered successfully:", email, data);
+
+    // Send welcome email via Netlify function (non-blocking)
+    try {
+      console.log("Sending welcome email...");
+      const emailResponse = await fetch("/.netlify/functions/send-welcome", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email.toLowerCase().trim() }),
+      });
+
+      if (!emailResponse.ok) {
+        console.warn("Failed to send welcome email, but signup was successful");
+      } else {
+        console.log("Welcome email sent successfully");
+      }
+    } catch (emailError) {
+      // Don't fail the whole operation if email fails
+      console.warn("Email sending failed:", emailError);
+    }
+
     return { success: true, data };
   } catch (error) {
     console.error("Error adding email to waitlist:", error);

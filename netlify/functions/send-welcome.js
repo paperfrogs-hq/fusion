@@ -43,34 +43,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // Insert email into Supabase
-    console.log("Inserting into Supabase...");
-    const { data: dbData, error: dbError } = await supabase
-      .from("early_access_signups")
-      .upsert(
-        [
-          {
-            email: email.toLowerCase(),
-            confirmed: true,
-          },
-        ],
-        { onConflict: "email" }
-      );
-
-    if (dbError) {
-      console.error("Database upsert error:", dbError);
-      // Check if it's a duplicate key error
-      if (dbError.code === "23505" || dbError.message.includes("duplicate")) {
-        return {
-          statusCode: 409,
-          body: JSON.stringify({ message: "Email already registered" }),
-        };
-      }
-      throw dbError;
-    }
-
-    console.log("Supabase insert successful");
-
     // Extract username from email
     const emailUsername = email.split('@')[0];
     console.log("Email username extracted:", emailUsername);
