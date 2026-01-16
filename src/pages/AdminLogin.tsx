@@ -3,8 +3,9 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Mail, Key } from "lucide-react";
+import { Mail, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { saveSession } from "@/lib/admin-auth";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -72,12 +73,16 @@ const AdminLogin = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Store admin session
-        localStorage.setItem("adminAuth", JSON.stringify({ email, token: data.token, timestamp: Date.now() }));
+        // Store admin session using new auth system
+        saveSession({
+          token: data.token,
+          admin: data.admin,
+          expiresAt: data.expiresAt
+        });
         
         toast({
           title: "Login Successful",
-          description: "Welcome to the admin panel.",
+          description: `Welcome, ${data.admin.email}`,
         });
         
         navigate("/admin/dashboard");
@@ -111,15 +116,25 @@ const AdminLogin = () => {
         <div className="glass-strong rounded-3xl p-8 md:p-10">
           <div className="flex flex-col items-center mb-8">
             <motion.div
-              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent p-[1px] mb-4"
-              whileHover={{ scale: 1.05, rotate: 5 }}
+              className="mb-6"
+              whileHover={{ scale: 1.05 }}
             >
-              <div className="w-full h-full rounded-2xl bg-card flex items-center justify-center">
-                <Shield className="w-8 h-8 text-primary" />
-              </div>
+              <svg className="w-20 h-20" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="fusionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" />
+                    <stop offset="100%" stopColor="hsl(var(--accent))" />
+                  </linearGradient>
+                </defs>
+                <circle cx="200" cy="200" r="180" fill="url(#fusionGradient)" opacity="0.1"/>
+                <path d="M200 80 L280 160 L240 160 L240 240 L280 240 L200 320 L120 240 L160 240 L160 160 L120 160 Z" 
+                      fill="url(#fusionGradient)" 
+                      stroke="url(#fusionGradient)" 
+                      strokeWidth="4"/>
+              </svg>
             </motion.div>
-            <h1 className="font-display text-3xl font-bold gradient-text">Admin Access</h1>
-            <p className="text-muted-foreground text-sm mt-2">Fusion by Paperfrogs HQ</p>
+            <h1 className="font-display text-3xl font-bold gradient-text">Fusion Admin</h1>
+            <p className="text-muted-foreground text-sm mt-2">Cryptographic Control Plane</p>
           </div>
 
           {step === "email" ? (
