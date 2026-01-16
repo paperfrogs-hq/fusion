@@ -12,9 +12,26 @@ const generateToken = () => {
 };
 
 exports.handler = async (event) => {
+  // CORS headers
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+
+  // Handle preflight
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers,
+      body: "",
+    };
+  }
+
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
+      headers,
       body: JSON.stringify({ error: "Method Not Allowed" }),
     };
   }
@@ -26,6 +43,7 @@ exports.handler = async (event) => {
     if (!email || !email.endsWith("@paperfrogs.dev")) {
       return {
         statusCode: 403,
+        headers,
         body: JSON.stringify({ error: "Unauthorized email domain" }),
       };
     }
@@ -40,6 +58,7 @@ exports.handler = async (event) => {
     if (fetchError || !stored) {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({ error: "No verification code found. Please request a new one." }),
       };
     }
@@ -54,6 +73,7 @@ exports.handler = async (event) => {
         
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({ error: "Verification code expired. Please request a new one." }),
       };
     }
@@ -62,6 +82,7 @@ exports.handler = async (event) => {
     if (stored.code !== code) {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({ error: "Invalid verification code" }),
       };
     }
@@ -110,6 +131,7 @@ exports.handler = async (event) => {
         console.error("Failed to get default role");
         return {
           statusCode: 500,
+          headers,
           body: JSON.stringify({ error: "Admin roles not configured. Please run database schema." }),
         };
       }
@@ -134,6 +156,7 @@ exports.handler = async (event) => {
         console.error("Failed to create admin user:", createError);
         return {
           statusCode: 500,
+          headers,
           body: JSON.stringify({ error: `Failed to create admin user: ${createError.message}` }),
         };
       }
@@ -153,6 +176,7 @@ exports.handler = async (event) => {
     if (!adminUser) {
       return {
         statusCode: 500,
+        headers,
         body: JSON.stringify({ error: "Failed to create admin user. Check server logs." }),
       };
     }
@@ -188,6 +212,7 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({ 
         success: true, 
         token,
@@ -199,6 +224,7 @@ exports.handler = async (event) => {
     console.error("Error:", error);
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ error: error.message || "Internal server error" }),
     };
   }

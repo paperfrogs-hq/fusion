@@ -119,16 +119,11 @@ const AdminDashboard = () => {
       <aside className="hidden lg:flex lg:flex-col w-64 bg-card border-r border-border">
         <div className="p-6 border-b border-border">
           <div className="flex items-center gap-3">
-            <svg className="w-10 h-10" viewBox="0 0 400 400" fill="none">
-              <defs>
-                <linearGradient id="fusionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" />
-                  <stop offset="100%" stopColor="hsl(var(--accent))" />
-                </linearGradient>
-              </defs>
-              <path d="M200 80 L280 160 L240 160 L240 240 L280 240 L200 320 L120 240 L160 240 L160 160 L120 160 Z" 
-                    fill="url(#fusionGradient)"/>
-            </svg>
+            <img 
+              src="/Fusion_Icon-No-BG-01.png" 
+              alt="Fusion Logo" 
+              className="w-10 h-10 object-contain"
+            />
             <div>
               <h1 className="font-display text-xl font-bold gradient-text">Fusion</h1>
               <p className="text-xs text-muted-foreground">Control Plane</p>

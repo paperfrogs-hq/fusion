@@ -14,9 +14,26 @@ const generateCode = () => {
 };
 
 exports.handler = async (event) => {
+  // CORS headers
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+
+  // Handle preflight
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers,
+      body: "",
+    };
+  }
+
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
+      headers,
       body: JSON.stringify({ error: "Method Not Allowed" }),
     };
   }
@@ -28,6 +45,7 @@ exports.handler = async (event) => {
     if (!email || !email.endsWith("@paperfrogs.dev")) {
       return {
         statusCode: 403,
+        headers,
         body: JSON.stringify({ error: "Unauthorized email domain" }),
       };
     }
@@ -139,12 +157,14 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({ success: true, message: "Code sent" }),
     };
   } catch (error) {
     console.error("Error:", error);
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ error: error.message || "Internal server error" }),
     };
   }
