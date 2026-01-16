@@ -3,10 +3,10 @@ const { createClient } = require("@supabase/supabase-js");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Initialize Supabase client
+// Initialize Supabase client with service role key for admin operations
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Generate 6-digit code
 const generateCode = () => {
@@ -149,6 +149,3 @@ exports.handler = async (event) => {
     };
   }
 };
-
-// Export the codes map for verification function
-module.exports.verificationCodes = verificationCodes;

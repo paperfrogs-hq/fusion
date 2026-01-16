@@ -1,10 +1,10 @@
 const { createClient } = require("@supabase/supabase-js");
 const crypto = require("crypto");
 
-// Initialize Supabase client
+// Initialize Supabase client with service role key for admin operations
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Generate secure session token
 const generateToken = () => {
@@ -72,6 +72,22 @@ exports.handler = async (event) => {
       .delete()
       .eq("email", email);
     
+    // Ensure admin roles exist (seed if missing)
+    const { data: roles } = await supabase
+      .from("admin_roles")
+      .select("id, name")
+      .limit(1);
+    
+    if (!roles || roles.length === 0) {
+      // Seed roles if they don't exist
+      await supabase.from("admin_roles").insert([
+        { name: 'super_admin', description: 'Full system access', permissions: ["*"] },
+        { name: 'security_admin', description: 'Security and key management', permissions: ["key_management", "audit_log", "security_incidents", "compliance"] },
+        { name: 'ops_admin', description: 'Operational access', permissions: ["client_management", "analytics", "monitoring", "verification_control"] },
+        { name: 'read_only', description: 'Read-only access', permissions: ["read_audit_log", "read_analytics", "read_clients"] }
+      ]);
+    }
+    
     // Get or create admin user
     let { data: adminUser, error: userError } = await supabase
       .from("admin_users")
@@ -90,25 +106,39 @@ exports.handler = async (event) => {
         .eq("name", "ops_admin")
         .single();
       
-      if (defaultRole) {
-        const { data: newAdmin } = await supabase
-          .from("admin_users")
-          .insert([{
-            email,
-            role_id: defaultRole.id,
-            totp_enabled: false,
-            is_active: true,
-            last_login_at: new Date().toISOString(),
-            last_login_ip: event.headers['x-forwarded-for'] || event.headers['x-real-ip']
-          }])
-          .select(`
-            *,
-            role:admin_roles!admin_users_role_id_fkey(*)
-          `)
-          .single();
-        
-        adminUser = newAdmin;
+      if (!defaultRole) {
+        console.error("Failed to get default role");
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ error: "Admin roles not configured. Please run database schema." }),
+        };
       }
+      
+      const { data: newAdmin, error: createError } = await supabase
+        .from("admin_users")
+        .insert([{
+          email,
+          role_id: defaultRole.id,
+          totp_enabled: false,
+          is_active: true,
+          last_login_at: new Date().toISOString(),
+          last_login_ip: event.headers['x-forwarded-for'] || event.headers['x-real-ip']
+        }])
+        .select(`
+          *,
+          role:admin_roles!admin_users_role_id_fkey(*)
+        `)
+        .single();
+      
+      if (createError) {
+        console.error("Failed to create admin user:", createError);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ error: `Failed to create admin user: ${createError.message}` }),
+        };
+      }
+      
+      adminUser = newAdmin;
     } else {
       // Update last login
       await supabase
@@ -123,7 +153,7 @@ exports.handler = async (event) => {
     if (!adminUser) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: "Failed to create admin user" }),
+        body: JSON.stringify({ error: "Failed to create admin user. Check server logs." }),
       };
     }
     

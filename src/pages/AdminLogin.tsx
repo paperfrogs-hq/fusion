@@ -119,19 +119,11 @@ const AdminLogin = () => {
               className="mb-6"
               whileHover={{ scale: 1.05 }}
             >
-              <svg className="w-20 h-20" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="fusionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="hsl(var(--primary))" />
-                    <stop offset="100%" stopColor="hsl(var(--accent))" />
-                  </linearGradient>
-                </defs>
-                <circle cx="200" cy="200" r="180" fill="url(#fusionGradient)" opacity="0.1"/>
-                <path d="M200 80 L280 160 L240 160 L240 240 L280 240 L200 320 L120 240 L160 240 L160 160 L120 160 Z" 
-                      fill="url(#fusionGradient)" 
-                      stroke="url(#fusionGradient)" 
-                      strokeWidth="4"/>
-              </svg>
+              <img 
+                src="/Fusion_Icon-No-BG-01.png" 
+                alt="Fusion Logo" 
+                className="w-20 h-20 object-contain"
+              />
             </motion.div>
             <h1 className="font-display text-3xl font-bold gradient-text">Fusion Admin</h1>
             <p className="text-muted-foreground text-sm mt-2">Cryptographic Control Plane</p>

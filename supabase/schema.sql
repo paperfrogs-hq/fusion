@@ -31,6 +31,15 @@ CREATE TABLE IF NOT EXISTS public.admin_users (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Admin verification codes (for login)
+CREATE TABLE IF NOT EXISTS public.admin_verification_codes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  code TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Admin sessions
 CREATE TABLE IF NOT EXISTS public.admin_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -449,6 +458,7 @@ CREATE TABLE IF NOT EXISTS public.system_integrity_log (
 -- Enable RLS on all tables
 ALTER TABLE public.admin_roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.admin_verification_codes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_audit_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_ip_allowlist ENABLE ROW LEVEL SECURITY;
@@ -489,8 +499,24 @@ CREATE POLICY "Allow anon to insert codes" ON public.admin_verification_codes FO
 CREATE POLICY "Allow anon to read codes" ON public.admin_verification_codes FOR SELECT USING (true);
 CREATE POLICY "Allow anon to delete codes" ON public.admin_verification_codes FOR DELETE USING (true);
 
--- Note: Authenticated admin policies will be created after implementing JWT-based auth
--- For now, these tables are protected by Supabase service role key
+-- Admin roles - allow read access for login flow
+DROP POLICY IF EXISTS "Allow anon read roles" ON public.admin_roles;
+CREATE POLICY "Allow anon read roles" ON public.admin_roles FOR SELECT USING (true);
+
+-- Admin users - allow full access for server-side functions
+DROP POLICY IF EXISTS "Allow anon manage users" ON public.admin_users;
+CREATE POLICY "Allow anon manage users" ON public.admin_users FOR ALL USING (true) WITH CHECK (true);
+
+-- Admin sessions - allow full access for server-side functions
+DROP POLICY IF EXISTS "Allow anon manage sessions" ON public.admin_sessions;
+CREATE POLICY "Allow anon manage sessions" ON public.admin_sessions FOR ALL USING (true) WITH CHECK (true);
+
+-- Admin audit log - allow insert for logging
+DROP POLICY IF EXISTS "Allow anon insert audit" ON public.admin_audit_log;
+CREATE POLICY "Allow anon insert audit" ON public.admin_audit_log FOR INSERT WITH CHECK (true);
+
+-- Note: These permissive policies are for server-side Netlify functions only
+-- In production, consider using Supabase Service Role key for backend operations
 
 -- ============================================
 -- INDEXES FOR PERFORMANCE
