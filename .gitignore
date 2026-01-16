@@ -28,3 +28,5 @@ dist-ssr
 *env.local
 # Local Netlify folder
 .netlify
+
+ADMIN_REQUIREMENTS.md

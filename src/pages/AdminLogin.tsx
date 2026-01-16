@@ -122,7 +122,7 @@ const AdminLogin = () => {
               <img 
                 src="/Fusion_Icon-No-BG-01.png" 
                 alt="Fusion Logo" 
-                className="w-20 h-20 object-contain"
+                className="w-28 h-28 object-contain"
               />
             </motion.div>
             <h1 className="font-display text-3xl font-bold gradient-text">Fusion Admin</h1>

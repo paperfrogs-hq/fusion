@@ -5,10 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Check, X } from "lucide-react";
-import { getSession, logAdminAction } from "@/lib/admin-auth";
-import { supabase } from "@/lib/supabase-client";
-import * as OTPAuth from "otpauth";
-import QRCode from "qrcode";
+import { getSession } from "@/lib/admin-auth";
 
 const TOTPSetup = () => {
   const [step, setStep] = useState<"setup" | "verify">("setup");
@@ -24,28 +21,28 @@ const TOTPSetup = () => {
 
     setIsLoading(true);
     try {
-      // Generate TOTP secret
-      const totp = new OTPAuth.TOTP({
-        issuer: "Fusion Admin",
-        label: session.admin.email,
-        algorithm: "SHA1",
-        digits: 6,
-        period: 30,
+      const response = await fetch("/.netlify/functions/generate-totp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminId: session.admin.id,
+          email: session.admin.email,
+        }),
       });
 
-      const totpSecret = totp.secret.base32;
-      setSecret(totpSecret);
+      const data = await response.json();
 
-      // Generate QR code
-      const otpAuthUrl = totp.toString();
-      const qrCodeDataUrl = await QRCode.toDataURL(otpAuthUrl);
-      setQrCode(qrCodeDataUrl);
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate 2FA setup");
+      }
 
+      setSecret(data.secret);
+      setQrCode(data.qrCode);
       setStep("verify");
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to generate 2FA setup",
+        description: error instanceof Error ? error.message : "Failed to generate 2FA setup",
         variant: "destructive",
       });
     } finally {
@@ -59,42 +56,22 @@ const TOTPSetup = () => {
 
     setIsLoading(true);
     try {
-      // Create TOTP instance with the secret
-      const totp = new OTPAuth.TOTP({
-        issuer: "Fusion Admin",
-        label: session.admin.email,
-        algorithm: "SHA1",
-        digits: 6,
-        period: 30,
-        secret: OTPAuth.Secret.fromBase32(secret),
+      const response = await fetch("/.netlify/functions/enable-totp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminId: session.admin.id,
+          email: session.admin.email,
+          secret,
+          code: verificationCode,
+        }),
       });
 
-      // Verify the code
-      const delta = totp.validate({ token: verificationCode, window: 1 });
-      
-      if (delta === null) {
-        toast({
-          title: "Invalid Code",
-          description: "The verification code is incorrect",
-          variant: "destructive",
-        });
-        return;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to enable 2FA");
       }
-
-      // Store encrypted TOTP secret in database
-      const { error } = await supabase
-        .from("admin_users")
-        .update({
-          totp_secret: secret, // In production, encrypt this!
-          totp_enabled: true,
-        })
-        .eq("id", session.admin.id);
-
-      if (error) throw error;
-
-      await logAdminAction("totp_enabled", "admin_user", session.admin.id, {
-        email: session.admin.email,
-      });
 
       toast({
         title: "2FA Enabled",
@@ -106,10 +83,13 @@ const TOTPSetup = () => {
       setSecret("");
       setQrCode("");
       setVerificationCode("");
+      
+      // Reload page to update session
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to enable 2FA",
+        description: error instanceof Error ? error.message : "Failed to enable 2FA",
         variant: "destructive",
       });
     } finally {
@@ -127,29 +107,33 @@ const TOTPSetup = () => {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from("admin_users")
-        .update({
-          totp_secret: null,
-          totp_enabled: false,
-        })
-        .eq("id", session.admin.id);
-
-      if (error) throw error;
-
-      await logAdminAction("totp_disabled", "admin_user", session.admin.id, {
-        email: session.admin.email,
+      const response = await fetch("/.netlify/functions/disable-totp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminId: session.admin.id,
+          email: session.admin.email,
+        }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to disable 2FA");
+      }
 
       toast({
         title: "2FA Disabled",
         description: "Two-factor authentication has been disabled",
         variant: "destructive",
       });
+      
+      // Reload page to update session
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to disable 2FA",
+        description: error instanceof Error ? error.message : "Failed to disable 2FA",
         variant: "destructive",
       });
     } finally {

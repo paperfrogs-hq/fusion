@@ -53,9 +53,9 @@ exports.handler = async (event) => {
 
     // Send confirmation email
     await resend.emails.send({
-      from: "Fusion Team <info@fusion.paperfrogs.dev>",
+      from: "Fusion Developer Team <info@fusion.paperfrogs.dev>",
       to: email,
-      subject: "Welcome to Fusion - Access Confirmed!",
+      subject: "Welcome to Fusion - Your Access is Confirmed",
       html: `
         <!DOCTYPE html>
         <html>
@@ -65,10 +65,11 @@ exports.handler = async (event) => {
             <style>
               body {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                line-height: 1.6;
+                line-height: 1.7;
                 color: #2d2d2d;
                 background: #f8f8f8;
                 padding: 20px;
+                margin: 0;
               }
               .container {
                 max-width: 600px;
@@ -76,63 +77,111 @@ exports.handler = async (event) => {
                 background: white;
                 border-radius: 12px;
                 overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
               }
               .header {
                 background: linear-gradient(135deg, #1a4d2e 0%, #0d3b1f 100%);
                 color: white;
-                padding: 40px 20px;
+                padding: 40px 30px;
                 text-align: center;
               }
+              .header h1 {
+                margin: 0 0 10px 0;
+                font-size: 28px;
+                font-weight: 600;
+              }
+              .header p {
+                margin: 0;
+                opacity: 0.9;
+                font-size: 16px;
+              }
               .content {
-                padding: 40px;
+                padding: 40px 30px;
+              }
+              .content p {
+                margin: 0 0 16px 0;
+                font-size: 15px;
+              }
+              .content ul {
+                margin: 20px 0;
+                padding-left: 20px;
+              }
+              .content li {
+                margin: 8px 0;
+                font-size: 15px;
               }
               .button {
                 display: inline-block;
                 background: #1a4d2e;
-                color: white;
-                padding: 12px 32px;
+                color: white !important;
+                padding: 14px 36px;
                 border-radius: 8px;
                 text-decoration: none;
-                margin: 20px 0;
-                font-weight: bold;
+                margin: 24px 0;
+                font-weight: 600;
+                font-size: 16px;
+                transition: background 0.2s;
+              }
+              .button:hover {
+                background: #0d3b1f;
+              }
+              .signature {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #e5e5e5;
+                color: #666;
+                font-size: 14px;
               }
               .footer {
                 background: #f5f5f5;
-                padding: 20px;
+                padding: 25px 30px;
                 text-align: center;
-                font-size: 14px;
+                font-size: 13px;
                 color: #666;
+              }
+              .footer strong {
+                color: #2d2d2d;
+                font-size: 14px;
               }
             </style>
           </head>
           <body>
             <div class="container">
               <div class="header">
-                <h1>🎉 Welcome to Fusion!</h1>
-                <p>Your early access has been confirmed</p>
+                <h1>Welcome to Fusion</h1>
+                <p>Audio Provenance Infrastructure</p>
               </div>
               <div class="content">
-                <p>Hi there,</p>
-                <p>Great news! You've been confirmed for early access to Fusion, our cutting-edge Cryptographic Control Plane for Audio Provenance & Verification.</p>
+                <p>Hi ${email.split('@')[0]}!</p>
                 
-                <p><strong>What's next?</strong></p>
+                <p>Thanks for your interest in Fusion.</p>
+                
+                <p>Fusion is being built as long-term infrastructure for audio provenance and verification — focused on integrity, traceability, and real-world use. We're currently developing core systems, testing capabilities, and shaping the foundation before broader access.</p>
+                
+                <p><strong>As we move forward:</strong></p>
                 <ul>
-                  <li>You'll receive your API credentials within 24 hours</li>
-                  <li>Check out our documentation to get started</li>
-                  <li>Join our Discord community for support</li>
+                  <li>Early access invitations will be sent in phases</li>
+                  <li>You'll receive updates as major milestones ship</li>
+                  <li>Feedback from early users will help guide what Fusion becomes</li>
                 </ul>
                 
-                <div style="text-align: center;">
-                  <a href="https://fusion.paperfrogs.dev" class="button">Visit Dashboard</a>
+                <p>No action is required from you right now. When it's time, you'll hear from us.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="https://fusion.paperfrogs.dev" class="button">Request Early Access</a>
                 </div>
                 
-                <p style="margin-top: 30px; color: #666; font-size: 14px;">
-                  If you have any questions, feel free to reach out to our team at info@paperfrogs.dev
-                </p>
+                <p>Thanks for being here early and for supporting work that values authenticity by design.</p>
+                
+                <div class="signature">
+                  <p style="margin: 0 0 8px 0;"><strong>Regards,</strong></p>
+                  <p style="margin: 0;">Fusion Developer Team</p>
+                  <p style="margin: 0;">Audio Provenance Infrastructure</p>
+                </div>
               </div>
               <div class="footer">
-                <p><strong>Paperfrogs HQ</strong></p>
-                <p>Building trust in the age of AI</p>
+                <p><strong>Paperfrogs Labs © 2025</strong></p>
+                <p style="margin-top: 8px;">Building trust in the age of AI</p>
               </div>
             </div>
           </body>
