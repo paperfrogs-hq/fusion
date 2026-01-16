@@ -534,6 +534,58 @@ CREATE POLICY "Allow anon delete signups" ON public.early_access_signups FOR DEL
 -- Note: These permissive policies are for server-side Netlify functions only
 -- In production, consider using Supabase Service Role key for backend operations
 
+-- Client Portal tables - allow access for authentication functions
+DROP POLICY IF EXISTS "Allow anon manage organizations" ON public.organizations;
+CREATE POLICY "Allow anon manage organizations" ON public.organizations FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage client_users" ON public.client_users;
+CREATE POLICY "Allow anon manage client_users" ON public.client_users FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage organization_members" ON public.organization_members;
+CREATE POLICY "Allow anon manage organization_members" ON public.organization_members FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage organization_invitations" ON public.organization_invitations;
+CREATE POLICY "Allow anon manage organization_invitations" ON public.organization_invitations FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage environments" ON public.environments;
+CREATE POLICY "Allow anon manage environments" ON public.environments FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage api_keys" ON public.api_keys;
+CREATE POLICY "Allow anon manage api_keys" ON public.api_keys FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage client_sessions" ON public.client_sessions;
+CREATE POLICY "Allow anon manage client_sessions" ON public.client_sessions FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage login_history" ON public.login_history;
+CREATE POLICY "Allow anon manage login_history" ON public.login_history FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage verification_activity" ON public.verification_activity;
+CREATE POLICY "Allow anon manage verification_activity" ON public.verification_activity FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage audit_reports" ON public.audit_reports;
+CREATE POLICY "Allow anon manage audit_reports" ON public.audit_reports FOR ALL USING (true) WITH CHECK (true);
+
+DROClient Portal indexes
+CREATE INDEX idx_organizations_slug ON public.organizations(slug);
+CREATE INDEX idx_client_users_email ON public.client_users(email);
+CREATE INDEX idx_organization_members_org_id ON public.organization_members(organization_id);
+CREATE INDEX idx_organization_members_user_id ON public.organization_members(user_id);
+CREATE INDEX idx_client_sessions_user_id ON public.client_sessions(user_id);
+CREATE INDEX idx_client_sessions_token ON public.client_sessions(session_token);
+CREATE INDEX idx_login_history_user_id ON public.login_history(user_id, created_at DESC);
+CREATE INDEX idx_environments_org_id ON public.environments(organization_id);
+CREATE INDEX idx_api_keys_org_id ON public.api_keys(organization_id);
+CREATE INDEX idx_api_keys_env_id ON public.api_keys(environment_id);
+CREATE INDEX idx_api_keys_key_hash ON public.api_keys(key_hash);
+CREATE INDEX idx_verification_activity_org_id ON public.verification_activity(organization_id, created_at DESC);
+CREATE INDEX idx_verification_activity_env_id ON public.verification_activity(environment_id);
+CREATE INDEX idx_client_webhooks_org_id ON public.client_webhooks(organization_id);
+CREATE INDEX idx_webhook_deliveries_webhook_id ON public.webhook_deliveries(webhook_id, delivered_at DESC);
+CREATE INDEX idx_usage_metrics_org_date ON public.usage_metrics(organization_id, metric_date DESCCK (true);
+
+DROP POLICY IF EXISTS "Allow anon manage invoices" ON public.invoices;
+CREATE POLICY "Allow anon manage invoices" ON public.invoices FOR ALL USING (true) WITH CHECK (true);
+
 -- ============================================
 -- INDEXES FOR PERFORMANCE
 -- ============================================
@@ -548,6 +600,15 @@ CREATE INDEX idx_verification_results_audio_id ON public.verification_results(au
 CREATE INDEX idx_client_usage_client_date ON public.client_usage_metrics(client_id, date);
 CREATE INDEX idx_security_incidents_severity ON public.security_incidents(severity, detected_at DESC);
 CREATE INDEX idx_webhook_event_log_webhook_id ON public.webhook_event_log(webhook_id, delivered_at DESC);
+
+-- User indexes
+CREATE INDEX idx_users_email ON public.users(email);
+CREATE INDEX idx_user_sessions_user_id ON public.user_sessions(user_id);
+CREATE INDEX idx_user_sessions_token ON public.user_sessions(session_token);
+CREATE INDEX idx_user_audio_files_user_id ON public.user_audio_files(user_id);
+CREATE INDEX idx_user_audio_files_registry_id ON public.user_audio_files(audio_registry_id);
+CREATE INDEX idx_user_verification_history_user_id ON public.user_verification_history(user_id);
+CREATE INDEX idx_user_verification_history_audio_id ON public.user_verification_history(audio_file_id);
 
 -- ============================================
 -- SEED DATA (Initial Roles)

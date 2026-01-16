@@ -108,6 +108,34 @@ const ClientManagementModule = () => {
     }
   };
 
+  const handleDeleteClient = async (clientId: string, clientName: string) => {
+    if (!confirm(`Are you sure you want to permanently delete ${clientName}? This action cannot be undone.`)) return;
+
+    try {
+      const { error } = await supabase
+        .from("clients")
+        .delete()
+        .eq("id", clientId);
+
+      if (error) throw error;
+
+      await logAdminAction("client_deleted", "client", clientId);
+
+      toast({
+        title: "Client Deleted",
+        description: `${clientName} has been permanently deleted`,
+      });
+
+      fetchClients();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete client",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="text-center py-12">
@@ -254,13 +282,23 @@ const ClientManagementModule = () => {
                     </div>
                   </div>
                 </div>
-                <Button
-                  size="sm"
-                  variant={client.client_status === "active" ? "destructive" : "default"}
-                  onClick={() => handleSuspendClient(client.id, client.client_status)}
-                >
-                  {client.client_status === "active" ? "Suspend" : "Activate"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={client.client_status === "active" ? "destructive" : "default"}
+                    onClick={() => handleSuspendClient(client.id, client.client_status)}
+                  >
+                    {client.client_status === "active" ? "Suspend" : "Activate"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-500 hover:text-red-600"
+                    onClick={() => handleDeleteClient(client.id, client.name)}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </div>
             </motion.div>
           ))

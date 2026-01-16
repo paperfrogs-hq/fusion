@@ -40,7 +40,7 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: "Fusion Developer Team <info@fusion.paperfrogs.dev>",
       to: email,
-      subject: "🚀 Your Fusion Early Access",
+      subject: "Your Fusion Early Access",
       html: `
         <!DOCTYPE html>
         <html>

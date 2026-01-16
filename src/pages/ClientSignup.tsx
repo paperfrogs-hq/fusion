@@ -1,0 +1,187 @@
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, Building2, CheckCircle2 } from 'lucide-react';
+
+export default function ClientSignup() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    fullName: '',
+    organizationName: '',
+    acceptedTerms: false
+  });
+
+  const handleChange = (field: string, value: string | boolean) => {
+    setFormData({ ...formData, [field]: value });
+    setError('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    if (!formData.acceptedTerms) {
+      setError('You must accept the terms and privacy policy');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/.netlify/functions/client-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Signup failed');
+      }
+
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/client/login');
+      }, 3000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-green-500/20">
+          <CardHeader className="text-center">
+            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <CardTitle className="text-2xl">Account Created!</CardTitle>
+            <CardDescription>
+              Your account has been successfully created. Please check your email to verify your account.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src="/Fusion_Icon-No-BG-01.png" 
+              alt="Fusion Logo" 
+              className="w-20 h-20 object-contain"
+            />
+          </div>
+          <CardTitle className="text-3xl font-bold">Create Your Account</CardTitle>
+          <CardDescription>
+            Start your 14-day free trial. No credit card required.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Full Name *</Label>
+              <Input
+                id="fullName"
+                type="text"
+                required
+                value={formData.fullName}
+                onChange={(e) => handleChange('fullName', e.target.value)}
+                placeholder="John Doe"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Work Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                placeholder="you@company.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="organizationName">Organization Name *</Label>
+              <Input
+                id="organizationName"
+                type="text"
+                required
+                value={formData.organizationName}
+                onChange={(e) => handleChange('organizationName', e.target.value)}
+                placeholder="Acme Inc"
+              />
+            </div>
+
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="acceptedTerms"
+                checked={formData.acceptedTerms}
+                onCheckedChange={(checked) => handleChange('acceptedTerms', checked as boolean)}
+              />
+              <label
+                htmlFor="acceptedTerms"
+                className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I agree to the{' '}
+                <Link to="/terms" className="text-primary hover:underline">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link to="/privacy" className="text-primary hover:underline">
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full"
+              size="lg"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                'Create Account'
+              )}
+            </Button>
+
+            <div className="text-center text-sm">
+              Already have an account?{' '}
+              <Link to="/client/login" className="text-primary hover:underline font-medium">
+                Sign in
+              </Link>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

@@ -11,28 +11,88 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import UserSignup from "./pages/UserSignup";
+import UserLogin from "./pages/UserLogin";
+import UserDashboard from "./pages/UserDashboard";
+import ErrorBoundary from "./components/client/ErrorBoundary";
 
-const queryClient = new QueryClient();
+// Lazy load client portal pages
+import { lazy, Suspense } from "react";
+import LoadingSkeleton from "./components/client/LoadingSkeleton";
+
+const ClientLogin = lazy(() => import("./pages/ClientLogin"));
+const ClientSignup = lazy(() => import("./pages/ClientSignup"));
+const ClientDashboard = lazy(() => import("./pages/Dashboard"));
+const Activity = lazy(() => import("./pages/VerificationActivity"));
+const ApiKeys = lazy(() => import("./pages/APIKeys"));
+const Webhooks = lazy(() => import("./pages/Webhooks"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+const Team = lazy(() => import("./pages/TeamRoles"));
+const OrganizationSettings = lazy(() => import("./pages/OrganizationSettings"));
+const Billing = lazy(() => import("./pages/Billing"));
+const SystemTest = lazy(() => import("./pages/SystemTest"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
+const LoadingPage = () => (
+  <div className="min-h-screen bg-gray-50 p-6">
+    <LoadingSkeleton type="stats" />
+    <div className="mt-6">
+      <LoadingSkeleton type="card" />
+    </div>
+  </div>
+);
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/whitepaper" element={<Whitepaper />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner position="top-right" />
+        <BrowserRouter>
+          <Suspense fallback={<LoadingPage />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/whitepaper" element={<Whitepaper />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/admin" element={<AdminLogin />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/user/signup" element={<UserSignup />} />
+              <Route path="/user/login" element={<UserLogin />} />
+              <Route path="/user/dashboard" element={<UserDashboard />} />
+              
+              {/* Client Portal Routes */}
+              <Route path="/client/login" element={<ClientLogin />} />
+              <Route path="/client/signup" element={<ClientSignup />} />
+              <Route path="/client/dashboard" element={<ClientDashboard />} />
+              <Route path="/client/activity" element={<Activity />} />
+              <Route path="/client/api-keys" element={<ApiKeys />} />
+              <Route path="/client/webhooks" element={<Webhooks />} />
+              <Route path="/client/analytics" element={<Analytics />} />
+              <Route path="/client/team" element={<Team />} />
+              <Route path="/client/settings" element={<OrganizationSettings />} />
+              <Route path="/client/settings/billing" element={<Billing />} />
+              
+              {/* System Test Route */}
+              <Route path="/system-test" element={<SystemTest />} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

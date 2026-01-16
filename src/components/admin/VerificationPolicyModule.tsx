@@ -118,6 +118,34 @@ const VerificationPolicyModule = () => {
     }
   };
 
+  const handleDeletePolicy = async (policyId: string, policyName: string) => {
+    if (!confirm(`Are you sure you want to permanently delete ${policyName}? This action cannot be undone.`)) return;
+
+    try {
+      const { error } = await supabase
+        .from("verification_policies")
+        .delete()
+        .eq("id", policyId);
+
+      if (error) throw error;
+
+      await logAdminAction("verification_policy_deleted", "verification_policy", policyId);
+
+      toast({
+        title: "Policy Deleted",
+        description: `${policyName} has been permanently deleted`,
+      });
+
+      fetchPolicies();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete policy",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getModeColor = (mode: string) => {
     switch (mode) {
       case "strict": return "bg-red-500/20 text-red-600 dark:text-red-400";
@@ -288,14 +316,25 @@ const VerificationPolicyModule = () => {
                     </div>
                   </div>
                 </div>
-                {!policy.is_active && (
+                <div className="flex gap-2">
+                  {!policy.is_active && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleActivatePolicy(policy.id)}
+                    >
+                      Activate
+                    </Button>
+                  )}
                   <Button
                     size="sm"
-                    onClick={() => handleActivatePolicy(policy.id)}
+                    variant="outline"
+                    className="text-red-500 hover:text-red-600"
+                    onClick={() => handleDeletePolicy(policy.id, policy.name)}
+                    disabled={policy.is_active}
                   >
-                    Activate
+                    Delete
                   </Button>
-                )}
+                </div>
               </div>
             </motion.div>
           ))

@@ -1,0 +1,399 @@
+import { useState, useEffect } from 'react';
+import { 
+  Shield, 
+  Search,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  Eye,
+  Filter,
+  Calendar
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import ClientLayout from '../components/client/ClientLayout';
+import VerificationDetailModal from '../components/client/VerificationDetailModal';
+import ActivityFilters from '../components/client/ActivityFilters';
+import { getCurrentOrganization, getCurrentEnvironment } from '../lib/client-auth';
+import { toast } from 'sonner';
+
+interface VerificationActivity {
+  id: string;
+  file_name: string;
+  file_size: number;
+  file_type: string;
+  result: 'authentic' | 'tampered' | 'failed';
+  confidence_score?: number;
+  processing_time_ms: number;
+  api_key_name: string;
+  created_at: string;
+  metadata?: any;
+}
+
+interface Filters {
+  result?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  apiKey?: string;
+}
+
+export default function VerificationActivity() {
+  const [activities, setActivities] = useState<VerificationActivity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<Filters>({});
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [exporting, setExporting] = useState(false);
+
+  const org = getCurrentOrganization();
+  const env = getCurrentEnvironment();
+  const itemsPerPage = 20;
+
+  useEffect(() => {
+    if (org && env) {
+      loadActivity();
+    }
+  }, [org?.id, env?.id, currentPage, searchQuery, filters]);
+
+  const loadActivity = async () => {
+    if (!org || !env) return;
+
+    try {
+      const response = await fetch('/.netlify/functions/get-verification-activity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          organizationId: org.id,
+          environmentId: env.id,
+          page: currentPage,
+          limit: itemsPerPage,
+          search: searchQuery,
+          filters
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data.activities || []);
+        setTotalPages(Math.ceil((data.total || 0) / itemsPerPage));
+      } else {
+        toast.error('Failed to load activity');
+      }
+    } catch (error) {
+      console.error('Failed to load activity:', error);
+      toast.error('Failed to load activity');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExport = async () => {
+    if (!org || !env) return;
+
+    setExporting(true);
+    try {
+      const response = await fetch('/.netlify/functions/export-verification-activity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          organizationId: org.id,
+          environmentId: env.id,
+          search: searchQuery,
+          filters
+        }),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `verification-activity-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        toast.success('Activity exported successfully');
+      } else {
+        toast.error('Failed to export activity');
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to export activity');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const getResultIcon = (result: string) => {
+    if (result === 'authentic') {
+      return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+    }
+    if (result === 'tampered') {
+      return <AlertTriangle className="h-5 w-5 text-red-600" />;
+    }
+    return <XCircle className="h-5 w-5 text-gray-400" />;
+  };
+
+  const getResultBadge = (result: string) => {
+    if (result === 'authentic') {
+      return <Badge className="bg-green-100 text-green-800 border-green-300">Authentic</Badge>;
+    }
+    if (result === 'tampered') {
+      return <Badge className="bg-red-100 text-red-800 border-red-300">Tampered</Badge>;
+    }
+    return <Badge variant="outline">Failed</Badge>;
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+  };
+
+  if (loading) {
+    return (
+      <ClientLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      </ClientLayout>
+    );
+  }
+
+  if (!env) {
+    return (
+      <ClientLayout>
+        <div className="max-w-4xl mx-auto text-center py-12">
+          <Shield className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Environment Selected</h2>
+          <p className="text-gray-600">Please select an environment to view activity.</p>
+        </div>
+      </ClientLayout>
+    );
+  }
+
+  return (
+    <ClientLayout>
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Verification Activity</h1>
+            <p className="text-gray-600 mt-1">
+              Complete history of audio verifications in {env.display_name}
+            </p>
+          </div>
+          <Button onClick={handleExport} disabled={exporting || activities.length === 0}>
+            <Download className="h-4 w-4 mr-2" />
+            {exporting ? 'Exporting...' : 'Export CSV'}
+          </Button>
+        </div>
+
+        {/* Search and Filters */}
+        <Card className="p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search by file name..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="pl-10"
+              />
+            </div>
+            <Button 
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              Filters
+              {Object.keys(filters).length > 0 && (
+                <Badge variant="secondary" className="ml-1">
+                  {Object.keys(filters).length}
+                </Badge>
+              )}
+            </Button>
+          </div>
+
+          {showFilters && (
+            <ActivityFilters 
+              filters={filters}
+              onFiltersChange={(newFilters) => {
+                setFilters(newFilters);
+                setCurrentPage(1);
+              }}
+            />
+          )}
+        </Card>
+
+        {/* Activity Table */}
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>File</TableHead>
+                <TableHead>Result</TableHead>
+                <TableHead>Confidence</TableHead>
+                <TableHead>API Key</TableHead>
+                <TableHead>Processing Time</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="w-20">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {activities.map((activity) => (
+                <TableRow key={activity.id}>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      {getResultIcon(activity.result)}
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 truncate max-w-xs">
+                          {activity.file_name}
+                        </p>
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                          <span>{activity.file_type}</span>
+                          <span>•</span>
+                          <span>{formatFileSize(activity.file_size)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {getResultBadge(activity.result)}
+                  </TableCell>
+                  <TableCell>
+                    {activity.confidence_score !== undefined ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              activity.confidence_score >= 90 ? 'bg-green-600' :
+                              activity.confidence_score >= 70 ? 'bg-yellow-600' :
+                              'bg-red-600'
+                            }`}
+                            style={{ width: `${activity.confidence_score}%` }}
+                          />
+                        </div>
+                        <span className="text-sm text-gray-900 font-medium">
+                          {Math.round(activity.confidence_score)}%
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400">N/A</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm text-gray-600">
+                    {activity.api_key_name}
+                  </TableCell>
+                  <TableCell className="text-sm text-gray-600">
+                    {activity.processing_time_ms}ms
+                  </TableCell>
+                  <TableCell className="text-sm text-gray-600">
+                    {formatDate(activity.created_at)}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedActivity(activity.id)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {activities.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-12">
+                    <Shield className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 mb-2">No verification activity found</p>
+                    <p className="text-sm text-gray-400">
+                      {searchQuery || Object.keys(filters).length > 0
+                        ? 'Try adjusting your search or filters'
+                        : 'Start verifying audio files using your API keys'}
+                    </p>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+              <p className="text-sm text-gray-600">
+                Page {currentPage} of {totalPages}
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* Detail Modal */}
+      {selectedActivity && (
+        <VerificationDetailModal
+          verificationId={selectedActivity}
+          onClose={() => setSelectedActivity(null)}
+        />
+      )}
+    </ClientLayout>
+  );
+}
