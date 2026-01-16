@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Trash2, Users } from "lucide-react";
+import { Download, Trash2, Users, CheckCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase-client";
 import { motion } from "framer-motion";
 
@@ -41,6 +41,36 @@ const WaitlistModule = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleConfirm = async (id: number, email: string) => {
+    if (!confirm(`Confirm ${email} and send welcome email?`)) return;
+
+    try {
+      const response = await fetch("/.netlify/functions/confirm-waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to confirm user");
+      }
+
+      toast({
+        title: "Confirmed",
+        description: "Welcome email sent to " + email,
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to confirm user",
+        variant: "destructive",
+      });
     }
   };
 
@@ -162,13 +192,25 @@ const WaitlistModule = () => {
                     })}
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDelete(user.id)}
-                    >
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      {!user.confirmed && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleConfirm(user.id, user.email)}
+                          title="Confirm and send welcome email"
+                        >
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDelete(user.id)}
+                      >
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
                   </td>
                 </motion.tr>
               ))}

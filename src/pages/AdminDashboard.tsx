@@ -122,7 +122,7 @@ const AdminDashboard = () => {
             <img 
               src="/Fusion_Icon-No-BG-01.png" 
               alt="Fusion Logo" 
-              className="w-10 h-10 object-contain"
+              className="w-14 h-14 object-contain"
             />
             <div>
               <h1 className="font-display text-xl font-bold gradient-text">Fusion</h1>

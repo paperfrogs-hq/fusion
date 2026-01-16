@@ -515,6 +515,22 @@ CREATE POLICY "Allow anon manage sessions" ON public.admin_sessions FOR ALL USIN
 DROP POLICY IF EXISTS "Allow anon insert audit" ON public.admin_audit_log;
 CREATE POLICY "Allow anon insert audit" ON public.admin_audit_log FOR INSERT WITH CHECK (true);
 
+-- Clients - allow read for admin dashboard
+DROP POLICY IF EXISTS "Allow anon read clients" ON public.clients;
+CREATE POLICY "Allow anon read clients" ON public.clients FOR SELECT USING (true);
+
+-- Clients - allow update for admin operations
+DROP POLICY IF EXISTS "Allow anon update clients" ON public.clients;
+CREATE POLICY "Allow anon update clients" ON public.clients FOR UPDATE USING (true) WITH CHECK (true);
+
+-- Early access signups - allow read for admin dashboard
+DROP POLICY IF EXISTS "Allow anon read signups" ON public.early_access_signups;
+CREATE POLICY "Allow anon read signups" ON public.early_access_signups FOR SELECT USING (true);
+
+-- Early access signups - allow delete for admin operations
+DROP POLICY IF EXISTS "Allow anon delete signups" ON public.early_access_signups;
+CREATE POLICY "Allow anon delete signups" ON public.early_access_signups FOR DELETE USING (true);
+
 -- Note: These permissive policies are for server-side Netlify functions only
 -- In production, consider using Supabase Service Role key for backend operations
 

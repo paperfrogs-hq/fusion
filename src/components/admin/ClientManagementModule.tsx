@@ -45,16 +45,17 @@ const ClientManagementModule = () => {
 
   const handleCreateClient = async () => {
     try {
-      const { error } = await supabase
-        .from("clients")
-        .insert([{
-          ...formData,
-          client_status: "active",
-          rate_limit_per_minute: 1000,
-          rate_limit_per_day: 100000,
-        }]);
+      const response = await fetch("/.netlify/functions/create-client", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-      if (error) throw error;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create client");
+      }
 
       await logAdminAction("client_created", "client", formData.name, { email: formData.contact_email });
 
@@ -69,7 +70,7 @@ const ClientManagementModule = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create client",
+        description: error instanceof Error ? error.message : "Failed to create client",
         variant: "destructive",
       });
     }
