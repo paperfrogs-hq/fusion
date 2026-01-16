@@ -1,13 +1,14 @@
 const { createClient } = require("@supabase/supabase-js");
+const crypto = require("crypto");
 
 // Initialize Supabase client
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Generate simple token
+// Generate secure session token
 const generateToken = () => {
-  return Buffer.from(`${Date.now()}-${Math.random()}`).toString('base64');
+  return crypto.randomBytes(32).toString('hex');
 };
 
 exports.handler = async (event) => {
@@ -25,7 +26,11 @@ exports.handler = async (event) => {
     if (!email || !email.endsWith("@paperfrogs.dev")) {
       return {
         statusCode: 403,
-        body: JSON.str from Supabase
+        body: JSON.stringify({ error: "Unauthorized email domain" }),
+      };
+    }
+
+    // Get verification code from Supabase
     const { data: stored, error: fetchError } = await supabase
       .from("admin_verification_codes")
       .select("*")
@@ -61,16 +66,93 @@ exports.handler = async (event) => {
       };
     }
 
-    // Code is valid, delete it and generate token
+    // Code is valid, delete it
     await supabase
       .from("admin_verification_codes")
       .delete()
-      .eq("email", 
+      .eq("email", email);
+    
+    // Get or create admin user
+    let { data: adminUser, error: userError } = await supabase
+      .from("admin_users")
+      .select(`
+        *,
+        role:admin_roles!admin_users_role_id_fkey(*)
+      `)
+      .eq("email", email)
+      .single();
+    
+    // If admin doesn't exist, create with default role (ops_admin for @paperfrogs.dev)
+    if (userError || !adminUser) {
+      const { data: defaultRole } = await supabase
+        .from("admin_roles")
+        .select("id")
+        .eq("name", "ops_admin")
+        .single();
+      
+      if (defaultRole) {
+        const { data: newAdmin } = await supabase
+          .from("admin_users")
+          .insert([{
+            email,
+            role_id: defaultRole.id,
+            totp_enabled: false,
+            is_active: true,
+            last_login_at: new Date().toISOString(),
+            last_login_ip: event.headers['x-forwarded-for'] || event.headers['x-real-ip']
+          }])
+          .select(`
+            *,
+            role:admin_roles!admin_users_role_id_fkey(*)
+          `)
+          .single();
+        
+        adminUser = newAdmin;
+      }
+    } else {
+      // Update last login
+      await supabase
+        .from("admin_users")
+        .update({
+          last_login_at: new Date().toISOString(),
+          last_login_ip: event.headers['x-forwarded-for'] || event.headers['x-real-ip']
+        })
+        .eq("id", adminUser.id);
     }
-
-    // Code is valid, delete it and generate token
-    verificationCodes.delete(email);
+    
+    if (!adminUser) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Failed to create admin user" }),
+      };
+    }
+    
+    // Generate session token and create session (24 hour expiry)
     const token = generateToken();
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    
+    await supabase
+      .from("admin_sessions")
+      .insert([{
+        admin_id: adminUser.id,
+        session_token: token,
+        ip_address: event.headers['x-forwarded-for'] || event.headers['x-real-ip'],
+        user_agent: event.headers['user-agent'],
+        expires_at: expiresAt
+      }]);
+    
+    // Log successful login in audit log
+    await supabase
+      .from("admin_audit_log")
+      .insert([{
+        admin_id: adminUser.id,
+        action: "admin_login",
+        resource_type: "session",
+        action_hash: crypto.createHash('sha256').update(`${email}-${Date.now()}`).digest('hex'),
+        details: { email, ip: event.headers['x-forwarded-for'] || event.headers['x-real-ip'] },
+        ip_address: event.headers['x-forwarded-for'] || event.headers['x-real-ip'],
+        user_agent: event.headers['user-agent']
+      }]);
 
     console.log(`Admin login successful for ${email}`);
 
@@ -79,7 +161,8 @@ exports.handler = async (event) => {
       body: JSON.stringify({ 
         success: true, 
         token,
-        email,
+        admin: adminUser,
+        expiresAt
       }),
     };
   } catch (error) {

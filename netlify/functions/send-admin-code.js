@@ -32,7 +32,10 @@ exports.handler = async (event) => {
       };
     }
 
-    // Generate vein Supabase with expiration (5 minutes)
+    // Generate code
+    const code = generateCode();
+    
+    // Store in Supabase with expiration (5 minutes)
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
     
     // Delete any existing codes for this email
@@ -53,10 +56,7 @@ exports.handler = async (event) => {
     if (dbError) {
       console.error("Database error:", dbError);
       throw new Error("Failed to store verification code");
-    }ificationCodes.set(email, {
-      code,
-      expires: Date.now() + 5 * 60 * 1000,
-    });
+    }
 
     // Send email with verification code
     await resend.emails.send({
