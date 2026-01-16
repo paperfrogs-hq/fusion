@@ -1,9 +1,12 @@
 const { Resend } = require("resend");
+const { createClient } = require("@supabase/supabase-js");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// In-memory store for verification codes (in production, use Redis or database)
-const verificationCodes = new Map();
+// Initialize Supabase client
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Generate 6-digit code
 const generateCode = () => {
@@ -29,11 +32,28 @@ exports.handler = async (event) => {
       };
     }
 
-    // Generate verification code
-    const code = generateCode();
+    // Generate vein Supabase with expiration (5 minutes)
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
     
-    // Store code with expiration (5 minutes)
-    verificationCodes.set(email, {
+    // Delete any existing codes for this email
+    await supabase
+      .from("admin_verification_codes")
+      .delete()
+      .eq("email", email);
+    
+    // Insert new code
+    const { error: dbError } = await supabase
+      .from("admin_verification_codes")
+      .insert([{
+        email,
+        code,
+        expires_at: expiresAt,
+      }]);
+
+    if (dbError) {
+      console.error("Database error:", dbError);
+      throw new Error("Failed to store verification code");
+    }ificationCodes.set(email, {
       code,
       expires: Date.now() + 5 * 60 * 1000,
     });
@@ -111,10 +131,7 @@ exports.handler = async (event) => {
               <div class="footer">
                 <p><strong>Paperfrogs HQ</strong></p>
                 <p>Secure Admin Access</p>
-              </div>
-            </div>
-          </body>
-        </html>
+  
       `,
     });
 

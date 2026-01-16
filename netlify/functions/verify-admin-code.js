@@ -1,5 +1,9 @@
-// Import verification codes from send-admin-code
-const { verificationCodes } = require("./send-admin-code");
+const { createClient } = require("@supabase/supabase-js");
+
+// Initialize Supabase client
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Generate simple token
 const generateToken = () => {
@@ -21,14 +25,14 @@ exports.handler = async (event) => {
     if (!email || !email.endsWith("@paperfrogs.dev")) {
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: "Unauthorized email domain" }),
-      };
-    }
+        body: JSON.str from Supabase
+    const { data: stored, error: fetchError } = await supabase
+      .from("admin_verification_codes")
+      .select("*")
+      .eq("email", email)
+      .single();
 
-    // Get stored code
-    const stored = verificationCodes.get(email);
-
-    if (!stored) {
+    if (fetchError || !stored) {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: "No verification code found. Please request a new one." }),
@@ -36,8 +40,13 @@ exports.handler = async (event) => {
     }
 
     // Check expiration
-    if (Date.now() > stored.expires) {
-      verificationCodes.delete(email);
+    if (new Date() > new Date(stored.expires_at)) {
+      // Delete expired code
+      await supabase
+        .from("admin_verification_codes")
+        .delete()
+        .eq("email", email);
+        
       return {
         statusCode: 400,
         body: JSON.stringify({ error: "Verification code expired. Please request a new one." }),
@@ -50,6 +59,13 @@ exports.handler = async (event) => {
         statusCode: 400,
         body: JSON.stringify({ error: "Invalid verification code" }),
       };
+    }
+
+    // Code is valid, delete it and generate token
+    await supabase
+      .from("admin_verification_codes")
+      .delete()
+      .eq("email", 
     }
 
     // Code is valid, delete it and generate token

@@ -134,7 +134,7 @@ const AdminLogin = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@paperfrogs.dev"
+                    placeholder="user@paperfrogs.dev"
                     className="pl-10"
                     required
                   />
