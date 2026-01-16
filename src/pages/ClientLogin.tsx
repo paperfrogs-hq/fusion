@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, Building2 } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 export default function ClientLogin() {
   const navigate = useNavigate();
@@ -85,8 +86,9 @@ export default function ClientLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-background flex flex-col">
+      <main className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
             <img 
@@ -232,6 +234,8 @@ export default function ClientLogin() {
           </form>
         </CardContent>
       </Card>
+      </main>
+      <Footer />
     </div>
   );
 }
