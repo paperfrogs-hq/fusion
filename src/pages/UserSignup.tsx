@@ -66,7 +66,14 @@ export default function UserSignup() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Signup failed');
+        const errorMsg = data.error || 'Signup failed';
+        const detailMsg = data.details ? ` (${data.details})` : '';
+        throw new Error(errorMsg + detailMsg);
+      }
+
+      // Show warning if email wasn't sent
+      if (!data.emailSent) {
+        setError('Account created but verification email failed to send. Please contact support.');
       }
 
       setSuccess(true);

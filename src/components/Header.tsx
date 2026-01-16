@@ -30,20 +30,9 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleJoinWaitlist = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleJoinClick = () => {
     setMobileMenuOpen(false);
-    const waitlistSection = document.getElementById("waitlist-section");
-    if (waitlistSection) {
-      const headerOffset = 100;
-      const elementPosition = waitlistSection.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    }
+    window.location.href = '/user';
   };
 
   const handleNavClick = (sectionId: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -139,8 +128,8 @@ const Header = () => {
               Sign In
             </motion.a>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="hero" size="sm" className="text-xs sm:text-sm px-2 sm:px-4" onClick={handleJoinWaitlist}>
-                Join Waitlist
+              <Button variant="hero" size="sm" className="text-xs sm:text-sm px-2 sm:px-4" onClick={handleJoinClick}>
+                Join
               </Button>
             </motion.div>
           </motion.div>
@@ -181,9 +170,9 @@ const Header = () => {
                   variant="hero" 
                   size="sm" 
                   className="w-full mt-2" 
-                  onClick={handleJoinWaitlist}
+                  onClick={handleJoinClick}
                 >
-                  Join Waitlist
+                  Join
                 </Button>
                 <a 
                   href="/user/login"

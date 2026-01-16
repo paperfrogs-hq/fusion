@@ -8,8 +8,6 @@ import { Upload, Music, Shield, LogOut, Key, User } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
 import AudioUpload from '@/components/user/AudioUpload';
 import AudioVerification from '@/components/user/AudioVerification';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -67,28 +65,20 @@ export default function UserDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="pt-32 pb-20">
-          <div className="container mx-auto px-4 flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading...</p>
-            </div>
-          </div>
-        </main>
-        <Footer />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
+    <div className="min-h-screen bg-background flex flex-col">
       {/* User Info Banner */}
       <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 border-b">
-        <div className="container mx-auto px-4 py-6 mt-20">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
@@ -111,7 +101,7 @@ export default function UserDashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-8">
         <Tabs defaultValue="upload" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="upload">
@@ -238,7 +228,11 @@ export default function UserDashboard() {
         </Tabs>
       </main>
 
-      <Footer />
+      <footer className="bg-muted/50 border-t py-6 mt-auto">
+        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+          <p>&copy; 2026 Fusion. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
