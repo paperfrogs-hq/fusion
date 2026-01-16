@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Trash2, Users, CheckCircle } from "lucide-react";
+import { Download, Trash2, Users, CheckCircle, Mail } from "lucide-react";
 import { supabase } from "@/lib/supabase-client";
 import { motion } from "framer-motion";
 
@@ -69,6 +69,35 @@ const WaitlistModule = () => {
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to confirm user",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSendEarlyAccess = async (id: number, email: string) => {
+    if (!confirm(`Send early access credentials to ${email}?`)) return;
+
+    try {
+      const response = await fetch("/.netlify/functions/send-early-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send early access");
+      }
+
+      toast({
+        title: "Early Access Sent",
+        description: "API credentials sent to " + email,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send early access",
         variant: "destructive",
       });
     }
@@ -203,6 +232,14 @@ const WaitlistModule = () => {
                           <CheckCircle className="w-4 h-4 text-green-600" />
                         </Button>
                       )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleSendEarlyAccess(user.id, user.email)}
+                        title="Send early access credentials"
+                      >
+                        <Mail className="w-4 h-4 text-blue-600" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="ghost"
