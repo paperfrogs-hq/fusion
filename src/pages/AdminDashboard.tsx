@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, Key, FileAudio, Users, AlertTriangle, BarChart3, 
-  Settings, LogOut, Menu, X, Database, Lock, Activity, FileText 
+  Settings, LogOut, Menu, X, Database, Lock, Activity, FileText, Music
 } from "lucide-react";
 import { getSession, clearSession, hasPermission } from "@/lib/admin-auth";
 import { Button } from "@/components/ui/button";
@@ -23,12 +23,14 @@ import VerificationPolicyModule from "@/components/admin/VerificationPolicyModul
 import ComplianceModule from "@/components/admin/ComplianceModule";
 import SystemControlModule from "@/components/admin/SystemControlModule";
 import WaitlistModule from "@/components/admin/WaitlistModule";
+import UserAudioManagementModule from "@/components/admin/UserAudioManagementModule";
 
 type Module = 
   | "overview"
   | "audit-log"
   | "key-management"
   | "audio-provenance"
+  | "user-audio"
   | "clients"
   | "incidents"
   | "analytics"
@@ -69,6 +71,7 @@ const AdminDashboard = () => {
     { id: "audit-log", label: "Audit Log", icon: FileText, permission: "read_audit_log" },
     { id: "key-management", label: "Key Management", icon: Key, permission: "key_management" },
     { id: "audio-provenance", label: "Audio Provenance", icon: FileAudio, permission: "provenance_management" },
+    { id: "user-audio", label: "User Audio Files", icon: Music, permission: "read_analytics" },
     { id: "clients", label: "Clients", icon: Users, permission: "client_management" },
     { id: "verification-policy", label: "Verification Policy", icon: Shield, permission: "verification_control" },
     { id: "incidents", label: "Incidents", icon: AlertTriangle, permission: "security_incidents" },
@@ -92,6 +95,8 @@ const AdminDashboard = () => {
         return <KeyManagementModule />;
       case "audio-provenance":
         return <AudioProvenanceModule />;
+      case "user-audio":
+        return <UserAudioManagementModule />;
       case "clients":
         return <ClientManagementModule />;
       case "incidents":

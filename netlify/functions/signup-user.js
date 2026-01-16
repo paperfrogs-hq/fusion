@@ -78,8 +78,9 @@ exports.handler = async (event) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Generate API key for user
+    // Generate API key and verification token for user
     const apiKey = `fus_${crypto.randomBytes(32).toString('hex')}`;
+    const verificationToken = crypto.randomBytes(32).toString('hex');
 
     // Create user
     const { data: newUser, error: createError } = await supabase
@@ -91,7 +92,8 @@ exports.handler = async (event) => {
         password_hash: passwordHash,
         api_key: apiKey,
         email_verified: false,
-        account_status: 'active'
+        verification_token: verificationToken,
+        account_status: 'pending_verification'
       }])
       .select()
       .single();
@@ -105,13 +107,80 @@ exports.handler = async (event) => {
       };
     }
 
+    // Send verification email
+    try {
+      const verificationUrl = `${event.headers.origin || 'https://fusion.paperfrogs.dev'}/verify-email?token=${verificationToken}`;
+      
+      const emailResponse = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'Fusion <noreply@paperfrogs.dev>',
+          to: [email],
+          subject: 'Verify Your Fusion Account',
+          html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                  .logo { text-align: center; margin-bottom: 30px; }
+                  .button { 
+                    display: inline-block; 
+                    padding: 12px 30px; 
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white; 
+                    text-decoration: none; 
+                    border-radius: 6px;
+                    margin: 20px 0;
+                  }
+                  .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="logo">
+                    <h1 style="color: #667eea;">🎵 Fusion</h1>
+                  </div>
+                  <h2>Welcome to Fusion, ${fullName}!</h2>
+                  <p>Thank you for signing up. Please verify your email address to activate your account and start protecting your audio content.</p>
+                  <p style="text-align: center;">
+                    <a href="${verificationUrl}" class="button">Verify Email Address</a>
+                  </p>
+                  <p>Or copy and paste this link into your browser:</p>
+                  <p style="word-break: break-all; color: #667eea;">${verificationUrl}</p>
+                  <p>This link will expire in 24 hours.</p>
+                  <p>If you didn't create this account, please ignore this email.</p>
+                  <div class="footer">
+                    <p>© 2026 Fusion by Paperfrogs. All rights reserved.</p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `
+        })
+      });
+
+      if (!emailResponse.ok) {
+        console.error('Failed to send verification email');
+        // Don't fail the signup if email fails
+      }
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+      // Don't fail the signup if email fails
+    }
+
     return {
       statusCode: 201,
       headers,
       body: JSON.stringify({
         success: true,
         userId: newUser.id,
-        message: 'Account created successfully'
+        message: 'Account created successfully. Please check your email to verify your account.'
       })
     };
 

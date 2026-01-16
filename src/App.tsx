@@ -11,9 +11,11 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import UserIndex from "./pages/UserIndex";
 import UserSignup from "./pages/UserSignup";
 import UserLogin from "./pages/UserLogin";
 import UserDashboard from "./pages/UserDashboard";
+import VerifyEmail from "./pages/VerifyEmail";
 import ErrorBoundary from "./components/client/ErrorBoundary";
 
 // Lazy load client portal pages
@@ -67,9 +69,11 @@ const App = () => (
               <Route path="/admin" element={<AdminLogin />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/user" element={<UserIndex />} />
               <Route path="/user/signup" element={<UserSignup />} />
               <Route path="/user/login" element={<UserLogin />} />
               <Route path="/user/dashboard" element={<UserDashboard />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
               
               {/* Client Portal Routes */}
               <Route path="/client/login" element={<ClientLogin />} />

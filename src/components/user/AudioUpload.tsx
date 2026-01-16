@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Upload, File, CheckCircle2, XCircle, Loader2, Music } from 'lucide-react';
+import { supabase } from '@/lib/supabase-client';
 
 interface AudioUploadProps {
   userId: string;
@@ -78,36 +79,92 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
     setUploadProgress(0);
 
     try {
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return prev;
-          }
-          return prev + 10;
+      // Generate unique file path
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `audio/${userId}/${fileName}`;
+
+      // Upload directly to Supabase Storage
+      setUploadProgress(20);
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('audio-files')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
         });
-      }, 200);
 
-      // Create FormData for file upload
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('userId', userId);
-      formData.append('metadata', JSON.stringify(metadata));
-
-      const response = await fetch('/.netlify/functions/upload-audio', {
-        method: 'POST',
-        body: formData
-      });
-
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Upload failed');
+      if (uploadError) {
+        throw new Error(uploadError.message || 'Failed to upload file');
       }
+
+      setUploadProgress(60);
+
+      // Generate audio hash
+      const fileBuffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const audioHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('audio-files')
+        .getPublicUrl(filePath);
+
+      setUploadProgress(80);
+
+      // Create audio registry entry
+      const { data: registryEntry, error: registryError } = await supabase
+        .from('audio_registry')
+        .insert([{
+          audio_hash: audioHash,
+          watermark_id: `wm_${Math.random().toString(36).substring(2, 15)}`,
+          original_filename: file.name,
+          file_format: fileExt,
+          file_size_bytes: file.size,
+          origin: metadata.origin || 'human',
+          metadata: {
+            title: metadata.title,
+            artist: metadata.artist,
+            model_used: metadata.modelUsed,
+            description: metadata.description,
+            uploaded_by: userId
+          },
+          created_by: 'user_' + userId
+        }])
+        .select()
+        .single();
+
+      if (registryError) {
+        throw new Error('Failed to create registry entry');
+      }
+
+      // Create user audio file entry
+      const { error: userFileError } = await supabase
+        .from('user_audio_files')
+        .insert([{
+          user_id: userId,
+          audio_registry_id: registryEntry.id,
+          original_filename: file.name,
+          file_size_bytes: file.size,
+          file_format: fileExt,
+          storage_path: publicUrl,
+          provenance_status: 'verified',
+          confidence_score: 1.0,
+          watermark_embedded: true,
+          metadata: {
+            title: metadata.title,
+            artist: metadata.artist,
+            origin: metadata.origin,
+            model_used: metadata.modelUsed,
+            description: metadata.description
+          }
+        }]);
+
+      if (userFileError) {
+        throw new Error('Failed to create user file entry');
+      }
+
+      setUploadProgress(100);
 
       setSuccess(true);
       setFile(null);

@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function UserSignup() {
   const navigate = useNavigate();
@@ -80,121 +82,127 @@ export default function UserSignup() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-green-500/20 bg-slate-800/50">
-          <CardHeader className="text-center">
-            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <CardTitle className="text-2xl text-white">Account Created!</CardTitle>
-            <CardDescription className="text-gray-300">
-              Your account has been successfully created. Redirecting to login...
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-32 pb-20">
+          <div className="container mx-auto px-4 flex items-center justify-center">
+            <Card className="w-full max-w-md border-green-500/20">
+              <CardHeader className="text-center">
+                <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <CardTitle className="text-2xl">Account Created!</CardTitle>
+                <CardDescription>
+                  Your account has been successfully created. Redirecting to login...
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-purple-500/20 bg-slate-800/50 backdrop-blur-sm">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <img 
-              src="/Fusion_Icon-No-BG-01.png" 
-              alt="Fusion Logo" 
-              className="w-20 h-20 object-contain"
-            />
-          </div>
-          <CardTitle className="text-3xl font-bold text-white">Join Fusion</CardTitle>
-          <CardDescription className="text-gray-300">
-            Create your account to start protecting your audio
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="pt-32 pb-20">
+        <div className="container mx-auto px-4 flex items-center justify-center">
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <div className="flex items-center justify-center mb-4">
+                <img 
+                  src="/Fusion_Icon-No-BG-01.png" 
+                  alt="Fusion Logo" 
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+              <CardTitle className="text-3xl font-bold">Join Fusion</CardTitle>
+              <CardDescription>
+                Create your account to start protecting your audio
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
-            <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-white">Full Name *</Label>
-              <Input
-                id="fullName"
-                name="fullName"
-                type="text"
-                required
-                value={formData.fullName}
-                onChange={handleChange}
-                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-gray-400"
-                placeholder="John Doe"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    required
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    placeholder="John Doe"
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-white">Email *</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-gray-400"
-                placeholder="you@example.com"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="you@example.com"
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="userType" className="text-white">Account Type *</Label>
-              <select
-                id="userType"
-                name="userType"
-                value={formData.userType}
-                onChange={handleChange}
-                className="w-full h-10 px-3 rounded-md bg-slate-700/50 border border-slate-600 text-white"
-              >
-                <option value="creator">Creator</option>
-                <option value="artist">Artist</option>
-                <option value="platform">Platform</option>
-                <option value="developer">Developer</option>
-              </select>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="userType">Account Type *</Label>
+                  <select
+                    id="userType"
+                    name="userType"
+                    value={formData.userType}
+                    onChange={handleChange}
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                  >
+                    <option value="creator">Creator</option>
+                    <option value="artist">Artist</option>
+                    <option value="platform">Platform</option>
+                    <option value="developer">Developer</option>
+                  </select>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-white">Password *</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="bg-slate-700/50 border-slate-600 text-white"
-                placeholder="Minimum 8 characters"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password *</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Minimum 8 characters"
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-white">Confirm Password *</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="bg-slate-700/50 border-slate-600 text-white"
-                placeholder="Re-enter password"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Re-enter password"
+                  />
+                </div>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold"
-            >
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  variant="hero"
+                  className="w-full"
+                >
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -205,15 +213,18 @@ export default function UserSignup() {
               )}
             </Button>
 
-            <div className="text-center text-sm text-gray-300">
-              Already have an account?{' '}
-              <Link to="/user/login" className="text-purple-400 hover:text-purple-300 font-medium">
-                Sign in
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+                <div className="text-center text-sm text-muted-foreground">
+                  Already have an account?{' '}
+                  <Link to="/user/login" className="text-primary hover:underline font-medium">
+                    Sign in
+                  </Link>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }

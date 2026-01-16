@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function UserLogin() {
   const navigate = useNavigate();
@@ -61,23 +63,26 @@ export default function UserLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-purple-500/20 bg-slate-800/50 backdrop-blur-sm">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <img 
-              src="/Fusion_Icon-No-BG-01.png" 
-              alt="Fusion Logo" 
-              className="w-20 h-20 object-contain"
-            />
-          </div>
-          <CardTitle className="text-3xl font-bold text-white">Welcome Back</CardTitle>
-          <CardDescription className="text-gray-300">
-            Sign in to your Fusion account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="pt-32 pb-20">
+        <div className="container mx-auto px-4 flex items-center justify-center">
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <div className="flex items-center justify-center mb-4">
+                <img 
+                  src="/Fusion_Icon-No-BG-01.png" 
+                  alt="Fusion Logo" 
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+              <CardTitle className="text-3xl font-bold">Welcome Back</CardTitle>
+              <CardDescription>
+                Sign in to your Fusion account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
@@ -85,7 +90,7 @@ export default function UserLogin() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white">Email</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -93,13 +98,12 @@ export default function UserLogin() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-gray-400"
                 placeholder="you@example.com"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-white">Password</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 name="password"
@@ -107,7 +111,6 @@ export default function UserLogin() {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="bg-slate-700/50 border-slate-600 text-white"
                 placeholder="Enter your password"
               />
             </div>
@@ -115,7 +118,8 @@ export default function UserLogin() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              variant="hero"
+              className="w-full"
             >
               {loading ? (
                 <>
@@ -127,24 +131,27 @@ export default function UserLogin() {
               )}
             </Button>
 
-            <div className="text-center text-sm text-gray-300">
+            <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{' '}
-              <Link to="/user/signup" className="text-purple-400 hover:text-purple-300 font-medium">
+              <Link to="/user/signup" className="text-primary hover:underline font-medium">
                 Create one
               </Link>
             </div>
 
             <div className="text-center">
               <Link 
-                to="/admin/login" 
-                className="text-xs text-gray-400 hover:text-gray-300"
+                to="/client/login" 
+                className="text-xs text-muted-foreground hover:text-foreground"
               >
-                Admin Login
+                Business Portal →
               </Link>
             </div>
           </form>
         </CardContent>
       </Card>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
