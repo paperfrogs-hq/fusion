@@ -167,9 +167,9 @@ exports.handler = async (event) => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            from: 'Fusion <fusion@paperfrogs.dev>',
+            from: 'Fusion <noreply@paperfrogs.dev>',
             to: [email],
-            subject: '✅ Verify Your Fusion Account',
+            subject: 'Verify Your Fusion Account',
             html: `
               <!DOCTYPE html>
               <html>
