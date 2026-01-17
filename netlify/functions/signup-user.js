@@ -142,34 +142,24 @@ exports.handler = async (event) => {
         console.error('User created but verification email CANNOT be sent');
         console.error('Verification token:', verificationToken);
         
-        // Auto-verify the user since we can't send email
-        console.log('🔧 AUTO-VERIFYING user due to missing email configuration');
-        await supabase
-          .from('users')
-          .update({ 
-            email_verified: true, 
-            account_status: 'active' 
-          })
-          .eq('id', newUser.id);
-        
         return {
-          statusCode: 201,
+          statusCode: 500,
           headers,
           body: JSON.stringify({
-            success: true,
-            userId: newUser.id,
-            message: 'Account created! You can now login. (Email verification temporarily disabled)',
-            warning: 'Email service not configured - please contact support'
+            error: 'Email service not configured. Please contact administrator.',
+            details: 'RESEND_API_KEY missing from environment variables'
           })
         };
-      } else {
-        const origin = event.headers.origin || event.headers.referer?.split('/').slice(0, 3).join('/') || 'https://fusion.paperfrogs.dev';
-        const verificationUrl = `${origin}/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`;
-        
-        console.log('📧 Attempting to send verification email to:', email);
-        console.log('🔗 Verification URL:', verificationUrl);
-        console.log('🔑 Using RESEND_API_KEY:', process.env.RESEND_API_KEY.substring(0, 10) + '...');
-        
+      }
+      
+      const origin = event.headers.origin || event.headers.referer?.split('/').slice(0, 3).join('/') || 'https://fusion.paperfrogs.dev';
+      const verificationUrl = `${origin}/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+      
+      console.log('📧 Attempting to send verification email to:', email);
+      console.log('🔗 Verification URL:', verificationUrl);
+      console.log('🔑 RESEND_API_KEY present:', !!process.env.RESEND_API_KEY);
+      console.log('🔑 Key starts with:', process.env.RESEND_API_KEY?.substring(0, 8) + '...');
+      
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -233,59 +223,44 @@ exports.handler = async (event) => {
           })
         });
 
-        const emailResult = await emailResponse.json();
+      const emailResult = await emailResponse.json();
+      
+      if (!emailResponse.ok) {
+        console.error('❌ Failed to send verification email. Status:', emailResponse.status);
+        console.error('❌ Resend API error:', JSON.stringify(emailResult, null, 2));
         
-        if (!emailResponse.ok) {
-          console.error('❌ Failed to send verification email. Status:', emailResponse.status);
-          console.error('❌ Error details:', JSON.stringify(emailResult));
-          
-          // Auto-verify user if email fails
-          console.log('🔧 AUTO-VERIFYING user due to email send failure');
-          await supabase
-            .from('users')
-            .update({ 
-              email_verified: true, 
-              account_status: 'active' 
-            })
-            .eq('id', newUser.id);
-          
-          return {
-            statusCode: 201,
-            headers,
-            body: JSON.stringify({
-              success: true,
-              userId: newUser.id,
-              message: 'Account created! You can now login. (Email verification temporarily disabled)',
-              warning: 'Email delivery issue - please contact support'
-            })
-          };
-        } else {
-          console.log('✅ Verification email sent successfully to:', email);
-          console.log('✅ Email ID:', emailResult.id);
-        }
+        // Delete the user since we couldn't send verification email
+        await supabase.from('users').delete().eq('id', newUser.id);
+        
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({
+            error: 'Failed to send verification email',
+            details: emailResult.message || 'Email service error',
+            hint: 'Please check your email address or contact support'
+          })
+        };
       }
+      
+      console.log('✅ Verification email sent successfully!');
+      console.log('✅ Email ID:', emailResult.id);
+      console.log('✅ To:', email);
+      
     } catch (emailError) {
       console.error('❌ Email sending exception:', emailError);
-      console.error('❌ Error message:', emailError.message);
+      console.error('❌ Stack trace:', emailError.stack);
       
-      // Auto-verify user if email fails
-      console.log('🔧 AUTO-VERIFYING user due to email exception');
-      await supabase
-        .from('users')
-        .update({ 
-          email_verified: true, 
-          account_status: 'active' 
-        })
-        .eq('id', newUser.id);
+      // Delete the user since we couldn't send verification email
+      await supabase.from('users').delete().eq('id', newUser.id);
       
       return {
-        statusCode: 201,
+        statusCode: 500,
         headers,
         body: JSON.stringify({
-          success: true,
-          userId: newUser.id,
-          message: 'Account created! You can now login. (Email verification temporarily disabled)',
-          warning: 'Email service issue - please contact support'
+          error: 'Failed to send verification email',
+          details: emailError.message,
+          hint: 'Email service is not responding. Please try again later.'
         })
       };
     }
