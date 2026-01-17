@@ -24,6 +24,7 @@ import ComplianceModule from "@/components/admin/ComplianceModule";
 import SystemControlModule from "@/components/admin/SystemControlModule";
 import WaitlistModule from "@/components/admin/WaitlistModule";
 import UserAudioManagementModule from "@/components/admin/UserAudioManagementModule";
+import UserManagementModule from "@/components/admin/UserManagementModule";
 
 type Module = 
   | "overview"
@@ -31,6 +32,7 @@ type Module =
   | "key-management"
   | "audio-provenance"
   | "user-audio"
+  | "users"
   | "clients"
   | "incidents"
   | "analytics"
@@ -72,6 +74,7 @@ const AdminDashboard = () => {
     { id: "key-management", label: "Key Management", icon: Key, permission: "key_management" },
     { id: "audio-provenance", label: "Audio Provenance", icon: FileAudio, permission: "provenance_management" },
     { id: "user-audio", label: "User Audio Files", icon: Music, permission: "read_analytics" },
+    { id: "users", label: "User Management", icon: Users, permission: "client_management" },
     { id: "clients", label: "Clients", icon: Users, permission: "client_management" },
     { id: "verification-policy", label: "Verification Policy", icon: Shield, permission: "verification_control" },
     { id: "incidents", label: "Incidents", icon: AlertTriangle, permission: "security_incidents" },
@@ -97,6 +100,8 @@ const AdminDashboard = () => {
         return <AudioProvenanceModule />;
       case "user-audio":
         return <UserAudioManagementModule />;
+      case "users":
+        return <UserManagementModule />;
       case "clients":
         return <ClientManagementModule />;
       case "incidents":

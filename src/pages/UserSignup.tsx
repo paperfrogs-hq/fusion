@@ -72,9 +72,7 @@ export default function UserSignup() {
       }
 
       setSuccess(true);
-      setTimeout(() => {
-        navigate('/user/login');
-      }, 3000);
+      // Don't auto-redirect, let user read the message
     } catch (err: any) {
       setError(err.message || 'Failed to create account. Please try again.');
     } finally {
@@ -91,11 +89,21 @@ export default function UserSignup() {
             <Card className="w-full max-w-md border-green-500/20">
               <CardHeader className="text-center">
                 <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <CardTitle className="text-2xl">Account Created!</CardTitle>
+                <CardTitle className="text-2xl">Check Your Email! 📧</CardTitle>
                 <CardDescription>
-                  Your account has been successfully created. Redirecting to login...
+                  We've sent a verification link to your email address. Please check your inbox and click the link to activate your account.
                 </CardDescription>
               </CardHeader>
+              <CardContent className="text-center space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Didn't receive the email? Check your spam folder or contact support.
+                </p>
+                <Link to="/user/login">
+                  <Button variant="outline" className="w-full">
+                    Back to Login
+                  </Button>
+                </Link>
+              </CardContent>
             </Card>
           </div>
         </main>

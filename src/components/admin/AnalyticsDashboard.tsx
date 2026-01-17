@@ -10,6 +10,12 @@ const AnalyticsDashboard = () => {
   const [stats, setStats] = useState({
     totalWaitlist: 0,
     totalMessages: 0,
+    totalUsers: 0,
+    totalAudioFiles: 0,
+    verifiedFiles: 0,
+    activeClients: 0,
+    tamperDetections: 0,
+    successRate: "0%"
   });
 
   useEffect(() => {
@@ -26,9 +32,48 @@ const AnalyticsDashboard = () => {
         .from("contact_messages")
         .select("*", { count: "exact", head: true });
 
+      // Fetch users count
+      const { count: usersCount } = await supabase
+        .from("users")
+        .select("*", { count: "exact", head: true });
+
+      // Fetch audio files count
+      const { count: audioCount } = await supabase
+        .from("user_audio_files")
+        .select("*", { count: "exact", head: true });
+
+      // Fetch verified audio count
+      const { count: verifiedCount } = await supabase
+        .from("user_audio_files")
+        .select("*", { count: "exact", head: true })
+        .eq("provenance_status", "verified");
+
+      // Fetch clients count
+      const { count: clientsCount } = await supabase
+        .from("clients")
+        .select("*", { count: "exact", head: true })
+        .eq("client_status", "active");
+
+      // Fetch tamper detections
+      const { count: tamperCount } = await supabase
+        .from("audio_registry")
+        .select("*", { count: "exact", head: true })
+        .eq("provenance_status", "tampered");
+
+      // Calculate success rate
+      const successRate = audioCount && verifiedCount 
+        ? Math.round((verifiedCount / audioCount) * 100) 
+        : 0;
+
       setStats({
         totalWaitlist: waitlistCount || 0,
         totalMessages: messagesCount || 0,
+        totalUsers: usersCount || 0,
+        totalAudioFiles: audioCount || 0,
+        verifiedFiles: verifiedCount || 0,
+        activeClients: clientsCount || 0,
+        tamperDetections: tamperCount || 0,
+        successRate: `${successRate}%`
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -37,11 +82,13 @@ const AnalyticsDashboard = () => {
 
   const statCards = [
     { label: "Waitlist Users", value: stats.totalWaitlist, icon: Users, color: "text-blue-500" },
-    { label: "Contact Messages", value: stats.totalMessages, icon: FileAudio, color: "text-purple-500" },
-    { label: "Audio Verified", value: "Coming Soon", icon: Shield, color: "text-green-500" },
-    { label: "Active Clients", value: "Coming Soon", icon: Activity, color: "text-orange-500" },
-    { label: "Tamper Detections", value: "Coming Soon", icon: AlertTriangle, color: "text-red-500" },
-    { label: "Success Rate", value: "Coming Soon", icon: TrendingUp, color: "text-teal-500" },
+    { label: "Registered Users", value: stats.totalUsers, icon: Users, color: "text-indigo-500" },
+    { label: "Audio Files", value: stats.totalAudioFiles, icon: FileAudio, color: "text-purple-500" },
+    { label: "Audio Verified", value: stats.verifiedFiles, icon: Shield, color: "text-green-500" },
+    { label: "Active Clients", value: stats.activeClients, icon: Activity, color: "text-orange-500" },
+    { label: "Tamper Detections", value: stats.tamperDetections, icon: AlertTriangle, color: "text-red-500" },
+    { label: "Success Rate", value: stats.successRate, icon: TrendingUp, color: "text-teal-500" },
+    { label: "Contact Messages", value: stats.totalMessages, icon: FileAudio, color: "text-gray-500" },
   ];
 
   return (
@@ -56,7 +103,7 @@ const AnalyticsDashboard = () => {
       {/* 2FA Setup Section */}
       <TOTPSetup />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {statCards.map((stat, index) => (
           <motion.div
             key={stat.label}

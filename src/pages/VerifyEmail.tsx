@@ -14,22 +14,23 @@ export default function VerifyEmail() {
 
   useEffect(() => {
     const token = searchParams.get('token');
+    const email = searchParams.get('email');
 
-    if (!token) {
+    if (!token || !email) {
       setStatus('error');
       setMessage('Invalid verification link');
       return;
     }
 
-    verifyEmail(token);
+    verifyEmail(token, email);
   }, [searchParams]);
 
-  const verifyEmail = async (token: string) => {
+  const verifyEmail = async (token: string, email: string) => {
     try {
       const response = await fetch('/.netlify/functions/verify-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
+        body: JSON.stringify({ token, email })
       });
 
       const data = await response.json();

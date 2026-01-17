@@ -65,6 +65,18 @@ exports.handler = async (event) => {
       };
     }
 
+    // Check if email is verified
+    if (!user.email_verified) {
+      return {
+        statusCode: 403,
+        headers,
+        body: JSON.stringify({ 
+          error: 'Please verify your email before logging in. Check your inbox for the verification link.',
+          requiresVerification: true
+        })
+      };
+    }
+
     // Verify password
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
 
