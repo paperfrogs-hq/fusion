@@ -138,15 +138,37 @@ exports.handler = async (event) => {
     // Send verification email
     try {
       if (!process.env.RESEND_API_KEY) {
-        console.error('CRITICAL: RESEND_API_KEY not configured - verification email cannot be sent');
-        console.log('User created but email not sent. Token:', verificationToken.substring(0, 8) + '...');
-        // Don't fail signup, but log the issue
+        console.error('⚠️ CRITICAL: RESEND_API_KEY not configured in Netlify!');
+        console.error('User created but verification email CANNOT be sent');
+        console.error('Verification token:', verificationToken);
+        
+        // Auto-verify the user since we can't send email
+        console.log('🔧 AUTO-VERIFYING user due to missing email configuration');
+        await supabase
+          .from('users')
+          .update({ 
+            email_verified: true, 
+            account_status: 'active' 
+          })
+          .eq('id', newUser.id);
+        
+        return {
+          statusCode: 201,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            userId: newUser.id,
+            message: 'Account created! You can now login. (Email verification temporarily disabled)',
+            warning: 'Email service not configured - please contact support'
+          })
+        };
       } else {
         const origin = event.headers.origin || event.headers.referer?.split('/').slice(0, 3).join('/') || 'https://fusion.paperfrogs.dev';
         const verificationUrl = `${origin}/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`;
         
-        console.log('Attempting to send verification email to:', email);
-        console.log('Verification URL:', verificationUrl);
+        console.log('📧 Attempting to send verification email to:', email);
+        console.log('🔗 Verification URL:', verificationUrl);
+        console.log('🔑 Using RESEND_API_KEY:', process.env.RESEND_API_KEY.substring(0, 10) + '...');
         
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -214,18 +236,58 @@ exports.handler = async (event) => {
         const emailResult = await emailResponse.json();
         
         if (!emailResponse.ok) {
-          console.error('Failed to send verification email. Status:', emailResponse.status);
-          console.error('Error details:', JSON.stringify(emailResult));
-          console.error('Full response:', emailResult);
+          console.error('❌ Failed to send verification email. Status:', emailResponse.status);
+          console.error('❌ Error details:', JSON.stringify(emailResult));
+          
+          // Auto-verify user if email fails
+          console.log('🔧 AUTO-VERIFYING user due to email send failure');
+          await supabase
+            .from('users')
+            .update({ 
+              email_verified: true, 
+              account_status: 'active' 
+            })
+            .eq('id', newUser.id);
+          
+          return {
+            statusCode: 201,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              userId: newUser.id,
+              message: 'Account created! You can now login. (Email verification temporarily disabled)',
+              warning: 'Email delivery issue - please contact support'
+            })
+          };
         } else {
           console.log('✅ Verification email sent successfully to:', email);
-          console.log('Email ID:', emailResult.id);
+          console.log('✅ Email ID:', emailResult.id);
         }
       }
     } catch (emailError) {
-      console.error('❌ Email sending error:', emailError);
-      console.error('Error details:', emailError.message);
-      // Don't fail signup even if email fails
+      console.error('❌ Email sending exception:', emailError);
+      console.error('❌ Error message:', emailError.message);
+      
+      // Auto-verify user if email fails
+      console.log('🔧 AUTO-VERIFYING user due to email exception');
+      await supabase
+        .from('users')
+        .update({ 
+          email_verified: true, 
+          account_status: 'active' 
+        })
+        .eq('id', newUser.id);
+      
+      return {
+        statusCode: 201,
+        headers,
+        body: JSON.stringify({
+          success: true,
+          userId: newUser.id,
+          message: 'Account created! You can now login. (Email verification temporarily disabled)',
+          warning: 'Email service issue - please contact support'
+        })
+      };
     }
 
     return {

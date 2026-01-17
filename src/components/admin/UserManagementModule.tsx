@@ -116,8 +116,9 @@ const UserManagementModule = () => {
     if (!confirm(`Are you sure you want to permanently delete ${userEmail}? This will delete all their data including audio files, sessions, and verification history.`)) return;
 
     try {
-      // Get admin token from session storage
-      const adminToken = sessionStorage.getItem("admin_token") || localStorage.getItem("admin_token");
+      // Get admin session from localStorage
+      const sessionData = localStorage.getItem("fusion_admin_session");
+      const adminToken = sessionData ? JSON.parse(sessionData).token : null;
 
       const response = await fetch("/.netlify/functions/delete-user", {
         method: "POST",
