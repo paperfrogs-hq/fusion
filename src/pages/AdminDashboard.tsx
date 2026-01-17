@@ -25,6 +25,7 @@ import SystemControlModule from "@/components/admin/SystemControlModule";
 import WaitlistModule from "@/components/admin/WaitlistModule";
 import UserAudioManagementModule from "@/components/admin/UserAudioManagementModule";
 import UserManagementModule from "@/components/admin/UserManagementModule";
+import SecurityMonitoringModule from "@/components/admin/SecurityMonitoringModule";
 
 type Module = 
   | "overview"
@@ -35,6 +36,7 @@ type Module =
   | "users"
   | "clients"
   | "incidents"
+  | "security"
   | "analytics"
   | "verification-policy"
   | "compliance"
@@ -77,6 +79,7 @@ const AdminDashboard = () => {
     { id: "users", label: "User Management", icon: Users, permission: "client_management" },
     { id: "clients", label: "Clients", icon: Users, permission: "client_management" },
     { id: "verification-policy", label: "Verification Policy", icon: Shield, permission: "verification_control" },
+    { id: "security", label: "Security Monitor", icon: Shield, permission: "security_incidents" },
     { id: "incidents", label: "Incidents", icon: AlertTriangle, permission: "security_incidents" },
     { id: "analytics", label: "Analytics", icon: Activity, permission: "read_analytics" },
     { id: "compliance", label: "Compliance", icon: Lock, permission: "compliance" },
@@ -106,6 +109,8 @@ const AdminDashboard = () => {
         return <ClientManagementModule />;
       case "incidents":
         return <IncidentMonitoringModule />;
+      case "security":
+        return <SecurityMonitoringModule />;
       case "analytics":
         return <AnalyticsDashboard />;
       case "verification-policy":

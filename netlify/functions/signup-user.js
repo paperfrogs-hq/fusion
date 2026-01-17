@@ -1,6 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const { checkSecurity } = require('./security-middleware');
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -23,6 +24,19 @@ exports.handler = async (event) => {
       statusCode: 405,
       headers,
       body: JSON.stringify({ error: 'Method not allowed' })
+    };
+  }
+
+  // Check for security threats
+  const securityCheck = await checkSecurity(event, '/.netlify/functions/signup-user');
+  if (securityCheck.blocked) {
+    return {
+      statusCode: 403,
+      headers,
+      body: JSON.stringify({ 
+        error: 'Request blocked for security reasons',
+        reason: securityCheck.reason
+      })
     };
   }
 

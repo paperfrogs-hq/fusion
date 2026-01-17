@@ -13,6 +13,7 @@ const AnalyticsDashboard = () => {
     totalUsers: 0,
     totalAudioFiles: 0,
     verifiedFiles: 0,
+    pendingFiles: 0,
     activeClients: 0,
     tamperDetections: 0,
     successRate: "0%"
@@ -32,10 +33,16 @@ const AnalyticsDashboard = () => {
         .from("contact_messages")
         .select("*", { count: "exact", head: true });
 
-      // Fetch users count
+      // Fetch total users count
       const { count: usersCount } = await supabase
         .from("users")
         .select("*", { count: "exact", head: true });
+
+      // Fetch clients count separately (assuming clients have user_type='client')
+      const { count: clientsCount } = await supabase
+        .from("users")
+        .select("*", { count: "exact", head: true })
+        .eq("user_type", "client");
 
       // Fetch audio files count
       const { count: audioCount } = await supabase
@@ -48,11 +55,11 @@ const AnalyticsDashboard = () => {
         .select("*", { count: "exact", head: true })
         .eq("provenance_status", "verified");
 
-      // Fetch clients count
-      const { count: clientsCount } = await supabase
-        .from("clients")
+      // Fetch pending audio count
+      const { count: pendingCount } = await supabase
+        .from("user_audio_files")
         .select("*", { count: "exact", head: true })
-        .eq("client_status", "active");
+        .eq("provenance_status", "pending");
 
       // Fetch tamper detections
       const { count: tamperCount } = await supabase
@@ -68,12 +75,13 @@ const AnalyticsDashboard = () => {
       setStats({
         totalWaitlist: waitlistCount || 0,
         totalMessages: messagesCount || 0,
-        totalUsers: usersCount || 0,
+        totalUsers: (usersCount || 0) - (clientsCount || 0), // Users only (excluding clients)
         totalAudioFiles: audioCount || 0,
         verifiedFiles: verifiedCount || 0,
         activeClients: clientsCount || 0,
         tamperDetections: tamperCount || 0,
-        successRate: `${successRate}%`
+        successRate: `${successRate}%`,
+        pendingFiles: pendingCount || 0
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -81,14 +89,14 @@ const AnalyticsDashboard = () => {
   };
 
   const statCards = [
-    { label: "Waitlist Users", value: stats.totalWaitlist, icon: Users, color: "text-blue-500" },
-    { label: "Registered Users", value: stats.totalUsers, icon: Users, color: "text-indigo-500" },
-    { label: "Audio Files", value: stats.totalAudioFiles, icon: FileAudio, color: "text-purple-500" },
-    { label: "Audio Verified", value: stats.verifiedFiles, icon: Shield, color: "text-green-500" },
-    { label: "Active Clients", value: stats.activeClients, icon: Activity, color: "text-orange-500" },
-    { label: "Tamper Detections", value: stats.tamperDetections, icon: AlertTriangle, color: "text-red-500" },
-    { label: "Success Rate", value: stats.successRate, icon: TrendingUp, color: "text-teal-500" },
-    { label: "Contact Messages", value: stats.totalMessages, icon: FileAudio, color: "text-gray-500" },
+    { label: "Registered Users", value: stats.totalUsers, icon: Users, color: "text-indigo-500", description: "Individual users (creators)" },
+    { label: "Active Clients", value: stats.activeClients, icon: Activity, color: "text-orange-500", description: "Business clients" },
+    { label: "Total Audio Files", value: stats.totalAudioFiles, icon: FileAudio, color: "text-purple-500", description: "Songs uploaded" },
+    { label: "Verified Files", value: stats.verifiedFiles, icon: Shield, color: "text-green-500", description: "Successfully verified" },
+    { label: "Pending Verification", value: stats.pendingFiles, icon: AlertTriangle, color: "text-yellow-500", description: "Awaiting verification" },
+    { label: "Tamper Detections", value: stats.tamperDetections, icon: AlertTriangle, color: "text-red-500", description: "Hack attempts detected" },
+    { label: "Verification Success", value: stats.successRate, icon: TrendingUp, color: "text-teal-500", description: "Success rate" },
+    { label: "Waitlist", value: stats.totalWaitlist, icon: Users, color: "text-blue-500", description: "Early access signups" },
   ];
 
   return (
@@ -118,6 +126,7 @@ const AnalyticsDashboard = () => {
                 <p className="text-3xl font-bold">
                   {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
                 </p>
+                <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
               </div>
               <stat.icon className={`w-8 h-8 ${stat.color}`} />
             </div>

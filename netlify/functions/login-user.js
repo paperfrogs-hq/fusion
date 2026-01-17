@@ -49,6 +49,23 @@ exports.handler = async (event) => {
       .single();
 
     if (userError || !user) {
+      // Log suspicious activity - non-existent user login attempt
+      await supabase.from("security_events").insert([{
+        event_type: "unauthorized_access",
+        ip_address: event.headers['x-forwarded-for']?.split(',')[0].trim() || 
+                   event.headers['x-real-ip'] || 
+                   event.headers['client-ip'] || 
+                   'unknown',
+        user_agent: event.headers['user-agent'] || 'unknown',
+        endpoint: '/.netlify/functions/login-user',
+        request_method: 'POST',
+        request_body: { email },
+        response_status: 401,
+        threat_level: 'low',
+        reason: 'Login attempt with non-existent email',
+        blocked: false
+      }]);
+
       return {
         statusCode: 401,
         headers,
@@ -81,6 +98,24 @@ exports.handler = async (event) => {
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!passwordMatch) {
+      // Log failed login attempt as security event
+      await supabase.from("security_events").insert([{
+        event_type: "brute_force",
+        ip_address: event.headers['x-forwarded-for']?.split(',')[0].trim() || 
+                   event.headers['x-real-ip'] || 
+                   event.headers['client-ip'] || 
+                   'unknown',
+        user_agent: event.headers['user-agent'] || 'unknown',
+        endpoint: '/.netlify/functions/login-user',
+        request_method: 'POST',
+        request_body: { email },
+        response_status: 401,
+        threat_level: 'medium',
+        reason: 'Failed login attempt - Invalid password',
+        blocked: false,
+        user_id: user.id
+      }]);
+
       return {
         statusCode: 401,
         headers,
