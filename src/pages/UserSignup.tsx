@@ -71,11 +71,6 @@ export default function UserSignup() {
         throw new Error(errorMsg + detailMsg);
       }
 
-      // Show warning if email wasn't sent
-      if (!data.emailSent) {
-        setError('Account created but verification email failed to send. Please contact support.');
-      }
-
       setSuccess(true);
       setTimeout(() => {
         navigate('/user/login');

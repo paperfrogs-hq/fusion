@@ -119,14 +119,6 @@ const Header = () => {
           </button>
 
           <motion.div className="hidden md:flex items-center gap-3">
-            <motion.a 
-              href="/user/login" 
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Sign In
-            </motion.a>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button variant="hero" size="sm" className="text-xs sm:text-sm px-2 sm:px-4" onClick={handleJoinClick}>
                 Join
@@ -174,13 +166,6 @@ const Header = () => {
                 >
                   Join
                 </Button>
-                <a 
-                  href="/user/login"
-                  className="px-4 py-3 text-sm text-center rounded-lg transition-colors text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Sign In
-                </a>
               </nav>
             </div>
           </motion.div>

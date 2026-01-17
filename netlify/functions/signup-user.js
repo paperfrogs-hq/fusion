@@ -88,11 +88,10 @@ exports.handler = async (event) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Generate API key and verification token for user
+    // Generate API key for user
     const apiKey = `fus_${crypto.randomBytes(32).toString('hex')}`;
-    const verificationToken = crypto.randomBytes(32).toString('hex');
 
-    // Create user
+    // Create user without email verification for now
     const { data: newUser, error: createError } = await supabase
       .from('users')
       .insert([{
@@ -101,9 +100,8 @@ exports.handler = async (event) => {
         user_type: userType,
         password_hash: passwordHash,
         api_key: apiKey,
-        email_verified: false,
-        verification_token: verificationToken,
-        account_status: 'pending_verification'
+        email_verified: true,
+        account_status: 'active'
       }])
       .select()
       .single();
@@ -120,94 +118,13 @@ exports.handler = async (event) => {
       };
     }
 
-    // Send verification email
-    let emailSent = false;
-    try {
-      if (!process.env.RESEND_API_KEY) {
-        console.error('RESEND_API_KEY not configured');
-      } else {
-        const verificationUrl = `${event.headers.origin || 'https://fusion.paperfrogs.dev'}/verify-email?token=${verificationToken}`;
-        
-        console.log('Sending verification email to:', email);
-        
-        const emailResponse = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            from: 'Fusion <noreply@paperfrogs.dev>',
-            to: [email],
-            subject: 'Verify Your Fusion Account',
-            html: `
-              <!DOCTYPE html>
-              <html>
-                <head>
-                  <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .logo { text-align: center; margin-bottom: 30px; }
-                    .button { 
-                      display: inline-block; 
-                      padding: 12px 30px; 
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                      color: white; 
-                      text-decoration: none; 
-                      border-radius: 6px;
-                      margin: 20px 0;
-                    }
-                    .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; }
-                  </style>
-                </head>
-                <body>
-                  <div class="container">
-                    <div class="logo">
-                      <h1 style="color: #667eea;">🎵 Fusion</h1>
-                    </div>
-                    <h2>Welcome to Fusion, ${fullName}!</h2>
-                    <p>Thank you for signing up. Please verify your email address to activate your account and start protecting your audio content.</p>
-                    <p style="text-align: center;">
-                      <a href="${verificationUrl}" class="button">Verify Email Address</a>
-                    </p>
-                    <p>Or copy and paste this link into your browser:</p>
-                    <p style="word-break: break-all; color: #667eea;">${verificationUrl}</p>
-                    <p>This link will expire in 24 hours.</p>
-                    <p>If you didn't create this account, please ignore this email.</p>
-                    <div class="footer">
-                      <p>© 2026 Fusion by Paperfrogs. All rights reserved.</p>
-                    </div>
-                  </div>
-                </body>
-              </html>
-            `
-          })
-        });
-
-        const emailResult = await emailResponse.json();
-        
-        if (!emailResponse.ok) {
-          console.error('Resend API error:', emailResponse.status, emailResult);
-        } else {
-          console.log('Verification email sent successfully:', emailResult.id);
-          emailSent = true;
-        }
-      }
-    } catch (emailError) {
-      console.error('Email sending error:', emailError);
-    }
-
     return {
       statusCode: 201,
       headers,
       body: JSON.stringify({
         success: true,
         userId: newUser.id,
-        emailSent: emailSent,
-        message: emailSent 
-          ? 'Account created successfully. Please check your email to verify your account.'
-          : 'Account created successfully. Email verification failed - please contact support for manual verification.',
-        verificationToken: !emailSent ? verificationToken : undefined // Include token if email failed for manual verification
+        message: 'Account created successfully. You can now sign in.'
       })
     };
 
