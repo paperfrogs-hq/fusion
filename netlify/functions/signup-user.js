@@ -138,9 +138,15 @@ exports.handler = async (event) => {
     // Send verification email
     try {
       if (!process.env.RESEND_API_KEY) {
-        console.warn('RESEND_API_KEY not configured - verification email not sent');
+        console.error('CRITICAL: RESEND_API_KEY not configured - verification email cannot be sent');
+        console.log('User created but email not sent. Token:', verificationToken.substring(0, 8) + '...');
+        // Don't fail signup, but log the issue
       } else {
-        const verificationUrl = `${event.headers.origin || 'https://fusion.paperfrogs.dev'}/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+        const origin = event.headers.origin || event.headers.referer?.split('/').slice(0, 3).join('/') || 'https://fusion.paperfrogs.dev';
+        const verificationUrl = `${origin}/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+        
+        console.log('Attempting to send verification email to:', email);
+        console.log('Verification URL:', verificationUrl);
         
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -208,13 +214,18 @@ exports.handler = async (event) => {
         const emailResult = await emailResponse.json();
         
         if (!emailResponse.ok) {
-          console.error('Failed to send verification email:', emailResult);
+          console.error('Failed to send verification email. Status:', emailResponse.status);
+          console.error('Error details:', JSON.stringify(emailResult));
+          console.error('Full response:', emailResult);
         } else {
-          console.log('Verification email sent successfully');
+          console.log('✅ Verification email sent successfully to:', email);
+          console.log('Email ID:', emailResult.id);
         }
       }
     } catch (emailError) {
-      console.error('Email sending error:', emailError);
+      console.error('❌ Email sending error:', emailError);
+      console.error('Error details:', emailError.message);
+      // Don't fail signup even if email fails
     }
 
     return {
