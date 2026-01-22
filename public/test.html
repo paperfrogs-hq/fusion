@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fusion - Test Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: system-ui;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 3rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 3rem; margin: 0 0 1rem 0; }
+        p { font-size: 1.2rem; opacity: 0.9; }
+        .status { margin-top: 2rem; }
+        .ok { color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Deployment Working!</h1>
+        <p>Static files are serving correctly.</p>
+        <div class="status">
+            <div class="ok">✓ HTML loads</div>
+            <div class="ok">✓ CSS loads</div>
+            <div class="ok">✓ JavaScript executes</div>
+        </div>
+        <p style="margin-top: 2rem; font-size: 0.9rem;">
+            <a href="/" style="color: white;">← Back to main site</a>
+        </p>
+    </div>
+    <script>
+        console.log('✓ Test page loaded successfully');
+        console.log('Location:', window.location.href);
+    </script>
+</body>
+</html>
