@@ -343,6 +343,108 @@ exports.handler = async (event) => {
       console.log('✅ Email ID:', emailResult.id);
       console.log('✅ To:', email);
       
+      // Send welcome email after successful verification email
+      try {
+        console.log('📧 Sending welcome email...');
+        const welcomeResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'Fusion <noreply@paperfrogs.dev>',
+            to: [email],
+            subject: 'Welcome to Fusion - Your Account is Ready!',
+            html: `
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; margin: 0; padding: 0; }
+                    .container { max-width: 600px; margin: 40px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center; }
+                    .header h1 { color: white; margin: 0; font-size: 32px; }
+                    .content { padding: 40px 30px; }
+                    .feature { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+                    .feature h3 { margin-top: 0; color: #667eea; }
+                    .button { 
+                      display: inline-block; 
+                      padding: 15px 40px; 
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white !important; 
+                      text-decoration: none; 
+                      border-radius: 8px;
+                      font-weight: bold;
+                      margin: 20px 0;
+                      text-align: center;
+                    }
+                    .footer { background: #f8f8f8; padding: 20px; text-align: center; font-size: 12px; color: #666; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <div class="header">
+                      <h1>🎉 Welcome to Fusion!</h1>
+                    </div>
+                    <div class="content">
+                      <h2>Hey ${fullName}! 👋</h2>
+                      <p><strong>Your Fusion account has been successfully created!</strong></p>
+                      
+                      <p>You're now part of the future of audio verification and protection. Here's what you can do with Fusion:</p>
+                      
+                      <div class="feature">
+                        <h3>🎵 Upload & Protect Your Audio</h3>
+                        <p>Upload your music, voice recordings, or any audio content and get blockchain-backed verification.</p>
+                      </div>
+                      
+                      <div class="feature">
+                        <h3>🔐 Cryptographic Provenance</h3>
+                        <p>Every upload gets a unique fingerprint and tamper detection. Your work is protected.</p>
+                      </div>
+                      
+                      <div class="feature">
+                        <h3>📊 Real-time Verification</h3>
+                        <p>Verify authenticity of any audio file in seconds with our advanced detection system.</p>
+                      </div>
+                      
+                      <div class="feature">
+                        <h3>🔑 API Access</h3>
+                        <p>Your API Key: <code style="background: #e9ecef; padding: 5px 10px; border-radius: 4px; font-size: 12px;">${apiKey}</code></p>
+                        <p style="font-size: 13px; color: #666; margin-top: 10px;">Keep this key secure - you'll need it for API integrations.</p>
+                      </div>
+                      
+                      <p style="text-align: center; margin-top: 30px;">
+                        <a href="${origin}/user-login" class="button">Get Started Now</a>
+                      </p>
+                      
+                      <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+                        <strong>Need help getting started?</strong><br>
+                        Check out our documentation or contact support at fusion@paperfrogs.dev
+                      </p>
+                    </div>
+                    <div class="footer">
+                      <p>© 2026 Fusion by Paperfrogs. All rights reserved.</p>
+                      <p>Blockchain-backed audio verification and protection</p>
+                    </div>
+                  </div>
+                </body>
+              </html>
+            `
+          })
+        });
+        
+        const welcomeResult = await welcomeResponse.json();
+        if (welcomeResponse.ok) {
+          console.log('✅ Welcome email sent! ID:', welcomeResult.id);
+        } else {
+          console.log('⚠️ Welcome email failed (non-critical):', welcomeResult.message);
+        }
+      } catch (welcomeError) {
+        console.log('⚠️ Welcome email error (non-critical):', welcomeError.message);
+        // Don't fail signup if welcome email fails
+      }
+      
     } catch (emailError) {
       console.error('❌ Email sending exception:', emailError);
       console.error('❌ Stack trace:', emailError.stack);
