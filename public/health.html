@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fusion Health Check</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #00ff00; }
+        .status { margin: 10px 0; padding: 10px; background: #2a2a2a; }
+        .ok { color: #00ff00; }
+        .error { color: #ff0000; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Fusion Health Check</h1>
+    <div id="status"></div>
+    <script>
+        const statusDiv = document.getElementById('status');
+        
+        function addStatus(message, isOk = true) {
+            const div = document.createElement('div');
+            div.className = 'status ' + (isOk ? 'ok' : 'error');
+            div.textContent = message;
+            statusDiv.appendChild(div);
+        }
+        
+        // Check if main app loads
+        addStatus('✓ Health check page loaded');
+        
+        // Check if we can fetch main index
+        fetch('/index.html')
+            .then(r => {
+                addStatus('✓ Main index.html accessible');
+                return r.text();
+            })
+            .then(html => {
+                if (html.includes('id="root"')) {
+                    addStatus('✓ Root div present in index.html');
+                } else {
+                    addStatus('✗ Root div missing in index.html', false);
+                }
+            })
+            .catch(e => addStatus('✗ Cannot fetch index.html: ' + e.message, false));
+        
+        // Check assets
+        fetch('/assets/index-DDLK5zWq.js')
+            .then(r => {
+                if (r.ok) {
+                    addStatus('✓ Main JS bundle accessible');
+                } else {
+                    addStatus('✗ Main JS bundle not found (status: ' + r.status + ')', false);
+                }
+            })
+            .catch(e => addStatus('✗ JS bundle error: ' + e.message, false));
+        
+        // Environment check
+        addStatus('URL: ' + window.location.href);
+        addStatus('User Agent: ' + navigator.userAgent);
+        
+        // Try to load main app
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/assets/index-DDLK5zWq.js';
+        script.onload = () => addStatus('✓ Main JS executed');
+        script.onerror = (e) => addStatus('✗ Main JS failed to execute', false);
+        document.head.appendChild(script);
+        
+        // Check console errors
+        window.addEventListener('error', (e) => {
+            addStatus('✗ Runtime error: ' + e.message, false);
+        });
+    </script>
+</body>
+</html>
