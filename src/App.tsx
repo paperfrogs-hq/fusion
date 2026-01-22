@@ -28,6 +28,7 @@ import LoadingSkeleton from "./components/client/LoadingSkeleton";
 
 const ClientLogin = lazy(() => import("./pages/ClientLogin"));
 const ClientSignup = lazy(() => import("./pages/ClientSignup"));
+const ClientSelectOrg = lazy(() => import("./pages/ClientSelectOrg"));
 const ClientDashboard = lazy(() => import("./pages/Dashboard"));
 const Activity = lazy(() => import("./pages/VerificationActivity"));
 const ApiKeys = lazy(() => import("./pages/APIKeys"));
@@ -84,6 +85,7 @@ const App = () => (
               {/* Client Portal Routes */}
               <Route path="/client/login" element={<ClientLogin />} />
               <Route path="/client/signup" element={<ClientSignup />} />
+              <Route path="/client/select-org" element={<ClientSelectOrg />} />
               <Route path="/client/pricing" element={<BusinessPricing />} />
               <Route path="/client/dashboard" element={<ClientDashboard />} />
               <Route path="/client/activity" element={<Activity />} />
