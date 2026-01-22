@@ -160,14 +160,84 @@ exports.handler = async (event) => {
       console.log('🔑 RESEND_API_KEY present:', !!process.env.RESEND_API_KEY);
       console.log('🔑 Key starts with:', process.env.RESEND_API_KEY?.substring(0, 8) + '...');
       
-        const emailResponse = await fetch('https://api.resend.com/emails', {
+      // Try with custom domain first, fallback to resend.dev if it fails
+      let emailResponse = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'Fusion <noreply@paperfrogs.dev>',
+          to: [email],
+          subject: 'Verify Your Fusion Account',
+          html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; margin: 0; padding: 0; }
+                  .container { max-width: 600px; margin: 40px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                  .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center; }
+                  .header h1 { color: white; margin: 0; font-size: 28px; }
+                  .content { padding: 40px 30px; }
+                  .button { 
+                    display: inline-block; 
+                    padding: 15px 40px; 
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white !important; 
+                    text-decoration: none; 
+                    border-radius: 8px;
+                    font-weight: bold;
+                    margin: 20px 0;
+                    text-align: center;
+                  }
+                  .button:hover { opacity: 0.9; }
+                  .footer { background: #f8f8f8; padding: 20px; text-align: center; font-size: 12px; color: #666; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <h1>🎵 Welcome to Fusion!</h1>
+                  </div>
+                  <div class="content">
+                    <h2>Hi ${fullName}! 👋</h2>
+                    <p>Thank you for signing up for Fusion! We're excited to have you on board.</p>
+                    <p>To get started, please verify your email address by clicking the button below:</p>
+                    <p style="text-align: center;">
+                      <a href="${verificationUrl}" class="button">Verify Email Address</a>
+                    </p>
+                    <p>Or copy and paste this link into your browser:</p>
+                    <p style="word-break: break-all; background: #f5f5f5; padding: 10px; border-radius: 5px; font-size: 12px;">${verificationUrl}</p>
+                    <p><strong>This link will expire in 24 hours.</strong></p>
+                    <p>If you didn't create this account, you can safely ignore this email.</p>
+                  </div>
+                  <div class="footer">
+                    <p>© 2026 Fusion by Paperfrogs. All rights reserved.</p>
+                    <p>Blockchain-backed audio verification and protection</p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `
+        })
+      });
+
+      let emailResult = await emailResponse.json();
+      
+      // If custom domain fails with verification error, try resend.dev fallback
+      if (!emailResponse.ok && emailResult.message && emailResult.message.includes('not verified')) {
+        console.log('⚠️ Custom domain not verified, trying resend.dev fallback...');
+        
+        emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            from: 'Fusion <noreply@paperfrogs.dev>',
+            from: 'Fusion <onboarding@resend.dev>',
             to: [email],
             subject: 'Verify Your Fusion Account',
             html: `
@@ -222,8 +292,9 @@ exports.handler = async (event) => {
             `
           })
         });
-
-      const emailResult = await emailResponse.json();
+        
+        emailResult = await emailResponse.json();
+      }
       
       if (!emailResponse.ok) {
         console.error('❌ Failed to send verification email. Status:', emailResponse.status);
