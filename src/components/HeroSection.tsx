@@ -76,12 +76,22 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
           >
-            <Button variant="hero" size="lg" className="group w-full sm:w-auto text-sm sm:text-base" onClick={handleJoinWaitlist}>
-              Join the Waitlist
+            <Button 
+              variant="hero" 
+              size="lg" 
+              className="group w-full sm:w-auto text-sm sm:text-base" 
+              onClick={() => navigate('/user/signup')}
+            >
+              Get Started as Creator
               <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="hero-outline" size="lg" className="w-full sm:w-auto" onClick={handleReadWhitepaper} type="button">
-              Read the Whitepaper
+            <Button 
+              variant="hero-outline" 
+              size="lg" 
+              className="w-full sm:w-auto" 
+              onClick={() => navigate('/client/signup')}
+            >
+              For Businesses
             </Button>
           </motion.div>
 

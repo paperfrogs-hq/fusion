@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -120,8 +122,23 @@ const Header = () => {
 
           <motion.div className="hidden md:flex items-center gap-3">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="hero" size="sm" className="text-xs sm:text-sm px-2 sm:px-4" onClick={handleJoinClick}>
-                Join
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-xs sm:text-sm px-2 sm:px-4"
+                onClick={() => navigate('/user/login')}
+              >
+                Creators
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button 
+                variant="hero" 
+                size="sm" 
+                className="text-xs sm:text-sm px-2 sm:px-4"
+                onClick={() => navigate('/client/login')}
+              >
+                Business
               </Button>
             </motion.div>
           </motion.div>
@@ -158,14 +175,30 @@ const Header = () => {
                     </a>
                   );
                 })}
-                <Button 
-                  variant="hero" 
-                  size="sm" 
-                  className="w-full mt-2" 
-                  onClick={handleJoinClick}
-                >
-                  Join
-                </Button>
+                <div className="flex flex-col gap-2 mt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full" 
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/user/login');
+                    }}
+                  >
+                    Creators Login
+                  </Button>
+                  <Button 
+                    variant="hero" 
+                    size="sm" 
+                    className="w-full" 
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/client/login');
+                    }}
+                  >
+                    Business Login
+                  </Button>
+                </div>
               </nav>
             </div>
           </motion.div>

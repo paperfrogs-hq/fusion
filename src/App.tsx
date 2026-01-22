@@ -16,6 +16,10 @@ import UserSignup from "./pages/UserSignup";
 import UserLogin from "./pages/UserLogin";
 import UserDashboard from "./pages/UserDashboard";
 import VerifyEmail from "./pages/VerifyEmail";
+import UserPricing from "./pages/UserPricing";
+import UserSubscription from "./pages/UserSubscription";
+import BusinessPricing from "./pages/BusinessPricing";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import ErrorBoundary from "./components/client/ErrorBoundary";
 
 // Lazy load client portal pages
@@ -73,11 +77,14 @@ const App = () => (
               <Route path="/user/signup" element={<UserSignup />} />
               <Route path="/user/login" element={<UserLogin />} />
               <Route path="/user/dashboard" element={<UserDashboard />} />
+              <Route path="/user/pricing" element={<UserPricing />} />
+              <Route path="/user/subscription" element={<UserSubscription />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               
               {/* Client Portal Routes */}
               <Route path="/client/login" element={<ClientLogin />} />
               <Route path="/client/signup" element={<ClientSignup />} />
+              <Route path="/client/pricing" element={<BusinessPricing />} />
               <Route path="/client/dashboard" element={<ClientDashboard />} />
               <Route path="/client/activity" element={<Activity />} />
               <Route path="/client/api-keys" element={<ApiKeys />} />
@@ -86,6 +93,9 @@ const App = () => (
               <Route path="/client/team" element={<Team />} />
               <Route path="/client/settings" element={<OrganizationSettings />} />
               <Route path="/client/settings/billing" element={<Billing />} />
+              
+              {/* Payment Success Route */}
+              <Route path="/success" element={<PaymentSuccess />} />
               
               {/* System Test Route */}
               <Route path="/system-test" element={<SystemTest />} />
