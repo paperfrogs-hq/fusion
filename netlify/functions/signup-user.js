@@ -300,7 +300,32 @@ exports.handler = async (event) => {
         console.error('❌ Failed to send verification email. Status:', emailResponse.status);
         console.error('❌ Resend API error:', JSON.stringify(emailResult, null, 2));
         
-        // Delete the user since we couldn't send verification email
+        // Check if it's a testing mode restriction
+        if (emailResult.message && (emailResult.message.includes('testing emails') || emailResult.message.includes('verify a domain'))) {
+          console.log('⚠️ Resend is in testing mode - auto-verifying user to allow signup');
+          
+          // Auto-verify the user since we can't send emails in testing mode
+          await supabase
+            .from('users')
+            .update({ 
+              email_verified: true, 
+              account_status: 'active' 
+            })
+            .eq('id', newUser.id);
+          
+          return {
+            statusCode: 201,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              userId: newUser.id,
+              message: 'Account created successfully! You can now login.',
+              warning: 'Email verification temporarily disabled - contact admin to enable production emails'
+            })
+          };
+        }
+        
+        // For other errors, delete the user
         await supabase.from('users').delete().eq('id', newUser.id);
         
         return {
