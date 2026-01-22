@@ -469,7 +469,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         success: true,
         userId: newUser.id,
-        message: 'Account created successfully! Please check your email to verify your account before logging in.'
+        message: 'Account created successfully! Check your email for the verification link and welcome message.'
       })
     };
 
