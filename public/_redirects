@@ -1,3 +1,11 @@
 https://playfusion.netlify.app/* https://fusion.paperfrogs.dev/:splat 301
 https://testplayfusion.netlify.app/* https://fusion.paperfrogs.dev/:splat 301
+
+# Static files - serve as-is
+/status.html /status.html 200
+/env-check.html /env-check.html 200
+/health.html /health.html 200
+/test.html /test.html 200
+
+# SPA fallback - must be last
 /* /index.html 200
