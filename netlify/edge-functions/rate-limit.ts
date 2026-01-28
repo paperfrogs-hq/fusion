@@ -57,8 +57,10 @@ export default async (request: Request, context: any) => {
              'unknown';
   const path = url.pathname;
   
-  // Skip rate limiting for static assets and HTML pages - pass through directly
-  if (path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|html)$/) || path === '/') {
+  // Skip rate limiting for static assets, HTML pages, and netlify functions - pass through directly
+  if (path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|html)$/) || 
+      path === '/' || 
+      path.startsWith('/.netlify/functions/')) {
     return context.next();
   }
   

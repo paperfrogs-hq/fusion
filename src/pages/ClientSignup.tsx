@@ -54,7 +54,12 @@ export default function ClientSignup() {
         navigate('/client/login');
       }, 3000);
     } catch (err: any) {
-      setError(err.message || 'Failed to create account. Please try again.');
+      console.error('Signup error:', err);
+      if (err.message === 'Failed to fetch') {
+        setError('Network error. Please check your connection and try again.');
+      } else {
+        setError(err.message || 'Failed to create account. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
