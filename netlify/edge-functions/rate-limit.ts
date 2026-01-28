@@ -50,16 +50,16 @@ function checkRateLimit(ip: string, path: string): { allowed: boolean; remaining
   return { allowed: true, remaining: limit.requests - entry.count, resetTime: entry.resetTime };
 }
 
-export default async (request: Request) => {
+export default async (request: Request, context: any) => {
   const url = new URL(request.url);
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
              request.headers.get('x-real-ip') || 
              'unknown';
   const path = url.pathname;
   
-  // Skip rate limiting for static assets
-  if (path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/)) {
-    return new Response(null, { status: 200 });
+  // Skip rate limiting for static assets and HTML pages - pass through directly
+  if (path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|html)$/) || path === '/') {
+    return context.next();
   }
   
   const { allowed, remaining, resetTime } = checkRateLimit(ip, path);
@@ -83,15 +83,12 @@ export default async (request: Request) => {
     );
   }
   
-  // Pass through - edge function cannot modify response, just return success
-  return new Response(null, { 
-    status: 200,
-    headers: {
-      'X-RateLimit-Limit': String(getRateLimit(path).requests),
-      'X-RateLimit-Remaining': String(remaining),
-      'X-RateLimit-Reset': String(Math.floor(resetTime / 1000)),
-    }
-  });
+  // Pass through to the actual content with rate limit headers
+  const response = await context.next();
+  response.headers.set('X-RateLimit-Limit', String(getRateLimit(path).requests));
+  response.headers.set('X-RateLimit-Remaining', String(remaining));
+  response.headers.set('X-RateLimit-Reset', String(Math.floor(resetTime / 1000)));
+  return response;
 };
 
 export const config = { path: "/*" };
