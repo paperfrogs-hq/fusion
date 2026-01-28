@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fusion - Site Check</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      text-align: center;
+    }
+    h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+    p { opacity: 0.8; margin-bottom: 2rem; line-height: 1.6; }
+    .status { 
+      background: rgba(255,255,255,0.1); 
+      padding: 1.5rem; 
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+    }
+    .check { margin: 0.5rem 0; text-align: left; }
+    .ok { color: #22c55e; }
+    .fail { color: #ef4444; }
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #3b82f6;
+      color: white;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      margin: 0.5rem;
+    }
+    .btn:hover { background: #2563eb; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎵 Fusion</h1>
+    <p>Cryptographic Audio Provenance</p>
+    
+    <div class="status">
+      <h3 style="margin-bottom: 1rem;">Quick Status Check</h3>
+      <div class="check">✅ <span class="ok">Static HTML loads correctly</span></div>
+      <div class="check">✅ <span class="ok">CSS styling works</span></div>
+      <div class="check" id="js-check">⏳ Checking JavaScript...</div>
+      <div class="check" id="env-check">⏳ Checking environment...</div>
+    </div>
+    
+    <a href="/" class="btn">Go to Main Site</a>
+    <a href="/env-check.html" class="btn btn-outline">Environment Details</a>
+  </div>
+  
+  <script>
+    // JS check
+    document.getElementById('js-check').innerHTML = '✅ <span class="ok">JavaScript works</span>';
+    
+    // Check if main React app would work
+    setTimeout(() => {
+      const envStatus = document.getElementById('env-check');
+      
+      // We can't check Vite env vars from static HTML, but we can check if assets exist
+      fetch('/assets/index-DtaF0534.js', { method: 'HEAD' })
+        .then(res => {
+          if (res.ok) {
+            envStatus.innerHTML = '✅ <span class="ok">Main bundle accessible</span>';
+          } else {
+            envStatus.innerHTML = '❌ <span class="fail">Main bundle NOT found (404)</span>';
+          }
+        })
+        .catch(() => {
+          envStatus.innerHTML = '❌ <span class="fail">Cannot reach bundle file</span>';
+        });
+    }, 500);
+  </script>
+</body>
+</html>
