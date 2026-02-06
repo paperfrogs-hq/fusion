@@ -118,7 +118,22 @@ const UserManagementModule = () => {
     try {
       // Get admin session from localStorage
       const sessionData = localStorage.getItem("fusion_admin_session");
-      const adminToken = sessionData ? JSON.parse(sessionData).token : null;
+      if (!sessionData) {
+        throw new Error("Admin session not found. Please log in again.");
+      }
+      
+      let adminToken;
+      try {
+        adminToken = JSON.parse(sessionData).token;
+      } catch {
+        throw new Error("Invalid session data. Please log in again.");
+      }
+      
+      if (!adminToken) {
+        throw new Error("Admin token missing. Please log in again.");
+      }
+
+      console.log("Deleting user:", userId, "with token:", adminToken?.substring(0, 10) + "...");
 
       const response = await fetch("/.netlify/functions/delete-user", {
         method: "POST",
@@ -127,9 +142,10 @@ const UserManagementModule = () => {
       });
 
       const result = await response.json();
+      console.log("Delete response:", result);
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to delete user");
+        throw new Error(result.error || result.details || "Failed to delete user");
       }
 
       await logAdminAction("user_deleted", "user", userId);
@@ -145,7 +161,7 @@ const UserManagementModule = () => {
       console.error("Delete user error:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete user",
+        description: error instanceof Error ? error.message : "Failed to delete user. Check console for details.",
         variant: "destructive",
       });
     }
