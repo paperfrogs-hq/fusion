@@ -3,12 +3,11 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Building2, CheckCircle, XCircle, Clock, RefreshCw, Mail, Calendar, User } from "lucide-react";
+import { Building2, CheckCircle, XCircle, Clock, RefreshCw, Mail, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase-client";
 import { logAdminAction } from "@/lib/admin-auth";
 import {
   Dialog,
@@ -64,35 +63,20 @@ const BusinessApprovalModule = () => {
   const fetchPendingBusinesses = async () => {
     setIsLoading(true);
     try {
-      // Fetch organizations with pending statuses (pending_approval, pending_verification, or suspended)
-      const { data: orgs, error: orgsError } = await supabase
-        .from("organizations")
-        .select("*")
-        .in("account_status", ["pending_approval", "pending_verification", "suspended"])
-        .order("created_at", { ascending: false });
+      // Use Netlify function with service role key to bypass RLS
+      const response = await fetch("/.netlify/functions/business-approval", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
-      if (orgsError) throw orgsError;
+      const data = await response.json();
+      console.log("Business approval fetch response:", data);
 
-      // For each org, fetch associated users
-      const businessesWithUsers = await Promise.all(
-        (orgs || []).map(async (org) => {
-          const { data: users, error: usersError } = await supabase
-            .from("users")
-            .select("id, email, full_name, account_status")
-            .eq("organization_id", org.id);
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch businesses");
+      }
 
-          if (usersError) {
-            console.error("Error fetching users for org:", org.id, usersError);
-          }
-
-          return {
-            ...org,
-            users: users || [],
-          };
-        })
-      );
-
-      setPendingBusinesses(businessesWithUsers);
+      setPendingBusinesses(data.businesses || []);
     } catch (error) {
       console.error("Error fetching pending businesses:", error);
       toast({
@@ -110,26 +94,24 @@ const BusinessApprovalModule = () => {
 
     setProcessingId(business.id);
     try {
-      // Update organization status to active
-      const { error: orgError } = await supabase
-        .from("organizations")
-        .update({ account_status: "active" })
-        .eq("id", business.id);
+      // Use Netlify function to approve
+      const response = await fetch("/.netlify/functions/business-approval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "approve",
+          organizationId: business.id,
+        }),
+      });
 
-      if (orgError) throw orgError;
+      const data = await response.json();
 
-      // Update all users in this organization to active
-      for (const user of business.users) {
-        const { error: userError } = await supabase
-          .from("users")
-          .update({ account_status: "active" })
-          .eq("id", user.id);
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to approve business");
+      }
 
-        if (userError) {
-          console.error("Error updating user:", user.id, userError);
-        }
-
-        // Send approval email to each user
+      // Send approval emails to all users
+      for (const user of data.users || []) {
         try {
           await fetch("/.netlify/functions/send-approval-email", {
             method: "POST",
@@ -149,7 +131,7 @@ const BusinessApprovalModule = () => {
       // Log admin action
       await logAdminAction("business_approved", "organization", business.id, {
         name: business.name,
-        users: business.users.map((u) => u.email),
+        users: (data.users || []).map((u: any) => u.email),
       });
 
       toast({
@@ -184,26 +166,25 @@ const BusinessApprovalModule = () => {
     setRejectDialogOpen(false);
 
     try {
-      // Update organization status to rejected
-      const { error: orgError } = await supabase
-        .from("organizations")
-        .update({ account_status: "rejected" })
-        .eq("id", selectedBusiness.id);
+      // Use Netlify function to reject
+      const response = await fetch("/.netlify/functions/business-approval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "reject",
+          organizationId: selectedBusiness.id,
+          reason: rejectReason || undefined,
+        }),
+      });
 
-      if (orgError) throw orgError;
+      const data = await response.json();
 
-      // Update all users in this organization to rejected
-      for (const user of selectedBusiness.users) {
-        const { error: userError } = await supabase
-          .from("users")
-          .update({ account_status: "rejected" })
-          .eq("id", user.id);
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to reject business");
+      }
 
-        if (userError) {
-          console.error("Error updating user:", user.id, userError);
-        }
-
-        // Send rejection email to each user
+      // Send rejection emails to all users
+      for (const user of data.users || []) {
         try {
           await fetch("/.netlify/functions/send-approval-email", {
             method: "POST",
@@ -225,7 +206,7 @@ const BusinessApprovalModule = () => {
       await logAdminAction("business_rejected", "organization", selectedBusiness.id, {
         name: selectedBusiness.name,
         reason: rejectReason,
-        users: selectedBusiness.users.map((u) => u.email),
+        users: (data.users || []).map((u: any) => u.email),
       });
 
       toast({
