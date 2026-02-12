@@ -47,12 +47,30 @@ export default function AudioVerification() {
     setResult(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      // Convert file to base64
+      const reader = new FileReader();
+      const fileDataPromise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const base64 = reader.result as string;
+          // Remove data URL prefix (e.g., "data:audio/mp3;base64,")
+          const base64Data = base64.split(',')[1];
+          resolve(base64Data);
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+
+      const fileData = await fileDataPromise;
 
       const response = await fetch('/.netlify/functions/verify-audio', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fileData,
+          fileName: file.name
+        })
       });
 
       const data = await response.json();
@@ -63,6 +81,7 @@ export default function AudioVerification() {
 
       setResult(data);
     } catch (err: any) {
+      console.error('Verification error:', err);
       setError(err.message || 'Failed to verify audio');
     } finally {
       setVerifying(false);

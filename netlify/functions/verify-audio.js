@@ -1,7 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
-const formidable = require('formidable');
-const fs = require('fs').promises;
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -27,37 +25,64 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Parse multipart form data
-    const form = formidable({ multiples: false, maxFileSize: 100 * 1024 * 1024 });
+    console.log('Verify audio request received');
     
-    const parseForm = () => new Promise((resolve, reject) => {
-      form.parse(event, (err, fields, files) => {
-        if (err) reject(err);
-        else resolve({ fields, files });
-      });
-    });
+    // Check for required env vars
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing environment variables');
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'Server configuration error' })
+      };
+    }
 
-    const { files } = await parseForm();
-    const file = files.file;
-
-    if (!file) {
+    // Parse JSON body with file data
+    let requestData;
+    try {
+      requestData = JSON.parse(event.body);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'File is required' })
+        body: JSON.stringify({ error: 'Invalid JSON in request body' })
       };
     }
+
+    const { fileData, fileName } = requestData;
+
+    if (!fileData) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'fileData is required' })
+      };
+    }
+
+    // Convert base64 to buffer
+    let fileBuffer;
+    try {
+      fileBuffer = Buffer.from(fileData, 'base64');
+    } catch (bufferError) {
+      console.error('Buffer conversion error:', bufferError);
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Invalid base64 data' })
+      };
+    }
+
+    console.log('File decoded, size:', fileBuffer.length, 'bytes');
+    
+    // Generate audio hash
+    const audioHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+    console.log('Audio hash generated:', audioHash);
 
     // Initialize Supabase
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
       auth: { persistSession: false }
     });
-
-    // Read file content
-    const fileBuffer = await fs.readFile(file.filepath);
-    
-    // Generate audio hash
-    const audioHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
 
     // TODO: Implement actual watermark extraction here
     // For now, we'll simulate verification by looking up the hash
