@@ -26,13 +26,21 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { email, fullName, organizationName, acceptedTerms } = JSON.parse(event.body);
+    const { email, fullName, organizationName, password, acceptedTerms } = JSON.parse(event.body);
 
-    if (!email || !fullName || !organizationName) {
+    if (!email || !fullName || !organizationName || !password) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'Email, full name, and organization name are required' })
+        body: JSON.stringify({ error: 'Email, full name, organization name, and password are required' })
+      };
+    }
+
+    if (password.length < 8) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Password must be at least 8 characters' })
       };
     }
 
@@ -63,9 +71,8 @@ exports.handler = async (event) => {
       };
     }
 
-    // Generate temporary password
-    const tempPassword = crypto.randomBytes(16).toString('hex');
-    const passwordHash = await bcrypt.hash(tempPassword, 10);
+    // Hash the password provided by user
+    const passwordHash = await bcrypt.hash(password, 10);
 
     // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
