@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Check, Zap, Crown, ArrowRight, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { Check, Zap, Crown, User, ArrowRight, AudioLines } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { toast } from 'sonner';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 interface Plan {
   id: string;
@@ -13,252 +14,247 @@ interface Plan {
   price_monthly: number;
   price_yearly: number;
   monthly_verifications: number;
-  features: Record<string, boolean>;
+  features: string[];
   is_popular: boolean;
+  icon: React.ReactNode;
 }
 
-export default function UserPricing() {
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const [processingPlan, setProcessingPlan] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadPlans();
-  }, []);
-
-  const loadPlans = async () => {
-    try {
-      const response = await fetch('/.netlify/functions/get-subscription-plans?type=user');
-      if (response.ok) {
-        const data = await response.json();
-        setPlans(data.plans);
-      }
-    } catch (error) {
-      console.error('Failed to load plans:', error);
-      toast.error('Failed to load subscription plans');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubscribe = async (planCode: string) => {
-    const userSession = localStorage.getItem('fusion_user_session');
-    if (!userSession) {
-      toast.error('Please log in to subscribe');
-      window.location.href = '/user/login';
-      return;
-    }
-
-    const session = JSON.parse(userSession);
-    setProcessingPlan(planCode);
-
-    try {
-      const response = await fetch('/.netlify/functions/create-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          planCode,
-          userId: session.user.id,
-          billingCycle
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to start checkout');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast.error('Failed to start checkout process');
-    } finally {
-      setProcessingPlan(null);
-    }
-  };
-
-  const getPlanIcon = (planCode: string) => {
-    if (planCode.includes('enterprise')) return <Crown className="h-6 w-6" />;
-    if (planCode.includes('pro')) return <Zap className="h-6 w-6" />;
-    return <Check className="h-6 w-6" />;
-  };
-
-  const getFeatureList = (features: Record<string, boolean>) => {
-    const featureNames: Record<string, string> = {
-      watermarking: 'Audio Watermarking',
-      batch_upload: 'Batch Upload',
-      priority_support: 'Priority Support',
-      api_access: 'API Access',
-      advanced_analytics: 'Advanced Analytics',
-      custom_integration: 'Custom Integration',
-      dedicated_support: 'Dedicated Support Manager'
-    };
-
-    return Object.entries(features)
-      .filter(([_, enabled]) => enabled)
-      .map(([key]) => featureNames[key] || key);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen glass flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    );
+const plans: Plan[] = [
+  {
+    id: '1',
+    plan_code: 'user_free',
+    plan_name: 'Free',
+    description: 'Get started with basic audio verification',
+    price_monthly: 0,
+    price_yearly: 0,
+    monthly_verifications: 10,
+    features: [
+      'Audio Fingerprinting',
+      'Basic Verification',
+      'Personal Dashboard',
+      'Community Support'
+    ],
+    is_popular: false,
+    icon: <User className="h-6 w-6" />
+  },
+  {
+    id: '2',
+    plan_code: 'user_creator',
+    plan_name: 'Creator',
+    description: 'Perfect for content creators and podcasters',
+    price_monthly: 9,
+    price_yearly: 90,
+    monthly_verifications: 100,
+    features: [
+      'Audio Fingerprinting',
+      'Advanced Verification',
+      'Personal Dashboard',
+      'Audio Library Storage',
+      'Verification Certificates',
+      'Email Support',
+      'Export Reports'
+    ],
+    is_popular: true,
+    icon: <Zap className="h-6 w-6" />
+  },
+  {
+    id: '3',
+    plan_code: 'user_professional',
+    plan_name: 'Professional',
+    description: 'For professionals requiring extensive verification',
+    price_monthly: 29,
+    price_yearly: 290,
+    monthly_verifications: 500,
+    features: [
+      'Audio Fingerprinting',
+      'Advanced Verification',
+      'Personal Dashboard',
+      'Unlimited Audio Library',
+      'Verification Certificates',
+      'Priority Support',
+      'Export Reports',
+      'Bulk Verification',
+      'API Access',
+      'Tamper Detection Alerts'
+    ],
+    is_popular: false,
+    icon: <Crown className="h-6 w-6" />
   }
+];
+
+export default function UserPricing() {
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+
+  const handleGetStarted = (planCode: string) => {
+    if (planCode === 'user_free') {
+      window.location.href = '/user/signup';
+    } else {
+      window.location.href = `/user/signup?plan=${planCode}`;
+    }
+  };
 
   return (
-    <div className="min-h-screen glass py-20 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-foreground mb-4">
-            Choose Your Plan
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Start protecting your audio with industry-leading verification
-          </p>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="pt-24 pb-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+              For Individuals
+            </Badge>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Protect Your Audio Identity
+            </h1>
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Secure your voice and audio content with cryptographic verification and deepfake protection
+            </p>
 
-          {/* Billing Toggle */}
-          <div className="inline-flex items-center gap-3 glass-card p-1 rounded-full">
-            <button
-              onClick={() => setBillingCycle('monthly')}
-              className={`px-6 py-2 rounded-full transition-all ${
-                billingCycle === 'monthly'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingCycle('yearly')}
-              className={`px-6 py-2 rounded-full transition-all ${
-                billingCycle === 'yearly'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Yearly
-              <span className="ml-2 text-xs">Save 17%</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Plans Grid */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan) => {
-            const price = billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
-            const monthlyPrice = billingCycle === 'yearly' ? plan.price_yearly / 12 : plan.price_monthly;
-
-            return (
-              <Card
-                key={plan.id}
-                className={`relative p-8 ${
-                  plan.is_popular
-                    ? 'border-blue-500 border-2 shadow-2xl scale-105'
-                    : 'glass-card'
+            {/* Billing Toggle */}
+            <div className="inline-flex items-center gap-1 bg-muted p-1 rounded-full">
+              <button
+                onClick={() => setBillingCycle('monthly')}
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  billingCycle === 'monthly'
+                    ? 'bg-primary text-primary-foreground shadow-lg'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {plan.is_popular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
-                    Most Popular
-                  </Badge>
-                )}
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingCycle('yearly')}
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  billingCycle === 'yearly'
+                    ? 'bg-primary text-primary-foreground shadow-lg'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Yearly
+                <span className="ml-2 text-xs opacity-80">Save 17%</span>
+              </button>
+            </div>
+          </div>
 
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600 mb-4">
-                    {getPlanIcon(plan.plan_code)}
-                  </div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
-                    {plan.plan_name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {plan.description}
-                  </p>
+          {/* Plans Grid */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {plans.map((plan) => {
+              const price = billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
+              const monthlyPrice = billingCycle === 'yearly' && plan.price_yearly > 0 
+                ? Math.round(plan.price_yearly / 12) 
+                : plan.price_monthly;
 
-                  <div className="mb-4">
-                    <div className="text-4xl font-bold text-foreground">
-                      ${monthlyPrice.toFixed(2)}
-                      <span className="text-lg font-normal text-muted-foreground">/mo</span>
+              return (
+                <Card
+                  key={plan.id}
+                  className={`relative p-8 bg-card border transition-all hover:shadow-lg ${
+                    plan.is_popular
+                      ? 'border-primary border-2 shadow-xl md:scale-105'
+                      : 'border-border'
+                  }`}
+                >
+                  {plan.is_popular && (
+                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
+                      Most Popular
+                    </Badge>
+                  )}
+
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
+                      {plan.icon}
                     </div>
-                    {billingCycle === 'yearly' && price > 0 && (
-                      <div className="text-sm text-muted-foreground mt-1">
-                        ${price.toFixed(2)} billed annually
-                      </div>
-                    )}
-                  </div>
-
-                  <Button
-                    onClick={() => handleSubscribe(plan.plan_code)}
-                    disabled={processingPlan === plan.plan_code || plan.price_monthly === 0}
-                    className={`w-full ${
-                      plan.is_popular
-                        ? 'bg-blue-600 hover:bg-blue-700'
-                        : 'glass-button'
-                    }`}
-                  >
-                    {processingPlan === plan.plan_code ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        Processing...
-                      </>
-                    ) : plan.price_monthly === 0 ? (
-                      'Current Plan'
-                    ) : (
-                      <>
-                        Get Started
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-
-                {/* Features */}
-                <div className="space-y-3 border-t border-gray-200 pt-6">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                    <span className="text-foreground">
-                      {plan.monthly_verifications.toLocaleString()} verifications/month
-                    </span>
-                  </div>
-
-                  {getFeatureList(plan.features).map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      <span className="text-foreground">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {plan.plan_code !== 'creator_free' && (
-                  <div className="mt-6 pt-6 border-t border-gray-200">
-                    <p className="text-xs text-muted-foreground text-center">
-                      14-day free trial • Cancel anytime
+                    <h3 className="text-2xl font-bold text-foreground mb-2">
+                      {plan.plan_name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4 min-h-[40px]">
+                      {plan.description}
                     </p>
-                  </div>
-                )}
-              </Card>
-            );
-          })}
-        </div>
 
-        {/* FAQ Section */}
-        <div className="mt-20 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-4">
-            Have Questions?
-          </h2>
-          <p className="text-muted-foreground mb-6">
-            All plans include 14-day free trial with no credit card required
-          </p>
-          <Button variant="outline" size="lg">
-            Contact Sales
-          </Button>
+                    <div className="mb-6">
+                      <div className="text-4xl font-bold text-foreground">
+                        {monthlyPrice === 0 ? 'Free' : `$${monthlyPrice}`}
+                        {monthlyPrice > 0 && (
+                          <span className="text-lg font-normal text-muted-foreground">/mo</span>
+                        )}
+                      </div>
+                      {billingCycle === 'yearly' && price > 0 && (
+                        <div className="text-sm text-muted-foreground mt-1">
+                          ${price} billed annually
+                        </div>
+                      )}
+                    </div>
+
+                    <Button
+                      onClick={() => handleGetStarted(plan.plan_code)}
+                      className={`w-full ${
+                        plan.is_popular
+                          ? 'bg-primary hover:bg-primary/90'
+                          : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
+                      }`}
+                    >
+                      {plan.price_monthly === 0 ? 'Sign Up Free' : 'Get Started'}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Features */}
+                  <div className="space-y-3 border-t border-border pt-6">
+                    <div className="flex items-center gap-2 text-sm">
+                      <AudioLines className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-foreground font-semibold">
+                        {plan.monthly_verifications} verifications/month
+                      </span>
+                    </div>
+
+                    {plan.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm">
+                        <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <span className="text-muted-foreground">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {plan.price_monthly > 0 && (
+                    <div className="mt-6 pt-6 border-t border-border">
+                      <p className="text-xs text-muted-foreground text-center">
+                        7-day free trial • Cancel anytime
+                      </p>
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* FAQ Section */}
+          <div className="mt-20 max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-foreground text-center mb-12">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-6">
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="font-semibold text-foreground mb-2">What is audio verification?</h3>
+                <p className="text-muted-foreground text-sm">
+                  Audio verification uses cryptographic fingerprinting to prove the authenticity and origin of your audio content, protecting against deepfakes and unauthorized modifications.
+                </p>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="font-semibold text-foreground mb-2">Can I upgrade or downgrade my plan?</h3>
+                <p className="text-muted-foreground text-sm">
+                  Yes, you can change your plan at any time. Upgrades take effect immediately, and downgrades will apply at the start of your next billing cycle.
+                </p>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="font-semibold text-foreground mb-2">What happens if I exceed my monthly verifications?</h3>
+                <p className="text-muted-foreground text-sm">
+                  You'll receive a notification when approaching your limit. You can upgrade your plan or purchase additional verifications as needed.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }
