@@ -1,14 +1,53 @@
+# Fusion by Paperfrogs Labs
+# https://fusion.paperfrogs.dev
+
+# Sitemap
+Sitemap: https://fusion.paperfrogs.dev/sitemap.xml
+
+# Search Engine Crawlers
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 1
 
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 2
+
+# Social Media Crawlers
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Pinterest
+Allow: /
+
+# All other bots
 User-agent: *
 Allow: /
+Crawl-delay: 2
+
+# Disallow admin and private areas
+Disallow: /admin
+Disallow: /api
+Disallow: /.netlify
