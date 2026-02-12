@@ -22,23 +22,6 @@ interface Plan {
 const plans: Plan[] = [
   {
     id: '1',
-    plan_code: 'user_free',
-    plan_name: 'Free',
-    description: 'Get started with basic audio verification',
-    price_monthly: 0,
-    price_yearly: 0,
-    monthly_verifications: 10,
-    features: [
-      'Audio Fingerprinting',
-      'Basic Verification',
-      'Personal Dashboard',
-      'Community Support'
-    ],
-    is_popular: false,
-    icon: <User className="h-6 w-6" />
-  },
-  {
-    id: '2',
     plan_code: 'user_creator',
     plan_name: 'Creator',
     description: 'Perfect for content creators and podcasters',
@@ -55,7 +38,7 @@ const plans: Plan[] = [
       'Export Reports'
     ],
     is_popular: true,
-    icon: <Zap className="h-6 w-6" />
+    icon: <User className="h-6 w-6" />
   },
   {
     id: '3',
@@ -86,11 +69,7 @@ export default function UserPricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   const handleGetStarted = (planCode: string) => {
-    if (planCode === 'user_free') {
-      window.location.href = '/user/signup';
-    } else {
-      window.location.href = `/user/signup?plan=${planCode}`;
-    }
+    window.location.href = `/user/signup?plan=${planCode}`;
   };
 
   return (
@@ -172,10 +151,8 @@ export default function UserPricing() {
 
                     <div className="mb-6">
                       <div className="text-4xl font-bold text-foreground">
-                        {monthlyPrice === 0 ? 'Free' : `$${monthlyPrice}`}
-                        {monthlyPrice > 0 && (
-                          <span className="text-lg font-normal text-muted-foreground">/mo</span>
-                        )}
+                        ${monthlyPrice}
+                        <span className="text-lg font-normal text-muted-foreground">/mo</span>
                       </div>
                       {billingCycle === 'yearly' && price > 0 && (
                         <div className="text-sm text-muted-foreground mt-1">
@@ -192,7 +169,7 @@ export default function UserPricing() {
                           : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
                       }`}
                     >
-                      {plan.price_monthly === 0 ? 'Sign Up Free' : 'Get Started'}
+                      Start 14-Day Trial
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
@@ -217,7 +194,7 @@ export default function UserPricing() {
                   {plan.price_monthly > 0 && (
                     <div className="mt-6 pt-6 border-t border-border">
                       <p className="text-xs text-muted-foreground text-center">
-                        7-day free trial • Cancel anytime
+                        14-day trial • Cancel anytime
                       </p>
                     </div>
                   )}

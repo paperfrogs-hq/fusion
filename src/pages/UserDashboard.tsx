@@ -30,8 +30,8 @@ export default function UserDashboard() {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [uploadingPicture, setUploadingPicture] = useState(false);
   const [currentPlan] = useState({
-    name: 'Free',
-    verifications_limit: 10,
+    name: 'Trial',
+    verifications_limit: 100,
     verifications_used: 0,
     price: 0
   });
@@ -520,7 +520,7 @@ export default function UserDashboard() {
                       Manage your subscription and usage
                     </CardDescription>
                   </div>
-                  <Badge variant={currentPlan.name === 'Free' ? 'secondary' : 'default'} className="text-sm">
+                  <Badge variant={currentPlan.name === 'Trial' ? 'secondary' : 'default'} className="text-sm">
                     {currentPlan.name}
                   </Badge>
                 </div>
@@ -554,13 +554,13 @@ export default function UserDashboard() {
                     <p className="text-xs text-muted-foreground">Verifications/month</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-foreground">{currentPlan.price === 0 ? 'Free' : `$${currentPlan.price}`}</p>
-                    <p className="text-xs text-muted-foreground">{currentPlan.price > 0 ? '/month' : 'Forever'}</p>
+                    <p className="text-2xl font-bold text-foreground">{currentPlan.price === 0 ? 'Trial' : `$${currentPlan.price}`}</p>
+                    <p className="text-xs text-muted-foreground">{currentPlan.price > 0 ? '/month' : '14 Days'}</p>
                   </div>
                 </div>
 
                 {/* Upgrade CTA */}
-                {currentPlan.name === 'Free' && (
+                {currentPlan.name === 'Trial' && (
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
                       <Crown className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
@@ -581,7 +581,7 @@ export default function UserDashboard() {
                   </div>
                 )}
 
-                {currentPlan.name !== 'Free' && (
+                {currentPlan.name !== 'Trial' && (
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => navigate('/user/pricing')}>
                       Change Plan

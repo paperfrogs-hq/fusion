@@ -12,18 +12,6 @@ const PricingSection = () => {
 
   const individualPlans = [
     {
-      name: 'Free',
-      description: 'Get started with basic verification',
-      price: 0,
-      yearlyPrice: 0,
-      verifications: 10,
-      features: ['Audio Fingerprinting', 'Basic Verification', 'Personal Dashboard'],
-      popular: false,
-      icon: <User className="h-5 w-5" />,
-      cta: 'Sign Up Free',
-      link: '/user/signup'
-    },
-    {
       name: 'Creator',
       description: 'For content creators and podcasters',
       price: 9,
@@ -31,8 +19,8 @@ const PricingSection = () => {
       verifications: 100,
       features: ['Audio Fingerprinting', 'Advanced Verification', 'Audio Library', 'Certificates', 'Email Support'],
       popular: true,
-      icon: <Zap className="h-5 w-5" />,
-      cta: 'Start Free Trial',
+      icon: <User className="h-5 w-5" />,
+      cta: 'Start 14-Day Trial',
       link: '/user/signup?plan=creator'
     },
     {
@@ -43,8 +31,8 @@ const PricingSection = () => {
       verifications: 500,
       features: ['Unlimited Library', 'Priority Support', 'Bulk Verification', 'API Access', 'Tamper Alerts'],
       popular: false,
-      icon: <Crown className="h-5 w-5" />,
-      cta: 'Start Free Trial',
+      icon: <Zap className="h-5 w-5" />,
+      cta: 'Start 14-Day Trial',
       link: '/user/signup?plan=professional'
     }
   ];
@@ -104,7 +92,7 @@ const PricingSection = () => {
             Simple, Transparent Pricing
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-            Choose the plan that fits your needs. All plans include a free trial.
+            Choose the plan that fits your needs. All plans include a 14-day trial.
           </p>
 
           {/* Tab Selector */}
@@ -188,8 +176,8 @@ const PricingSection = () => {
 
                   <div className="text-center mb-4">
                     <div className="text-3xl font-bold text-foreground">
-                      {displayPrice === 0 ? 'Free' : `$${displayPrice}`}
-                      {displayPrice > 0 && <span className="text-base font-normal text-muted-foreground">/mo</span>}
+                      ${displayPrice}
+                      <span className="text-base font-normal text-muted-foreground">/mo</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       {plan.verifications.toLocaleString()} verifications/month

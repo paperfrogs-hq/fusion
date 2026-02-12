@@ -90,7 +90,7 @@ export default function UserIndex() {
                       Sign Up
                     </CardTitle>
                     <CardDescription className="text-base">
-                      New to Fusion? Create your free account.
+                      New to Fusion? Start your 14-day trial.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -100,7 +100,7 @@ export default function UserIndex() {
                         className="w-full group-hover:scale-105 transition-transform" 
                         size="lg"
                       >
-                        Get Started Free
+                        Start 14-Day Trial
                         <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </Link>
