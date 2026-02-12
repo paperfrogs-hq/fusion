@@ -122,19 +122,18 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
         .from('audio_registry')
         .insert([{
           audio_hash: audioHash,
+          provenance_status: metadata.origin === 'ai' ? 'ai_generated' : metadata.origin === 'hybrid' ? 'platform_processed' : 'human_created',
           watermark_id: `wm_${Math.random().toString(36).substring(2, 15)}`,
-          original_filename: file.name,
-          file_format: fileExt,
-          file_size_bytes: file.size,
-          origin: metadata.origin || 'human',
+          creator_id: userId,
+          model_used: metadata.modelUsed || null,
           metadata: {
             title: metadata.title,
             artist: metadata.artist,
-            model_used: metadata.modelUsed,
             description: metadata.description,
-            uploaded_by: userId
-          },
-          created_by: 'user_' + userId
+            original_filename: file.name,
+            file_format: fileExt,
+            file_size_bytes: file.size
+          }
         }])
         .select()
         .single();
@@ -157,7 +156,7 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
           original_filename: file.name,
           file_size_bytes: file.size,
           file_format: fileExt,
-          storage_path: publicUrl,
+          storage_path: filePath,
           provenance_status: 'verified',
           confidence_score: 1.0,
           watermark_embedded: true,
