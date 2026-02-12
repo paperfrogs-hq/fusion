@@ -32,6 +32,7 @@ export default function AcceptInvite() {
   const [accepting, setAccepting] = useState(false);
   const [invitation, setInvitation] = useState<Invitation | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [emailRegistered, setEmailRegistered] = useState<boolean | null>(null);
 
   const user = getCurrentUser();
 
@@ -52,6 +53,11 @@ export default function AcceptInvite() {
         }
 
         setInvitation(data.invitation);
+
+        // Check if the invited email is registered
+        const checkResponse = await fetch(`/.netlify/functions/check-email-exists?email=${encodeURIComponent(data.invitation.email)}`);
+        const checkData = await checkResponse.json();
+        setEmailRegistered(checkData.exists || false);
       } catch (err: any) {
         console.error('Fetch invitation error:', err);
         setError(err.message || 'Failed to load invitation');
@@ -222,6 +228,18 @@ export default function AcceptInvite() {
               </div>
             )}
 
+            {/* Email Not Registered Warning */}
+            {!user && emailRegistered === false && (
+              <div className="flex items-start gap-2 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-orange-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-orange-300">
+                  <p className="font-medium">Email not registered</p>
+                  <p>The email <span className="font-mono">{invitation.email}</span> is not registered.</p>
+                  <p>Please sign up with this email to accept the invitation.</p>
+                </div>
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex gap-3 pt-2">
               {user ? (
@@ -252,6 +270,13 @@ export default function AcceptInvite() {
                     )}
                   </Button>
                 </>
+              ) : emailRegistered === false ? (
+                <Button className="w-full" asChild>
+                  <Link to={`/client/signup?email=${encodeURIComponent(invitation.email)}&invite=${encodeURIComponent(token || '')}`}>
+                    <Users className="h-4 w-4 mr-2" />
+                    Sign Up to Accept
+                  </Link>
+                </Button>
               ) : (
                 <Button className="w-full" onClick={handleAccept}>
                   <LogIn className="h-4 w-4 mr-2" />
@@ -261,11 +286,19 @@ export default function AcceptInvite() {
             </div>
 
             {/* Login Link */}
-            {!user && (
+            {!user && emailRegistered === true && (
               <p className="text-center text-sm text-neutral-400">
-                Don't have an account?{' '}
-                <Link to={`/client/signup?email=${encodeURIComponent(invitation.email)}`} className="text-primary hover:underline">
-                  Sign up
+                Already have an account?{' '}
+                <Link to={`/client/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`} className="text-primary hover:underline">
+                  Log in
+                </Link>
+              </p>
+            )}
+            {!user && emailRegistered === false && (
+              <p className="text-center text-sm text-neutral-400">
+                Already have an account with a different email?{' '}
+                <Link to="/client/login" className="text-primary hover:underline">
+                  Log in
                 </Link>
               </p>
             )}
