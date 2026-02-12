@@ -44,6 +44,19 @@ const BusinessApprovalModule = () => {
   const [rejectReason, setRejectReason] = useState("");
   const { toast } = useToast();
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending_approval":
+        return { bg: "bg-amber-500/20", text: "text-amber-400", border: "border-amber-500/50", label: "Pending Approval" };
+      case "pending_verification":
+        return { bg: "bg-blue-500/20", text: "text-blue-400", border: "border-blue-500/50", label: "Pending Verification" };
+      case "suspended":
+        return { bg: "bg-red-500/20", text: "text-red-400", border: "border-red-500/50", label: "Suspended" };
+      default:
+        return { bg: "bg-neutral-500/20", text: "text-neutral-400", border: "border-neutral-500/50", label: status };
+    }
+  };
+
   useEffect(() => {
     fetchPendingBusinesses();
   }, []);
@@ -51,11 +64,11 @@ const BusinessApprovalModule = () => {
   const fetchPendingBusinesses = async () => {
     setIsLoading(true);
     try {
-      // Fetch organizations with pending_approval status
+      // Fetch organizations with pending statuses (pending_approval, pending_verification, or suspended)
       const { data: orgs, error: orgsError } = await supabase
         .from("organizations")
         .select("*")
-        .eq("account_status", "pending_approval")
+        .in("account_status", ["pending_approval", "pending_verification", "suspended"])
         .order("created_at", { ascending: false });
 
       if (orgsError) throw orgsError;
@@ -279,7 +292,7 @@ const BusinessApprovalModule = () => {
                 <Clock className="w-6 h-6 text-amber-500" />
               </div>
               <div>
-                <p className="text-sm text-neutral-400">Pending Approval</p>
+                <p className="text-sm text-neutral-400">Needs Review</p>
                 <p className="text-2xl font-bold text-white">{pendingBusinesses.length}</p>
               </div>
             </div>
@@ -326,10 +339,15 @@ const BusinessApprovalModule = () => {
                         </CardDescription>
                       </div>
                     </div>
-                    <Badge variant="outline" className="bg-amber-500/20 text-amber-400 border-amber-500/50">
-                      <Clock className="w-3 h-3 mr-1" />
-                      Pending Approval
-                    </Badge>
+                    {(() => {
+                      const badge = getStatusBadge(business.account_status);
+                      return (
+                        <Badge variant="outline" className={`${badge.bg} ${badge.text} ${badge.border}`}>
+                          <Clock className="w-3 h-3 mr-1" />
+                          {badge.label}
+                        </Badge>
+                      );
+                    })()}
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
