@@ -4,16 +4,29 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Music, Shield, LogOut, Key, User } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Upload, Music, Shield, LogOut, Key, User, Download, Trash2, Eye, EyeOff, Copy, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
+import { useToast } from '@/hooks/use-toast';
 import AudioUpload from '@/components/user/AudioUpload';
 import AudioVerification from '@/components/user/AudioVerification';
 
 export default function UserDashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [audioFiles, setAudioFiles] = useState<any[]>([]);
+  const [verificationHistory, setVerificationHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [copiedApiKey, setCopiedApiKey] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [showFileDetails, setShowFileDetails] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ full_name: '', email: '' });
+  const [storageUsed, setStorageUsed] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem('fusion_user_token');
@@ -28,7 +41,27 @@ export default function UserDashboard() {
 
     setUser({ id: userId, email, name });
     loadAudioFiles(userId);
+    loadVerificationHistory(userId);
+    loadUserData(userId);
   }, [navigate]);
+
+  const loadUserData = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('full_name, email, api_key')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setUser((prev: any) => ({ ...prev, api_key: data.api_key, full_name: data.full_name, email: data.email }));
+        setProfileForm({ full_name: data.full_name || '', email: data.email || '' });
+      }
+    } catch (error) {
+      console.error('Failed to load user data:', error);
+    }
+  };
 
   const loadAudioFiles = async (userId: string) => {
     try {
@@ -40,10 +73,99 @@ export default function UserDashboard() {
 
       if (error) throw error;
       setAudioFiles(data || []);
+      
+      // Calculate storage used
+      const totalBytes = (data || []).reduce((sum: number, file: any) => sum + (file.file_size_bytes || 0), 0);
+      setStorageUsed(totalBytes);
     } catch (error) {
       console.error('Failed to load audio files:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadVerificationHistory = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_verification_history')
+        .select('*')
+        .eq('user_id', userId)
+        .order('verified_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      setVerificationHistory(data || []);
+    } catch (error) {
+      console.error('Failed to load verification history:', error);
+    }
+  };
+
+  const downloadAudioFile = async (file: any) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('audio-files')
+        .download(file.storage_path);
+
+      if (error) throw error;
+
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.original_filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast({ title: 'Downloaded', description: `${file.original_filename} downloaded successfully` });
+    } catch (error: any) {
+      toast({ title: 'Download failed', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const deleteAudioFile = async (fileId: string, filename: string) => {
+    if (!confirm(`Delete ${filename}? This cannot be undone.`)) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_audio_files')
+        .delete()
+        .eq('id', fileId);
+
+      if (error) throw error;
+
+      toast({ title: 'Deleted', description: `${filename} deleted successfully` });
+      loadAudioFiles(user.id);
+    } catch (error: any) {
+      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const copyApiKey = () => {
+    if (user?.api_key) {
+      navigator.clipboard.writeText(user.api_key);
+      setCopiedApiKey(true);
+      setTimeout(() => setCopiedApiKey(false), 2000);
+      toast({ title: 'Copied', description: 'API key copied to clipboard' });
+    }
+  };
+
+  const updateProfile = async () => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ full_name: profileForm.full_name, email: profileForm.email })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setUser((prev: any) => ({ ...prev, full_name: profileForm.full_name, email: profileForm.email }));
+      localStorage.setItem('fusion_user_name', profileForm.full_name);
+      localStorage.setItem('fusion_user_email', profileForm.email);
+      setEditingProfile(false);
+      toast({ title: 'Profile updated', description: 'Your profile has been updated successfully' });
+    } catch (error: any) {
+      toast({ title: 'Update failed', description: error.message, variant: 'destructive' });
     }
   };
 
@@ -138,7 +260,7 @@ export default function UserDashboard() {
               <CardHeader>
                 <CardTitle>My Audio Library</CardTitle>
                 <CardDescription>
-                  All your uploaded and protected audio files
+                  {audioFiles.length} file{audioFiles.length !== 1 ? 's' : ''} • {formatBytes(storageUsed)} used
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -161,14 +283,38 @@ export default function UserDashboard() {
                             <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                               <span>{formatBytes(file.file_size_bytes)}</span>
                               <span>{file.file_format?.toUpperCase()}</span>
+                              <span>{new Date(file.uploaded_at).toLocaleDateString()}</span>
                               <Badge variant={file.watermark_embedded ? 'default' : 'secondary'}>
                                 {file.watermark_embedded ? 'Protected' : 'Processing'}
                               </Badge>
                             </div>
                           </div>
-                          <Button variant="outline" size="sm">
-                            View Details
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedFile(file);
+                                setShowFileDetails(true);
+                              }}
+                            >
+                              View Details
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => downloadAudioFile(file)}
+                            >
+                              <Download className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => deleteAudioFile(file.id, file.original_filename)}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -179,54 +325,250 @@ export default function UserDashboard() {
           </TabsContent>
 
           {/* Account Tab */}
-          <TabsContent value="account">
+          <TabsContent value="account" className="space-y-6">
+            {/* Profile Section */}
             <Card>
               <CardHeader>
-                <CardTitle>Account Settings</CardTitle>
+                <CardTitle>Profile Information</CardTitle>
                 <CardDescription>
-                  Manage your account and API access
+                  Manage your account details
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
-                    <p>{user?.email}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Full Name</h3>
-                    <p>{user?.name || 'Not set'}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">API Key</h3>
-                    <div className="flex items-center gap-2">
-                      <code className="flex-1 bg-muted border rounded px-3 py-2 text-primary text-sm font-mono">
-                        fus_********************************
-                      </code>
-                      <Button variant="outline" size="sm">
-                        <Key className="w-4 h-4 mr-2" />
-                        Show
-                      </Button>
+              <CardContent className="space-y-4">
+                {editingProfile ? (
+                  <>
+                    <div>
+                      <Label htmlFor="full_name">Full Name</Label>
+                      <Input
+                        id="full_name"
+                        value={profileForm.full_name}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, full_name: e.target.value }))}
+                      />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Use this key to access the Fusion API and Python SDK
-                    </p>
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={updateProfile}>Save Changes</Button>
+                      <Button variant="outline" onClick={() => setEditingProfile(false)}>Cancel</Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
+                      <p>{user?.email}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Full Name</h3>
+                      <p>{user?.full_name || user?.name || 'Not set'}</p>
+                    </div>
+                    <Button variant="outline" onClick={() => setEditingProfile(true)}>Edit Profile</Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* API Key Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>API Key</CardTitle>
+                <CardDescription>
+                  Use this key to access the Fusion API and Python SDK
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 bg-muted border rounded px-3 py-2 text-primary text-sm font-mono truncate">
+                    {showApiKey ? (user?.api_key || 'No API key generated') : 'fus_********************************'}
+                  </code>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                  >
+                    {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={copyApiKey}
+                    disabled={!user?.api_key}
+                  >
+                    {copiedApiKey ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Keep your API key secure. Do not share it publicly.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Storage Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Storage Usage</CardTitle>
+                <CardDescription>
+                  Track your audio file storage
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Storage Used</span>
+                    <span className="text-sm">{formatBytes(storageUsed)} / 1 GB</span>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Storage Used</h3>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-muted border rounded-full h-2">
-                        <div className="bg-primary h-full rounded-full" style={{ width: '15%' }}></div>
-                      </div>
-                      <span className="text-sm">150 MB / 1 GB</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-muted border rounded-full h-2">
+                      <div 
+                        className="bg-primary h-full rounded-full transition-all" 
+                        style={{ width: `${Math.min((storageUsed / (1024 * 1024 * 1024)) * 100, 100)}%` }}
+                      ></div>
                     </div>
                   </div>
                 </div>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Total Files</p>
+                    <p className="text-lg font-semibold">{audioFiles.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Verifications</p>
+                    <p className="text-lg font-semibold">{verificationHistory.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Verification History */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Verifications</CardTitle>
+                <CardDescription>
+                  Your audio verification history
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {verificationHistory.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Shield className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">No verification history yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {verificationHistory.slice(0, 10).map((record) => (
+                      <div key={record.id} className="flex items-center justify-between border-b pb-3 last:border-0">
+                        <div className="flex items-center gap-3">
+                          {record.verification_status === 'verified' ? (
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                          ) : record.verification_status === 'tampered' ? (
+                            <XCircle className="w-5 h-5 text-red-500" />
+                          ) : (
+                            <Clock className="w-5 h-5 text-yellow-500" />
+                          )}
+                          <div>
+                            <p className="text-sm font-medium capitalize">{record.verification_status}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(record.verified_at).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                        <Badge variant={record.verification_status === 'verified' ? 'default' : 'destructive'}>
+                          {record.confidence_score ? `${(record.confidence_score * 100).toFixed(1)}%` : 'N/A'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* File Details Dialog */}
+      <Dialog open={showFileDetails} onOpenChange={setShowFileDetails}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Audio File Details</DialogTitle>
+            <DialogDescription>
+              Complete information about this audio file
+            </DialogDescription>
+          </DialogHeader>
+          {selectedFile && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Filename</p>
+                  <p className="text-sm">{selectedFile.original_filename}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Format</p>
+                  <p className="text-sm">{selectedFile.file_format?.toUpperCase()}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">File Size</p>
+                  <p className="text-sm">{formatBytes(selectedFile.file_size_bytes)}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Uploaded</p>
+                  <p className="text-sm">{new Date(selectedFile.uploaded_at).toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Provenance Status</p>
+                  <Badge variant={selectedFile.provenance_status === 'verified' ? 'default' : 'secondary'}>
+                    {selectedFile.provenance_status}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Watermark</p>
+                  <Badge variant={selectedFile.watermark_embedded ? 'default' : 'secondary'}>
+                    {selectedFile.watermark_embedded ? 'Embedded' : 'Not Embedded'}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Confidence Score</p>
+                  <p className="text-sm">{selectedFile.confidence_score ? `${(selectedFile.confidence_score * 100).toFixed(2)}%` : 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Verification Count</p>
+                  <p className="text-sm">{selectedFile.verification_count || 0} times</p>
+                </div>
+              </div>
+              {selectedFile.metadata && Object.keys(selectedFile.metadata).length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Metadata</p>
+                  <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-40">
+                    {JSON.stringify(selectedFile.metadata, null, 2)}
+                  </pre>
+                </div>
+              )}
+              <div className="flex gap-2 pt-4">
+                <Button onClick={() => downloadAudioFile(selectedFile)}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download File
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  onClick={() => {
+                    setShowFileDetails(false);
+                    deleteAudioFile(selectedFile.id, selectedFile.original_filename);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete File
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <footer className="bg-muted/50 border-t py-6 mt-auto">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">

@@ -78,50 +78,61 @@ exports.handler = async (event) => {
     console.log("✅ Supabase client initialized with service role");
     console.log("🗑️ Attempting to delete user:", userId);
 
-    // Delete user's audio files first (if any)
-    console.log("🗑️ Step 1: Deleting audio files...");
-    const { error: audioDeleteError } = await supabase
-      .from("audio_files")
-      .delete()
-      .eq("user_id", userId);
+    // Note: Foreign key constraints have ON DELETE CASCADE, so deleting the user
+    // will automatically delete related records in user_sessions, user_audio_files,
+    // and user_verification_history tables.
 
-    if (audioDeleteError) {
-      console.error("⚠️ Error deleting audio files:", audioDeleteError.message);
-      // Continue anyway - user might not have any files or table doesn't exist
-    } else {
-      console.log("✅ Audio files deleted (or none existed)");
+    // Optional: Get user data before deletion for logging
+    const { data: userData, error: fetchError } = await supabase
+      .from("users")
+      .select("id, email, full_name, created_at")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError || !userData) {
+      console.error("❌ User not found:", userId);
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ 
+          error: "User not found",
+          userId: userId
+        }),
+      };
     }
 
-    // Delete user's sessions
-    console.log("🗑️ Step 2: Deleting sessions...");
-    const { error: sessionsDeleteError } = await supabase
-      .from("sessions")
-      .delete()
-      .eq("user_id", userId);
+    console.log("📋 Found user:", userData.email);
 
-    if (sessionsDeleteError) {
-      console.error("⚠️ Error deleting sessions:", sessionsDeleteError.message);
-      // Continue anyway
-    } else {
-      console.log("✅ Sessions deleted (or none existed)");
+    // Delete from Supabase Storage (audio files) - CASCADE won't handle storage bucket
+    console.log("🗑️ Step 1: Deleting audio files from storage...");
+    try {
+      // Get list of user's audio files to delete from storage
+      const { data: audioFiles } = await supabase
+        .from("user_audio_files")
+        .select("storage_path")
+        .eq("user_id", userId);
+
+      if (audioFiles && audioFiles.length > 0) {
+        const filePaths = audioFiles.map(f => f.storage_path).filter(Boolean);
+        if (filePaths.length > 0) {
+          const { error: storageError } = await supabase.storage
+            .from("audio-files")
+            .remove(filePaths);
+          
+          if (storageError) {
+            console.error("⚠️ Error deleting from storage:", storageError.message);
+          } else {
+            console.log(`✅ Deleted ${filePaths.length} files from storage`);
+          }
+        }
+      }
+    } catch (storageErr) {
+      console.error("⚠️ Storage cleanup error:", storageErr);
+      // Continue with user deletion even if storage cleanup fails
     }
 
-    // Delete verification history
-    console.log("🗑️ Step 3: Deleting verification history...");
-    const { error: verificationDeleteError } = await supabase
-      .from("verification_history")
-      .delete()
-      .eq("user_id", userId);
-
-    if (verificationDeleteError) {
-      console.error("⚠️ Error deleting verification history:", verificationDeleteError.message);
-      // Continue anyway
-    } else {
-      console.log("✅ Verification history deleted (or none existed)");
-    }
-
-    // Finally, delete the user
-    console.log("🗑️ Step 4: Deleting user account...");
+    // Delete the user (CASCADE will handle related records)
+    console.log("🗑️ Step 2: Deleting user account (CASCADE will delete related data)...");
     const { data, error } = await supabase
       .from("users")
       .delete()
