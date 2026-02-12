@@ -32,7 +32,7 @@ import {
 import ClientLayout from '../components/client/ClientLayout';
 import InviteMemberModal from '../components/client/InviteMemberModal';
 import RolePermissionsTable from '../components/client/RolePermissionsTable';
-import { getCurrentOrganization, canManageTeam } from '../lib/client-auth';
+import { getCurrentOrganization, getCurrentUser, canManageTeam } from '../lib/client-auth';
 import { toast } from 'sonner';
 
 interface TeamMember {
@@ -63,6 +63,7 @@ export default function TeamRoles() {
   const [showPermissions, setShowPermissions] = useState(false);
 
   const org = getCurrentOrganization();
+  const user = getCurrentUser();
   const canManage = canManageTeam(org);
 
   useEffect(() => {
@@ -409,6 +410,7 @@ export default function TeamRoles() {
       {showInviteModal && (
         <InviteMemberModal
           organizationId={org?.id || ''}
+          userId={user?.id || ''}
           onClose={() => setShowInviteModal(false)}
           onSuccess={() => {
             setShowInviteModal(false);

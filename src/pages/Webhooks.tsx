@@ -26,7 +26,7 @@ import {
 import ClientLayout from '../components/client/ClientLayout';
 import CreateWebhookModal from '../components/client/CreateWebhookModal';
 import WebhookDeliveryLog from '../components/client/WebhookDeliveryLog';
-import { getCurrentOrganization, getCurrentEnvironment, canManageWebhooks } from '../lib/client-auth';
+import { getCurrentOrganization, getCurrentEnvironment, getCurrentUser, canManageWebhooks } from '../lib/client-auth';
 import { toast } from 'sonner';
 
 interface Webhook {
@@ -53,6 +53,7 @@ export default function Webhooks() {
 
   const org = getCurrentOrganization();
   const env = getCurrentEnvironment();
+  const user = getCurrentUser();
   const canManage = canManageWebhooks(org);
 
   useEffect(() => {
@@ -424,6 +425,7 @@ export default function Webhooks() {
         <CreateWebhookModal
           organizationId={org?.id || ''}
           environmentId={env.id}
+          userId={user?.id || ''}
           onClose={() => setShowCreateModal(false)}
           onSuccess={() => {
             setShowCreateModal(false);

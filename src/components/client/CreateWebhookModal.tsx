@@ -23,6 +23,7 @@ import { toast } from 'sonner';
 interface CreateWebhookModalProps {
   organizationId: string;
   environmentId: string;
+  userId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -36,7 +37,8 @@ const eventTypes = [
 
 export default function CreateWebhookModal({ 
   organizationId, 
-  environmentId, 
+  environmentId,
+  userId, 
   onClose, 
   onSuccess 
 }: CreateWebhookModalProps) {
@@ -92,7 +94,8 @@ export default function CreateWebhookModal({
           retryPolicy: {
             max_attempts: parseInt(maxAttempts),
             backoff: 'exponential'
-          }
+          },
+          createdBy: userId,
         }),
       });
 

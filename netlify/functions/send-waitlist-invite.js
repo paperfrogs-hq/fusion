@@ -76,7 +76,7 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: "Fusion Developer Team <info@fusion.paperfrogs.dev>",
       to: email,
-      subject: "🎉 You're Invited to Join Fusion!",
+      subject: "You're Invited to Join Fusion!",
       html: `
         <!DOCTYPE html>
         <html>
@@ -169,7 +169,7 @@ exports.handler = async (event) => {
           <body>
             <div class="container">
               <div class="header">
-                <h1>You're Invited! 🎉</h1>
+                <h1>You're Invited!</h1>
                 <p>Your exclusive access to Fusion awaits</p>
               </div>
               <div class="content">

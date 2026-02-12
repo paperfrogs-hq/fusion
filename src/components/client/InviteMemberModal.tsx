@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 
 interface InviteMemberModalProps {
   organizationId: string;
+  userId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -32,7 +33,7 @@ const roles = [
   { value: 'read_only', label: 'Read Only', description: 'View-only access to all data' },
 ];
 
-export default function InviteMemberModal({ organizationId, onClose, onSuccess }: InviteMemberModalProps) {
+export default function InviteMemberModal({ organizationId, userId, onClose, onSuccess }: InviteMemberModalProps) {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('developer');
   const [loading, setLoading] = useState(false);
@@ -61,6 +62,7 @@ export default function InviteMemberModal({ organizationId, onClose, onSuccess }
           organizationId,
           email,
           role,
+          invitedBy: userId,
         }),
       });
 

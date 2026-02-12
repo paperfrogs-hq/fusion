@@ -48,12 +48,12 @@ exports.handler = async (event) => {
       createdBy 
     } = JSON.parse(event.body);
 
-    if (!organizationId || !environmentId || !keyName || !scopes) {
+    if (!organizationId || !environmentId || !keyName || !scopes || !createdBy) {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({ 
-          error: 'Organization ID, environment ID, key name, and scopes are required' 
+          error: 'Organization ID, environment ID, key name, scopes, and createdBy are required' 
         }),
       };
     }
@@ -108,12 +108,8 @@ exports.handler = async (event) => {
       is_active: true,
       rate_limit_per_minute: 100,
       rate_limit_per_day: 10000,
+      created_by: createdBy,
     };
-    
-    // Only add created_by if provided
-    if (createdBy) {
-      insertData.created_by = createdBy;
-    }
 
     const { data: apiKey, error } = await supabase
       .from('api_keys')

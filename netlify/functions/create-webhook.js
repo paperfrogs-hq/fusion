@@ -37,12 +37,12 @@ exports.handler = async (event) => {
       createdBy
     } = JSON.parse(event.body);
 
-    if (!organizationId || !environmentId || !endpointUrl || !eventTypes) {
+    if (!organizationId || !environmentId || !endpointUrl || !eventTypes || !createdBy) {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({ 
-          error: 'Organization ID, environment ID, endpoint URL, and event types are required' 
+          error: 'Organization ID, environment ID, endpoint URL, event types, and createdBy are required' 
         }),
       };
     }
@@ -79,12 +79,8 @@ exports.handler = async (event) => {
       signing_secret: signingSecret,
       is_active: true,
       retry_policy: retryPolicy || { max_attempts: 3, backoff: 'exponential' },
+      created_by: createdBy,
     };
-    
-    // Only add created_by if provided
-    if (createdBy) {
-      webhookData.created_by = createdBy;
-    }
 
     // Create webhook
     const { data: webhook, error } = await supabase

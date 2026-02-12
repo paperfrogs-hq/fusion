@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 interface CreateAPIKeyModalProps {
   organizationId: string;
   environmentId: string;
+  userId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -29,7 +30,8 @@ const availableScopes = [
 
 export default function CreateAPIKeyModal({ 
   organizationId, 
-  environmentId, 
+  environmentId,
+  userId, 
   onClose, 
   onSuccess 
 }: CreateAPIKeyModalProps) {
@@ -71,6 +73,7 @@ export default function CreateAPIKeyModal({
           environmentId,
           keyName: keyName.trim(),
           scopes: selectedScopes,
+          createdBy: userId,
         }),
       });
 

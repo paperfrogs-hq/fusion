@@ -32,11 +32,11 @@ exports.handler = async (event) => {
   try {
     const { organizationId, email, role, invitedBy } = JSON.parse(event.body);
 
-    if (!organizationId || !email || !role) {
+    if (!organizationId || !email || !role || !invitedBy) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'Organization ID, email, and role are required' }),
+        body: JSON.stringify({ error: 'Organization ID, email, role, and invitedBy are required' }),
       };
     }
 
@@ -116,12 +116,8 @@ exports.handler = async (event) => {
       role: role,
       invitation_token: invitationToken,
       expires_at: expiresAt.toISOString(),
+      invited_by: invitedBy,
     };
-    
-    // Only add invited_by if provided
-    if (invitedBy) {
-      invitationData.invited_by = invitedBy;
-    }
 
     // Create invitation
     const { data: invitation, error } = await supabase

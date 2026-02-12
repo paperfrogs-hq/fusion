@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/table';
 import ClientLayout from '../components/client/ClientLayout';
 import CreateAPIKeyModal from '../components/client/CreateAPIKeyModal';
-import { getCurrentOrganization, getCurrentEnvironment, canManageAPIKeys } from '../lib/client-auth';
+import { getCurrentOrganization, getCurrentEnvironment, getCurrentUser, canManageAPIKeys } from '../lib/client-auth';
 import { toast } from 'sonner';
 
 interface APIKey {
@@ -51,6 +51,7 @@ export default function APIKeys() {
 
   const org = getCurrentOrganization();
   const env = getCurrentEnvironment();
+  const user = getCurrentUser();
   const canManage = canManageAPIKeys(org);
 
   useEffect(() => {
@@ -420,6 +421,7 @@ export default function APIKeys() {
         <CreateAPIKeyModal
           organizationId={org?.id || ''}
           environmentId={env.id}
+          userId={user?.id || ''}
           onClose={() => setShowCreateModal(false)}
           onSuccess={() => {
             setShowCreateModal(false);
