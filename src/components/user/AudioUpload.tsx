@@ -94,7 +94,12 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
         });
 
       if (uploadError) {
-        throw new Error(uploadError.message || 'Failed to upload file');
+        console.error('Upload error:', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message || 'Unknown error'}`);
+      }
+
+      if (!uploadData) {
+        throw new Error('Upload failed - no data returned from storage');
       }
 
       setUploadProgress(60);
@@ -135,7 +140,12 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
         .single();
 
       if (registryError) {
-        throw new Error('Failed to create registry entry');
+        console.error('Registry error:', registryError);
+        throw new Error(`Failed to create registry entry: ${registryError.message || 'Unknown error'}`);
+      }
+
+      if (!registryEntry) {
+        throw new Error('Registry entry was not created - no data returned');
       }
 
       // Create user audio file entry
@@ -161,7 +171,8 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
         }]);
 
       if (userFileError) {
-        throw new Error('Failed to create user file entry');
+        console.error('User file entry error:', userFileError);
+        throw new Error(`Failed to create user file entry: ${userFileError.message || 'Unknown error'}`);
       }
 
       setUploadProgress(100);
@@ -181,8 +192,15 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
       }
 
     } catch (err: any) {
-      setError(err.message || 'Failed to upload audio');
+      console.error('Upload failed:', err);
+      const errorMessage = err.message || 'Failed to upload audio';
+      setError(errorMessage);
       setUploadProgress(0);
+      
+      // Log detailed error info for debugging
+      if (err.details) console.error('Error details:', err.details);
+      if (err.hint) console.error('Error hint:', err.hint);
+      if (err.code) console.error('Error code:', err.code);
     } finally {
       setUploading(false);
     }
