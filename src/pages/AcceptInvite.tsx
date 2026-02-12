@@ -204,7 +204,7 @@ export default function AcceptInvite() {
               
               <div className="flex items-center justify-between">
                 <span className="text-sm text-neutral-400">Plan:</span>
-                <Badge className="bg-neutral-700 text-neutral-300">{invitation.organization.plan_type || 'Free'}</Badge>
+                <Badge className="bg-neutral-700 text-neutral-300">{invitation.organization.plan_type || 'Trial'}</Badge>
               </div>
             </div>
 

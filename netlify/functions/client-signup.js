@@ -92,7 +92,7 @@ exports.handler = async (event) => {
         slug: orgSlug,
         organization_type: 'business',
         account_status: 'pending_approval',
-        plan_type: 'free',
+        plan_type: 'trial',
         billing_status: 'trial',
         trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days
         quota_verifications_monthly: 1000,

@@ -156,7 +156,7 @@ export default function CreateOrganization() {
               </div>
 
               <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-white mb-2">Included in Free Plan:</h4>
+                <h4 className="text-sm font-medium text-white mb-2">Included in 14-Day Trial:</h4>
                 <ul className="text-sm text-neutral-400 space-y-1">
                   <li>• 1,000 verifications/month</li>
                   <li>• 14-day trial period</li>

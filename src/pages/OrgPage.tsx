@@ -74,7 +74,7 @@ export default function OrgPage() {
       case 'starter':
         return <Badge className="bg-neutral-500/20 text-neutral-400 border-neutral-500/30">Starter</Badge>;
       default:
-        return <Badge className="bg-neutral-500/20 text-neutral-400 border-neutral-500/30">{plan || 'Free'}</Badge>;
+        return <Badge className="bg-neutral-500/20 text-neutral-400 border-neutral-500/30">{plan || 'Trial'}</Badge>;
     }
   };
 

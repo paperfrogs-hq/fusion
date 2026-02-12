@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS public.organizations (
   website TEXT,
   logo_url TEXT,
   account_status TEXT NOT NULL DEFAULT 'active', -- active, suspended, trial, churned
-  plan_type TEXT NOT NULL DEFAULT 'free', -- free, starter, professional, enterprise
+  plan_type TEXT NOT NULL DEFAULT 'trial', -- trial, starter, professional, enterprise
   billing_status TEXT DEFAULT 'trial', -- trial, active, past_due, cancelled
   trial_ends_at TIMESTAMPTZ,
   subscription_started_at TIMESTAMPTZ,

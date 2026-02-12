@@ -301,7 +301,7 @@ export function requireAuth(): void {
 // ============================================
 
 export function isFreePlan(org: Organization | null): boolean {
-  return org?.plan_type === 'free';
+  return org?.plan_type === 'free' || org?.plan_type === 'trial';
 }
 
 export function isOnTrial(org: Organization | null): boolean {
