@@ -47,6 +47,7 @@ const VerifyAudio = lazy(() => import("./pages/VerifyAudio"));
 const OrgPage = lazy(() => import("./pages/OrgPage"));
 const SecuritySettings = lazy(() => import("./pages/SecuritySettings"));
 const AcceptInvite = lazy(() => import("./pages/AcceptInvite"));
+const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -123,6 +124,7 @@ const App = () => (
               <Route path="/client/analytics" element={<Analytics />} />
               <Route path="/client/team" element={<Team />} />
               <Route path="/client/settings" element={<OrganizationSettings />} />
+              <Route path="/client/settings/profile" element={<ProfileSettings />} />
               <Route path="/client/settings/billing" element={<Billing />} />
               <Route path="/client/settings/security" element={<SecuritySettings />} />
               <Route path="/client/status" element={<StatusIncidents />} />
