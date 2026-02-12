@@ -36,6 +36,8 @@ const Analytics = lazy(() => import("./pages/Analytics"));
 const Team = lazy(() => import("./pages/TeamRoles"));
 const OrganizationSettings = lazy(() => import("./pages/OrganizationSettings"));
 const Billing = lazy(() => import("./pages/Billing"));
+const StatusIncidents = lazy(() => import("./pages/StatusIncidents"));
+const Reports = lazy(() => import("./pages/Reports"));
 const SystemTest = lazy(() => import("./pages/SystemTest"));
 
 const queryClient = new QueryClient({
@@ -97,6 +99,8 @@ const App = () => (
               <Route path="/client/team" element={<Team />} />
               <Route path="/client/settings" element={<OrganizationSettings />} />
               <Route path="/client/settings/billing" element={<Billing />} />
+              <Route path="/client/status" element={<StatusIncidents />} />
+              <Route path="/client/reports" element={<Reports />} />
               
               {/* Success Route Removed - Payment System Coming Soon */}
               

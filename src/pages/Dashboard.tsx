@@ -86,7 +86,7 @@ export default function Dashboard() {
     return (
       <ClientLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </ClientLayout>
     );
@@ -96,9 +96,9 @@ export default function Dashboard() {
     return (
       <ClientLayout>
         <div className="max-w-4xl mx-auto text-center py-12">
-          <AlertCircle className="h-12 w-12 text-amber-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Environment Selected</h2>
-          <p className="text-gray-600">Please select an environment to view dashboard.</p>
+          <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">No Environment Selected</h2>
+          <p className="text-neutral-400">Please select an environment to view dashboard.</p>
         </div>
       </ClientLayout>
     );
@@ -109,8 +109,8 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+          <p className="text-neutral-400 mt-1">
             Overview of {env.display_name} environment
           </p>
         </div>
@@ -147,19 +147,19 @@ export default function Dashboard() {
         </div>
 
         {/* Quota Usage */}
-        <Card className="p-6">
+        <Card className="p-6 bg-neutral-900 border-neutral-800">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Monthly Quota Usage</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="text-lg font-semibold text-white">Monthly Quota Usage</h3>
+              <p className="text-sm text-neutral-400">
                 {stats?.quota_used || 0} of {stats?.quota_limit || 0} verifications used
               </p>
             </div>
             <Badge 
               className={
-                quotaPercent >= 90 ? 'bg-red-100 text-red-800 border-red-300' :
-                quotaPercent >= 80 ? 'bg-amber-100 text-amber-800 border-amber-300' :
-                'bg-green-100 text-green-800 border-green-300'
+                quotaPercent >= 90 ? 'bg-red-500/20 text-red-400 border-red-500/50' :
+                quotaPercent >= 80 ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' :
+                'bg-green-500/20 text-green-400 border-green-500/50'
               }
             >
               {quotaPercent}% used
@@ -167,11 +167,11 @@ export default function Dashboard() {
           </div>
           <Progress value={quotaPercent} className="h-3" />
           <div className="flex justify-between items-center mt-3 text-sm">
-            <span className="text-gray-600">
+            <span className="text-neutral-400">
               {(stats?.quota_limit || 0) - (stats?.quota_used || 0)} remaining
             </span>
             {quotaPercent >= 80 && (
-              <Button variant="link" className="text-blue-600 p-0 h-auto">
+              <Button variant="link" className="text-primary p-0 h-auto">
                 Upgrade Plan <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             )}
@@ -192,18 +192,18 @@ export default function Dashboard() {
           <div className="space-y-6">
             {/* Security Alerts */}
             {stats && stats.tamper_detected_count > 0 && (
-              <Card className="p-4 border-red-200 bg-red-50">
+              <Card className="p-4 border-red-500/50 bg-red-500/10">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h4 className="font-semibold text-red-900 mb-1">Security Alert</h4>
-                    <p className="text-sm text-red-800 mb-3">
+                    <h4 className="font-semibold text-red-400 mb-1">Security Alert</h4>
+                    <p className="text-sm text-red-300 mb-3">
                       {stats.tamper_detected_count} tampered audio file{stats.tamper_detected_count !== 1 ? 's' : ''} detected this month
                     </p>
                     <Button 
                       variant="outline" 
                       size="sm"
-                      className="text-red-700 border-red-300 hover:bg-red-100"
+                      className="text-red-400 border-red-500/50 hover:bg-red-500/20"
                     >
                       View Details
                     </Button>
@@ -213,12 +213,12 @@ export default function Dashboard() {
             )}
 
             {/* Quick Actions */}
-            <Card className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Quick Actions</h3>
+            <Card className="p-4 bg-neutral-900 border-neutral-800">
+              <h3 className="font-semibold text-white mb-3">Quick Actions</h3>
               <div className="space-y-2">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start"
+                  className="w-full justify-start border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
                   onClick={() => window.location.href = '/client/api-keys'}
                 >
                   <Key className="h-4 w-4 mr-2" />
@@ -226,7 +226,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start"
+                  className="w-full justify-start border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
                   onClick={() => window.location.href = '/client/webhooks'}
                 >
                   <Activity className="h-4 w-4 mr-2" />
@@ -234,7 +234,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start"
+                  className="w-full justify-start border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
                   onClick={() => window.location.href = '/client/analytics'}
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
@@ -244,21 +244,21 @@ export default function Dashboard() {
             </Card>
 
             {/* Team Activity */}
-            <Card className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Team</h3>
+            <Card className="p-4 bg-neutral-900 border-neutral-800">
+              <h3 className="font-semibold text-white mb-3">Team</h3>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm text-gray-600">Active members</span>
+                  <Users className="h-4 w-4 text-neutral-400" />
+                  <span className="text-sm text-neutral-400">Active members</span>
                 </div>
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-white">
                   1
                 </span>
               </div>
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="w-full"
+                className="w-full border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
                 onClick={() => window.location.href = '/client/team'}
               >
                 Manage Team
@@ -274,39 +274,39 @@ export default function Dashboard() {
 
         {/* Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-medium text-gray-600 mb-1">Webhooks</h4>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats?.active_webhooks || 0} <span className="text-base font-normal text-gray-500">/ {stats?.total_webhooks || 0}</span>
+                <h4 className="text-sm font-medium text-neutral-400 mb-1">Webhooks</h4>
+                <p className="text-2xl font-bold text-white">
+                  {stats?.active_webhooks || 0} <span className="text-base font-normal text-neutral-500">/ {stats?.total_webhooks || 0}</span>
                 </p>
               </div>
-              <Activity className="h-8 w-8 text-gray-400" />
+              <Activity className="h-8 w-8 text-neutral-600" />
             </div>
             <Button 
               variant="link" 
-              className="text-blue-600 p-0 h-auto mt-2 text-sm"
+              className="text-primary p-0 h-auto mt-2 text-sm"
               onClick={() => window.location.href = '/client/webhooks'}
             >
               Configure webhooks <ChevronRight className="h-3 w-3 ml-1" />
             </Button>
           </Card>
 
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-medium text-gray-600 mb-1">System Status</h4>
+                <h4 className="text-sm font-medium text-neutral-400 mb-1">System Status</h4>
                 <div className="flex items-center gap-2 mt-2">
-                  <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-gray-900">All Systems Operational</span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-white">All Systems Operational</span>
                 </div>
               </div>
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
+              <CheckCircle2 className="h-8 w-8 text-green-500" />
             </div>
             <Button 
               variant="link" 
-              className="text-blue-600 p-0 h-auto mt-2 text-sm"
+              className="text-primary p-0 h-auto mt-2 text-sm"
               onClick={() => window.location.href = '/client/status'}
             >
               View status page <ExternalLink className="h-3 w-3 ml-1" />

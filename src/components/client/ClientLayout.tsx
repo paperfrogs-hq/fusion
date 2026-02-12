@@ -78,29 +78,29 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   if (!user || !org) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-950">
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200">
+      <div className="fixed inset-y-0 left-0 w-64 bg-neutral-900 border-r border-neutral-800">
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="h-16 flex items-center px-6 border-b border-gray-200">
+          <div className="h-16 flex items-center px-6 border-b border-neutral-800">
             <img 
               src="/Fusion_Icon-No-BG-01.png" 
               alt="Fusion" 
               className="h-10 w-auto object-contain"
             />
-            <span className="ml-2 text-xl font-bold text-gray-900">Fusion</span>
+            <span className="ml-2 text-xl font-bold text-white">Fusion</span>
           </div>
 
           {/* Org Switcher */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-neutral-800">
             <OrgSwitcher />
           </div>
 
@@ -117,8 +117,8 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                   className={`
                     flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors
                     ${active 
-                      ? 'bg-gray-100 text-gray-900 font-medium' 
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-primary text-white font-medium' 
+                      : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'
                     }
                   `}
                 >
@@ -131,12 +131,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
           {/* Quota Warning */}
           {quotaPercent >= 80 && (
-            <div className="mx-3 mb-3 p-3 bg-amber-50 border border-amber-200 rounded-md">
+            <div className="mx-3 mb-3 p-3 bg-amber-500/20 border border-amber-500/50 rounded-md">
               <div className="flex items-start gap-2">
-                <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div className="text-xs">
-                  <div className="font-medium text-amber-900">Quota Warning</div>
-                  <div className="text-amber-700 mt-0.5">
+                  <div className="font-medium text-amber-400">Quota Warning</div>
+                  <div className="text-amber-300 mt-0.5">
                     {quotaPercent}% of monthly quota used
                   </div>
                 </div>
@@ -146,16 +146,16 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
           {/* Trial Banner */}
           {onTrial && (
-            <div className="mx-3 mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <div className="mx-3 mb-3 p-3 bg-blue-500/20 border border-blue-500/50 rounded-md">
               <div className="text-xs">
-                <div className="font-medium text-blue-900">Trial Active</div>
-                <div className="text-blue-700 mt-0.5">
+                <div className="font-medium text-blue-400">Trial Active</div>
+                <div className="text-blue-300 mt-0.5">
                   {trialDays} days remaining
                 </div>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-full mt-2 text-xs h-7"
+                  className="w-full mt-2 text-xs h-7 border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
                   onClick={() => navigate('/client/settings/billing')}
                 >
                   Upgrade Plan
@@ -169,14 +169,14 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       {/* Main Content */}
       <div className="pl-64">
         {/* Top Bar */}
-        <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+        <div className="h-16 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
             <EnvironmentSwitcher />
           </div>
 
           <div className="flex items-center gap-3">
             {/* Notifications */}
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative text-neutral-400 hover:text-white">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
             </Button>
@@ -184,7 +184,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="gap-2">
+                <Button variant="ghost" className="gap-2 text-neutral-300 hover:text-white">
                   {user.avatar_url ? (
                     <img
                       src={user.avatar_url}
@@ -192,28 +192,28 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User className="h-4 w-4 text-gray-600" />
+                    <div className="h-8 w-8 rounded-full bg-neutral-700 flex items-center justify-center">
+                      <User className="h-4 w-4 text-neutral-400" />
                     </div>
                   )}
                   <span className="text-sm font-medium">{user.full_name}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="text-xs text-gray-500">{user.email}</div>
+              <DropdownMenuContent align="end" className="w-56 bg-neutral-900 border-neutral-700">
+                <DropdownMenuLabel className="text-neutral-400">
+                  <div className="text-xs">{user.email}</div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/client/settings/profile')}>
+                <DropdownMenuSeparator className="bg-neutral-700" />
+                <DropdownMenuItem onClick={() => navigate('/client/settings/profile')} className="text-neutral-300 focus:bg-neutral-800 focus:text-white">
                   <User className="h-4 w-4 mr-2" />
                   Profile Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/client/settings/security')}>
+                <DropdownMenuItem onClick={() => navigate('/client/settings/security')} className="text-neutral-300 focus:bg-neutral-800 focus:text-white">
                   <Key className="h-4 w-4 mr-2" />
                   Security & 2FA
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                <DropdownMenuSeparator className="bg-neutral-700" />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-400 focus:bg-red-500/20 focus:text-red-400">
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign Out
                 </DropdownMenuItem>
