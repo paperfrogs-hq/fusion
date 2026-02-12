@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Music, Shield, LogOut, Key, User, Download, Trash2, Eye, EyeOff, Copy, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Upload, Music, Shield, LogOut, Key, User, Download, Trash2, Eye, EyeOff, Copy, CheckCircle2, XCircle, Clock, Camera } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
 import AudioUpload from '@/components/user/AudioUpload';
@@ -27,6 +27,8 @@ export default function UserDashboard() {
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({ full_name: '' });
   const [storageUsed, setStorageUsed] = useState(0);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [uploadingPicture, setUploadingPicture] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('fusion_user_token');
@@ -49,14 +51,17 @@ export default function UserDashboard() {
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('full_name, email, api_key')
+        .select('full_name, email, api_key, avatar_url')
         .eq('id', userId)
         .single();
 
       if (error) throw error;
       if (data) {
-        setUser((prev: any) => ({ ...prev, api_key: data.api_key, full_name: data.full_name, email: data.email }));
+        setUser((prev: any) => ({ ...prev, api_key: data.api_key, full_name: data.full_name, email: data.email, avatar_url: data.avatar_url }));
         setProfileForm({ full_name: data.full_name || '' });
+        if (data.avatar_url) {
+          setProfilePicture(data.avatar_url);
+        }
       }
     } catch (error) {
       console.error('Failed to load user data:', error);
@@ -176,6 +181,62 @@ export default function UserDashboard() {
     navigate('/user/login');
   };
 
+  const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Invalid file', description: 'Please select an image file', variant: 'destructive' });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Image must be less than 5MB', variant: 'destructive' });
+      return;
+    }
+
+    setUploadingPicture(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/avatar.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Add cache buster to URL
+      const avatarUrl = `${publicUrl}?t=${Date.now()}`;
+
+      // Update user record
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ avatar_url: avatarUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      setProfilePicture(avatarUrl);
+      setUser((prev: any) => ({ ...prev, avatar_url: avatarUrl }));
+      toast({ title: 'Success', description: 'Profile picture updated successfully' });
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast({ title: 'Upload failed', description: error.message, variant: 'destructive' });
+    } finally {
+      setUploadingPicture(false);
+    }
+  };
+
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -202,11 +263,15 @@ export default function UserDashboard() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                <User className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+                {profilePicture ? (
+                  <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-6 h-6 text-primary" />
+                )}
               </div>
               <div>
-                <h1 className="text-2xl font-bold">{user?.name || 'User Dashboard'}</h1>
+                <h1 className="text-2xl font-bold">{user?.full_name || user?.name || 'User Dashboard'}</h1>
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
             </div>
@@ -333,8 +398,44 @@ export default function UserDashboard() {
                   Manage your account details
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
+              <CardContent className="space-y-6">
+                {/* Profile Picture */}
+                <div className="flex items-center gap-6">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden border-2 border-border">
+                      {profilePicture ? (
+                        <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-12 h-12 text-primary" />
+                      )}
+                    </div>
+                    <label 
+                      htmlFor="profile-picture" 
+                      className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors"
+                    >
+                      {uploadingPicture ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Camera className="w-4 h-4 text-white" />
+                      )}
+                    </label>
+                    <input
+                      type="file"
+                      id="profile-picture"
+                      accept="image/*"
+                      onChange={handleProfilePictureUpload}
+                      className="hidden"
+                      disabled={uploadingPicture}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Profile Picture</h3>
+                    <p className="text-sm text-muted-foreground">Click the camera icon to upload a new photo</p>
+                    <p className="text-xs text-muted-foreground mt-1">Max size: 5MB. JPG, PNG, or GIF.</p>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
                   <p className="mb-1">{user?.email}</p>
                   <p className="text-xs text-muted-foreground">Email cannot be changed after registration</p>
