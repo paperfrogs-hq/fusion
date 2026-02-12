@@ -25,7 +25,7 @@ export default function UserDashboard() {
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [showFileDetails, setShowFileDetails] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
-  const [profileForm, setProfileForm] = useState({ full_name: '', email: '' });
+  const [profileForm, setProfileForm] = useState({ full_name: '' });
   const [storageUsed, setStorageUsed] = useState(0);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function UserDashboard() {
       if (error) throw error;
       if (data) {
         setUser((prev: any) => ({ ...prev, api_key: data.api_key, full_name: data.full_name, email: data.email }));
-        setProfileForm({ full_name: data.full_name || '', email: data.email || '' });
+        setProfileForm({ full_name: data.full_name || '' });
       }
     } catch (error) {
       console.error('Failed to load user data:', error);
@@ -154,14 +154,13 @@ export default function UserDashboard() {
     try {
       const { error } = await supabase
         .from('users')
-        .update({ full_name: profileForm.full_name, email: profileForm.email })
+        .update({ full_name: profileForm.full_name })
         .eq('id', user.id);
 
       if (error) throw error;
 
-      setUser((prev: any) => ({ ...prev, full_name: profileForm.full_name, email: profileForm.email }));
+      setUser((prev: any) => ({ ...prev, full_name: profileForm.full_name }));
       localStorage.setItem('fusion_user_name', profileForm.full_name);
-      localStorage.setItem('fusion_user_email', profileForm.email);
       setEditingProfile(false);
       toast({ title: 'Profile updated', description: 'Your profile has been updated successfully' });
     } catch (error: any) {
@@ -335,6 +334,11 @@ export default function UserDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
+                  <p className="mb-1">{user?.email}</p>
+                  <p className="text-xs text-muted-foreground">Email cannot be changed after registration</p>
+                </div>
                 {editingProfile ? (
                   <>
                     <div>
@@ -345,15 +349,6 @@ export default function UserDashboard() {
                         onChange={(e) => setProfileForm(prev => ({ ...prev, full_name: e.target.value }))}
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={profileForm.email}
-                        onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
-                      />
-                    </div>
                     <div className="flex gap-2">
                       <Button onClick={updateProfile}>Save Changes</Button>
                       <Button variant="outline" onClick={() => setEditingProfile(false)}>Cancel</Button>
@@ -361,10 +356,6 @@ export default function UserDashboard() {
                   </>
                 ) : (
                   <>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
-                      <p>{user?.email}</p>
-                    </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Full Name</h3>
                       <p>{user?.full_name || user?.name || 'Not set'}</p>
