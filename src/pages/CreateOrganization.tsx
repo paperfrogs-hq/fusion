@@ -139,7 +139,7 @@ export default function CreateOrganization() {
               <div className="space-y-2">
                 <Label htmlFor="slug" className="text-neutral-300">Organization URL</Label>
                 <div className="flex items-center">
-                  <span className="text-neutral-500 text-sm mr-2">fusion.paperfrogs.dev/</span>
+                  <span className="text-neutral-500 text-sm mr-2">fusion.paperfrogs.dev/org/</span>
                   <Input
                     id="slug"
                     type="text"

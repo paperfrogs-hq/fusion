@@ -44,6 +44,8 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const WaitlistSignup = lazy(() => import("./pages/WaitlistSignup"));
 const VerifyAudio = lazy(() => import("./pages/VerifyAudio"));
+const OrgPage = lazy(() => import("./pages/OrgPage"));
+const SecuritySettings = lazy(() => import("./pages/SecuritySettings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -99,6 +101,9 @@ const App = () => (
               {/* Waitlist Signup Route */}
               <Route path="/waitlist/signup" element={<WaitlistSignup />} />
               
+              {/* Organization Public Page */}
+              <Route path="/org/:slug" element={<OrgPage />} />
+              
               {/* Business Pricing */}
               <Route path="/business/pricing" element={<BusinessPricing />} />
               
@@ -117,6 +122,7 @@ const App = () => (
               <Route path="/client/team" element={<Team />} />
               <Route path="/client/settings" element={<OrganizationSettings />} />
               <Route path="/client/settings/billing" element={<Billing />} />
+              <Route path="/client/settings/security" element={<SecuritySettings />} />
               <Route path="/client/status" element={<StatusIncidents />} />
               <Route path="/client/reports" element={<Reports />} />
               
