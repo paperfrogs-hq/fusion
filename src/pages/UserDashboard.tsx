@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Music, Shield, LogOut, Key, User, Download, Trash2, Eye, EyeOff, Copy, CheckCircle2, XCircle, Clock, Camera } from 'lucide-react';
+import { Upload, Music, Shield, LogOut, Key, User, Download, Trash2, Eye, EyeOff, Copy, CheckCircle2, XCircle, Clock, Camera, Zap, ArrowRight, Crown } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
 import AudioUpload from '@/components/user/AudioUpload';
@@ -29,6 +29,12 @@ export default function UserDashboard() {
   const [storageUsed, setStorageUsed] = useState(0);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [uploadingPicture, setUploadingPicture] = useState(false);
+  const [currentPlan] = useState({
+    name: 'Free',
+    verifications_limit: 10,
+    verifications_used: 0,
+    price: 0
+  });
 
   useEffect(() => {
     const token = localStorage.getItem('fusion_user_token');
@@ -498,6 +504,93 @@ export default function UserDashboard() {
                 <p className="text-xs text-muted-foreground">
                   Keep your API key secure. Do not share it publicly.
                 </p>
+              </CardContent>
+            </Card>
+
+            {/* Subscription Section */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Zap className="w-5 h-5 text-primary" />
+                      Current Plan
+                    </CardTitle>
+                    <CardDescription>
+                      Manage your subscription and usage
+                    </CardDescription>
+                  </div>
+                  <Badge variant={currentPlan.name === 'Free' ? 'secondary' : 'default'} className="text-sm">
+                    {currentPlan.name}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Usage Bar */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Monthly Verifications</span>
+                    <span className="text-sm text-muted-foreground">
+                      {verificationHistory.length} / {currentPlan.verifications_limit} used
+                    </span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2.5">
+                    <div 
+                      className="bg-primary h-2.5 rounded-full transition-all" 
+                      style={{ width: `${Math.min((verificationHistory.length / currentPlan.verifications_limit) * 100, 100)}%` }}
+                    ></div>
+                  </div>
+                  {verificationHistory.length >= currentPlan.verifications_limit && (
+                    <p className="text-xs text-orange-500 mt-2">
+                      You've reached your monthly limit. Upgrade to continue verifying.
+                    </p>
+                  )}
+                </div>
+
+                {/* Plan Features */}
+                <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-border">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-foreground">{currentPlan.verifications_limit}</p>
+                    <p className="text-xs text-muted-foreground">Verifications/month</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-foreground">{currentPlan.price === 0 ? 'Free' : `$${currentPlan.price}`}</p>
+                    <p className="text-xs text-muted-foreground">{currentPlan.price > 0 ? '/month' : 'Forever'}</p>
+                  </div>
+                </div>
+
+                {/* Upgrade CTA */}
+                {currentPlan.name === 'Free' && (
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <Crown className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-foreground">Upgrade to Creator</h4>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Get 100 verifications/month, audio library storage, and certificates for just $9/month.
+                        </p>
+                        <Button 
+                          className="mt-3" 
+                          onClick={() => navigate('/user/pricing')}
+                        >
+                          View Plans
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {currentPlan.name !== 'Free' && (
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => navigate('/user/pricing')}>
+                      Change Plan
+                    </Button>
+                    <Button variant="ghost" className="text-muted-foreground">
+                      Cancel Subscription
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
