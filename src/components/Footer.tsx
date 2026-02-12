@@ -10,10 +10,12 @@ const Footer = () => {
   };
 
   const links = [
+    { label: "Individual Pricing", path: "/user/pricing" },
+    { label: "Business Pricing", path: "/business/pricing" },
+    { label: "Whitepaper", path: "/whitepaper" },
+    { label: "Contact", path: "/contact" },
     { label: "Privacy", path: "/privacy" },
     { label: "Terms", path: "/terms" },
-    { label: "Contact", path: "/contact" },
-    { label: "Whitepaper", path: "/whitepaper" },
   ];
 
   return (
