@@ -1,11 +1,12 @@
 // Security Monitoring Module - Track hack attempts and suspicious activities
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Shield, AlertTriangle, Ban, Eye, Search, Download, Activity, Globe } from "lucide-react";
+import { Shield, AlertTriangle, Ban, Eye, Search, Download, Activity, Globe, AlertCircle, Lock, Server, Clock, XCircle, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/lib/supabase-client";
 
 interface SecurityEvent {
@@ -145,8 +146,29 @@ const SecurityMonitoringModule = () => {
         <p className="text-gray-600">Track suspicious activities and hack attempts in real-time</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+      <Tabs defaultValue="events" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="events" className="flex items-center gap-2">
+            <Activity className="w-4 h-4" />
+            Events
+          </TabsTrigger>
+          <TabsTrigger value="threats" className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            Threats
+          </TabsTrigger>
+          <TabsTrigger value="ips" className="flex items-center gap-2">
+            <Globe className="w-4 h-4" />
+            IPs
+          </TabsTrigger>
+          <TabsTrigger value="alerts" className="flex items-center gap-2">
+            <Bell className="w-4 h-4" />
+            Alerts
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="events" className="space-y-4">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
@@ -234,22 +256,20 @@ const SecurityMonitoringModule = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Event Type</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Threat Level</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Endpoint</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredEvents.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                       <Shield className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                       <p className="font-medium">No security events found</p>
                       <p className="text-sm mt-1">System is secure and monitoring for threats</p>
                     </td>
                   </tr>
                 ) : (
-                  filteredEvents.map((event) => {
+                  filteredEvents.slice(0, 20).map((event) => {
                     const EventIcon = getEventIcon(event.event_type);
                     return (
                       <motion.tr
@@ -262,18 +282,12 @@ const SecurityMonitoringModule = () => {
                           {new Date(event.detected_at).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <div className="flex items-center gap-2">
-                            <Globe className="h-4 w-4 text-gray-400" />
-                            <code className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                              {event.ip_address}
-                            </code>
-                          </div>
+                          <code className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                            {event.ip_address}
+                          </code>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <div className="flex items-center gap-2">
-                            <EventIcon className="h-4 w-4 text-gray-600" />
-                            <span className="capitalize">{event.event_type.replace('_', ' ')}</span>
-                          </div>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm capitalize">
+                          {event.event_type.replace('_', ' ')}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${getThreatColor(event.threat_level)}`}>
@@ -284,19 +298,7 @@ const SecurityMonitoringModule = () => {
                           {event.endpoint}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <Badge variant="outline">{event.request_method}</Badge>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <Badge variant={event.blocked ? "destructive" : "secondary"}>
-                            {event.blocked ? "Blocked" : event.response_status}
-                          </Badge>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setSelectedEvent(event)}
-                          >
+                          <Button size="sm" variant="ghost" onClick={() => setSelectedEvent(event)}>
                             <Eye className="h-4 w-4" />
                           </Button>
                         </td>
@@ -309,6 +311,162 @@ const SecurityMonitoringModule = () => {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="threats" className="space-y-4">
+          <div className="grid md:grid-cols-4 gap-4">
+            <div className="glass rounded-xl p-6 border-l-4 border-red-500">
+              <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Critical Threats</p>
+              <p className="text-3xl font-bold text-red-500">{stats.critical}</p>
+            </div>
+            <div className="glass rounded-xl p-6 border-l-4 border-orange-500">
+              <AlertTriangle className="w-8 h-8 text-orange-500 mb-2" />
+              <p className="text-sm text-muted-foreground">High Risk</p>
+              <p className="text-3xl font-bold text-orange-500">{stats.high}</p>
+            </div>
+            <div className="glass rounded-xl p-6 border-l-4 border-yellow-500">
+              <Shield className="w-8 h-8 text-yellow-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Medium Risk</p>
+              <p className="text-3xl font-bold text-yellow-500">{stats.medium}</p>
+            </div>
+            <div className="glass rounded-xl p-6 border-l-4 border-green-500">
+              <Ban className="w-8 h-8 text-green-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Blocked</p>
+              <p className="text-3xl font-bold text-green-500">{stats.blocked}</p>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <h3 className="text-lg font-semibold mb-4">Threat Breakdown by Type</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <Ban className="w-5 h-5 text-red-500" />
+                  <span>SQL Injection Attempts</span>
+                </div>
+                <span className="text-lg font-bold">{events.filter(e => e.event_type === 'sql_injection').length}</span>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <Lock className="w-5 h-5 text-orange-500" />
+                  <span>Brute Force Attacks</span>
+                </div>
+                <span className="text-lg font-bold">{events.filter(e => e.event_type === 'brute_force').length}</span>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className="w-5 h-5 text-yellow-500" />
+                  <span>Unauthorized Access</span>
+                </div>
+                <span className="text-lg font-bold">{events.filter(e => e.event_type === 'unauthorized_access').length}</span>
+              </div>
+              <div className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <Eye className="w-5 h-5 text-blue-500" />
+                  <span>Suspicious Activity</span>
+                </div>
+                <span className="text-lg font-bold">{events.filter(e => e.event_type === 'suspicious_activity').length}</span>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="ips" className="space-y-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="glass rounded-xl p-6">
+              <Globe className="w-8 h-8 text-blue-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Unique IPs</p>
+              <p className="text-3xl font-bold">{stats.uniqueIPs}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <XCircle className="w-8 h-8 text-red-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Blocked IPs</p>
+              <p className="text-3xl font-bold">{new Set(events.filter(e => e.blocked).map(e => e.ip_address)).size}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <Clock className="w-8 h-8 text-yellow-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Last 24h IPs</p>
+              <p className="text-3xl font-bold">{new Set(events.filter(e => new Date(e.detected_at) > new Date(Date.now() - 24*60*60*1000)).map(e => e.ip_address)).size}</p>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <h3 className="text-lg font-semibold mb-4">Top Offending IPs</h3>
+            <div className="space-y-2">
+              {Array.from(new Map(events.map(e => [e.ip_address, events.filter(ev => ev.ip_address === e.ip_address).length]))).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([ip, count]) => (
+                <div key={ip} className="flex items-center justify-between py-3 border-b border-border/30">
+                  <div className="flex items-center gap-3">
+                    <Globe className="w-4 h-4 text-muted-foreground" />
+                    <code className="font-mono text-sm">{ip}</code>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground">{count} events</span>
+                    <Button size="sm" variant="destructive" disabled>
+                      <Ban className="w-3 h-3 mr-1" />
+                      Block
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="alerts" className="space-y-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="glass rounded-xl p-6">
+              <Bell className="w-8 h-8 text-blue-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Active Alerts</p>
+              <p className="text-3xl font-bold">{stats.critical + stats.high}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Unresolved</p>
+              <p className="text-3xl font-bold">{stats.critical}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <Shield className="w-8 h-8 text-green-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Auto-Blocked</p>
+              <p className="text-3xl font-bold">{stats.blocked}</p>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <h3 className="text-lg font-semibold mb-4">Alert Configuration</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">Critical Threat Alerts</p>
+                  <p className="text-sm text-muted-foreground">Notify on critical severity events</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500">Enabled</span>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">Brute Force Detection</p>
+                  <p className="text-sm text-muted-foreground">Alert on repeated failed login attempts</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500">Enabled</span>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">SQL Injection Alerts</p>
+                  <p className="text-sm text-muted-foreground">Immediate notification on SQL injection</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500">Enabled</span>
+              </div>
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="font-medium">Email Notifications</p>
+                  <p className="text-sm text-muted-foreground">Send alerts to admin email</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-500">Disabled</span>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Event Detail Modal */}
       {selectedEvent && (
@@ -316,7 +474,7 @@ const SecurityMonitoringModule = () => {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-auto"
+            className="bg-white dark:bg-gray-900 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-auto"
           >
             <div className="p-6 border-b">
               <div className="flex items-center justify-between">
@@ -327,49 +485,49 @@ const SecurityMonitoringModule = () => {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">IP Address</p>
-                  <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">{selectedEvent.ip_address}</code>
+                  <p className="text-sm font-medium text-muted-foreground">IP Address</p>
+                  <code className="text-sm font-mono bg-muted px-2 py-1 rounded">{selectedEvent.ip_address}</code>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Event Type</p>
+                  <p className="text-sm font-medium text-muted-foreground">Event Type</p>
                   <p className="text-sm capitalize">{selectedEvent.event_type.replace('_', ' ')}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Threat Level</p>
+                  <p className="text-sm font-medium text-muted-foreground">Threat Level</p>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${getThreatColor(selectedEvent.threat_level)}`}>
                     {selectedEvent.threat_level.toUpperCase()}
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Detected At</p>
+                  <p className="text-sm font-medium text-muted-foreground">Detected At</p>
                   <p className="text-sm">{new Date(selectedEvent.detected_at).toLocaleString()}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Endpoint</p>
-                  <code className="text-sm bg-gray-100 px-2 py-1 rounded block mt-1">{selectedEvent.endpoint}</code>
+                  <p className="text-sm font-medium text-muted-foreground">Endpoint</p>
+                  <code className="text-sm bg-muted px-2 py-1 rounded block mt-1">{selectedEvent.endpoint}</code>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Method</p>
+                  <p className="text-sm font-medium text-muted-foreground">Method</p>
                   <Badge>{selectedEvent.request_method}</Badge>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Status</p>
+                  <p className="text-sm font-medium text-muted-foreground">Status</p>
                   <Badge variant={selectedEvent.blocked ? "destructive" : "secondary"}>
                     {selectedEvent.blocked ? "Blocked" : selectedEvent.response_status}
                   </Badge>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Reason</p>
+                  <p className="text-sm font-medium text-muted-foreground">Reason</p>
                   <p className="text-sm mt-1">{selectedEvent.reason}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-sm font-medium text-gray-500">User Agent</p>
-                  <code className="text-xs bg-gray-100 px-2 py-1 rounded block mt-1 break-all">{selectedEvent.user_agent}</code>
+                  <p className="text-sm font-medium text-muted-foreground">User Agent</p>
+                  <code className="text-xs bg-muted px-2 py-1 rounded block mt-1 break-all">{selectedEvent.user_agent}</code>
                 </div>
                 {selectedEvent.metadata && (
                   <div className="col-span-2">
-                    <p className="text-sm font-medium text-gray-500">Additional Metadata</p>
-                    <pre className="text-xs bg-gray-100 p-2 rounded mt-1 overflow-auto">{JSON.stringify(selectedEvent.metadata, null, 2)}</pre>
+                    <p className="text-sm font-medium text-muted-foreground">Additional Metadata</p>
+                    <pre className="text-xs bg-muted p-2 rounded mt-1 overflow-auto">{JSON.stringify(selectedEvent.metadata, null, 2)}</pre>
                   </div>
                 )}
               </div>

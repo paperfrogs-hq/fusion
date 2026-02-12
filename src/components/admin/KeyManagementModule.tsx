@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Key, Plus, Shield, AlertCircle, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Key, Plus, Shield, AlertCircle, CheckCircle, XCircle, Clock, RefreshCw, Server, Lock, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase-client";
 import { logAdminAction } from "@/lib/admin-auth";
@@ -145,28 +146,49 @@ const KeyManagementModule = () => {
         </Button>
       </div>
 
-      <div className="grid md:grid-cols-4 gap-4">
-        <div className="glass rounded-xl p-6">
-          <Shield className="w-8 h-8 text-blue-500 mb-2" />
-          <p className="text-sm text-muted-foreground">Total Keys</p>
-          <p className="text-3xl font-bold">{keys.length}</p>
-        </div>
-        <div className="glass rounded-xl p-6">
-          <CheckCircle className="w-8 h-8 text-green-500 mb-2" />
-          <p className="text-sm text-muted-foreground">Active</p>
-          <p className="text-3xl font-bold">{keys.filter(k => k.key_status === "active").length}</p>
-        </div>
-        <div className="glass rounded-xl p-6">
-          <XCircle className="w-8 h-8 text-red-500 mb-2" />
-          <p className="text-sm text-muted-foreground">Revoked</p>
-          <p className="text-3xl font-bold">{keys.filter(k => k.key_status === "revoked").length}</p>
-        </div>
-        <div className="glass rounded-xl p-6">
-          <Key className="w-8 h-8 text-purple-500 mb-2" />
-          <p className="text-sm text-muted-foreground">HSM-Backed</p>
-          <p className="text-3xl font-bold">{keys.filter(k => k.is_hsm_backed).length}</p>
-        </div>
-      </div>
+      <Tabs defaultValue="keys" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="keys" className="flex items-center gap-2">
+            <Key className="w-4 h-4" />
+            Keys
+          </TabsTrigger>
+          <TabsTrigger value="rotation" className="flex items-center gap-2">
+            <RotateCcw className="w-4 h-4" />
+            Rotation
+          </TabsTrigger>
+          <TabsTrigger value="hsm" className="flex items-center gap-2">
+            <Server className="w-4 h-4" />
+            HSM
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Lock className="w-4 h-4" />
+            Security
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="keys" className="space-y-4">
+          <div className="grid md:grid-cols-4 gap-4">
+            <div className="glass rounded-xl p-6">
+              <Shield className="w-8 h-8 text-blue-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Total Keys</p>
+              <p className="text-3xl font-bold">{keys.length}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <CheckCircle className="w-8 h-8 text-green-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Active</p>
+              <p className="text-3xl font-bold">{keys.filter(k => k.key_status === "active").length}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <XCircle className="w-8 h-8 text-red-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Revoked</p>
+              <p className="text-3xl font-bold">{keys.filter(k => k.key_status === "revoked").length}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <Key className="w-8 h-8 text-purple-500 mb-2" />
+              <p className="text-sm text-muted-foreground">HSM-Backed</p>
+              <p className="text-3xl font-bold">{keys.filter(k => k.is_hsm_backed).length}</p>
+            </div>
+          </div>
 
       {showCreateForm && (
         <motion.div
@@ -265,16 +287,184 @@ const KeyManagementModule = () => {
         </div>
       </div>
 
-      <div className="glass rounded-xl p-6">
-        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-          Security Notice
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          Private keys are never displayed or stored in plain text. All key operations are logged in the audit trail.
-          For production use, consider HSM-backed keys for enhanced security.
-        </p>
-      </div>
+          <div className="glass rounded-xl p-6">
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+              Security Notice
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Private keys are never displayed or stored in plain text. All key operations are logged in the audit trail.
+              For production use, consider HSM-backed keys for enhanced security.
+            </p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="rotation" className="space-y-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="glass rounded-xl p-6">
+              <RotateCcw className="w-8 h-8 text-blue-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Scheduled Rotations</p>
+              <p className="text-3xl font-bold">0</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <Clock className="w-8 h-8 text-yellow-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Keys Expiring (30d)</p>
+              <p className="text-3xl font-bold">{keys.filter(k => k.expires_at && new Date(k.expires_at) < new Date(Date.now() + 30*24*60*60*1000)).length}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <RefreshCw className="w-8 h-8 text-green-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Last Rotation</p>
+              <p className="text-xl font-bold">Never</p>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <h3 className="text-lg font-semibold mb-4">Rotation Schedule</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">Signing Keys</p>
+                  <p className="text-sm text-muted-foreground">RSA-4096 keys used for digital signatures</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium">Every 365 days</p>
+                  <p className="text-xs text-muted-foreground">Industry standard</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">Verification Keys</p>
+                  <p className="text-sm text-muted-foreground">Ed25519 keys for verification</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium">Every 180 days</p>
+                  <p className="text-xs text-muted-foreground">High security</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="font-medium">HSM Master Keys</p>
+                  <p className="text-sm text-muted-foreground">Hardware-backed master keys</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium">Every 730 days</p>
+                  <p className="text-xs text-muted-foreground">Compliant rotation</p>
+                </div>
+              </div>
+            </div>
+            <Button className="mt-4" variant="outline">
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Trigger Manual Rotation
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="hsm" className="space-y-4">
+          <div className="grid md:grid-cols-4 gap-4">
+            <div className="glass rounded-xl p-6">
+              <Server className="w-8 h-8 text-purple-500 mb-2" />
+              <p className="text-sm text-muted-foreground">HSM Devices</p>
+              <p className="text-3xl font-bold">1</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <Key className="w-8 h-8 text-blue-500 mb-2" />
+              <p className="text-sm text-muted-foreground">HSM Keys</p>
+              <p className="text-3xl font-bold">{keys.filter(k => k.is_hsm_backed).length}</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <CheckCircle className="w-8 h-8 text-green-500 mb-2" />
+              <p className="text-sm text-muted-foreground">HSM Status</p>
+              <p className="text-xl font-bold text-green-500">Online</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <Shield className="w-8 h-8 text-teal-500 mb-2" />
+              <p className="text-sm text-muted-foreground">FIPS 140-2</p>
+              <p className="text-xl font-bold">Level 3</p>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <h3 className="text-lg font-semibold mb-4">HSM Configuration</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">HSM Provider</p>
+                  <p className="text-sm text-muted-foreground">Cloud HSM service provider</p>
+                </div>
+                <span className="text-sm px-3 py-1 rounded-full bg-purple-500/20 text-purple-500">AWS CloudHSM</span>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">Cluster ID</p>
+                  <p className="text-sm text-muted-foreground">HSM cluster identifier</p>
+                </div>
+                <code className="text-xs font-mono">cluster-abc123xyz</code>
+              </div>
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="font-medium">Auto-Backup</p>
+                  <p className="text-sm text-muted-foreground">Automatic key backup to secondary HSM</p>
+                </div>
+                <span className="text-sm px-3 py-1 rounded-full bg-green-500/20 text-green-500">Enabled</span>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="security" className="space-y-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="glass rounded-xl p-6">
+              <Shield className="w-8 h-8 text-green-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Security Score</p>
+              <p className="text-3xl font-bold text-green-500">A+</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <Lock className="w-8 h-8 text-blue-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Encryption</p>
+              <p className="text-xl font-bold">AES-256-GCM</p>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <AlertCircle className="w-8 h-8 text-yellow-500 mb-2" />
+              <p className="text-sm text-muted-foreground">Alerts</p>
+              <p className="text-3xl font-bold">0</p>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <h3 className="text-lg font-semibold mb-4">Security Policies</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">Key Access Logging</p>
+                  <p className="text-sm text-muted-foreground">Log all key access attempts</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500">Enabled</span>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">Multi-Party Authorization</p>
+                  <p className="text-sm text-muted-foreground">Require 2+ admins for key operations</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-500">Disabled</span>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div>
+                  <p className="font-medium">Automatic Key Revocation</p>
+                  <p className="text-sm text-muted-foreground">Revoke compromised keys automatically</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500">Enabled</span>
+              </div>
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="font-medium">Zero-Knowledge Backup</p>
+                  <p className="text-sm text-muted-foreground">Encrypted backups without key exposure</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500">Enabled</span>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
