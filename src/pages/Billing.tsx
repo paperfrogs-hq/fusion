@@ -129,19 +129,19 @@ export default function Billing() {
   const getPlanBadge = (planType: string) => {
     const badges = {
       free: <Badge variant="outline">Free</Badge>,
-      starter: <Badge className="bg-green-100 text-green-800 border-green-300">Starter</Badge>,
-      professional: <Badge className="bg-blue-100 text-blue-800 border-blue-300">Professional</Badge>,
-      enterprise: <Badge className="bg-purple-100 text-purple-800 border-purple-300">Enterprise</Badge>,
+      starter: <Badge className="bg-green-500/20 text-green-300 border-green-500/30">Starter</Badge>,
+      professional: <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">Professional</Badge>,
+      enterprise: <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">Enterprise</Badge>,
     };
     return badges[planType] || badges.free;
   };
 
   const getStatusBadge = (status: string) => {
     if (status === 'active') {
-      return <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>;
+      return <Badge className="bg-green-500/20 text-green-300 border-green-500/30">Active</Badge>;
     }
     if (status === 'past_due') {
-      return <Badge className="bg-red-100 text-red-800 border-red-300">Past Due</Badge>;
+      return <Badge className="bg-red-500/20 text-red-300 border-red-500/30">Past Due</Badge>;
     }
     if (status === 'canceled') {
       return <Badge variant="outline">Canceled</Badge>;
@@ -168,7 +168,7 @@ export default function Billing() {
     return (
       <ClientLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </ClientLayout>
     );
@@ -178,9 +178,9 @@ export default function Billing() {
     return (
       <ClientLayout>
         <div className="max-w-4xl mx-auto text-center py-12">
-          <AlertCircle className="h-12 w-12 text-amber-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600">You don't have permission to view billing information.</p>
+          <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
+          <p className="text-neutral-400">You don't have permission to view billing information.</p>
         </div>
       </ClientLayout>
     );
@@ -196,8 +196,8 @@ export default function Billing() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Billing & Usage</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-white">Billing & Usage</h1>
+            <p className="text-neutral-400 mt-1">
               Manage your subscription and view usage
             </p>
           </div>
@@ -211,12 +211,12 @@ export default function Billing() {
 
         {/* Trial Banner */}
         {data.subscription.is_trial && data.subscription.trial_ends_at && (
-          <Card className="bg-blue-50 border-blue-200 p-4">
+          <Card className="bg-blue-500/10 border-blue-500/30 p-4">
             <div className="flex items-start gap-3">
-              <Zap className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <Zap className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-blue-900 mb-1">Trial Active</h3>
-                <p className="text-sm text-blue-800">
+                <h3 className="font-semibold text-blue-300 mb-1">Trial Active</h3>
+                <p className="text-sm text-blue-200">
                   Your trial ends on {formatDate(data.subscription.trial_ends_at)}. 
                   Upgrade to continue using Fusion without interruption.
                 </p>
@@ -237,34 +237,34 @@ export default function Billing() {
         {/* Current Plan & Usage */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Current Plan */}
-          <Card className="p-6">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Current Plan</h3>
+              <h3 className="text-lg font-semibold text-white">Current Plan</h3>
               {getPlanBadge(data.subscription.plan_type)}
             </div>
 
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Status</p>
+                <p className="text-sm text-neutral-400 mb-1">Status</p>
                 {getStatusBadge(data.subscription.status)}
               </div>
 
               <div>
-                <p className="text-sm text-gray-600 mb-1">Billing Period</p>
-                <p className="text-sm text-gray-900">
+                <p className="text-sm text-neutral-400 mb-1">Billing Period</p>
+                <p className="text-sm text-white">
                   {formatDate(data.subscription.current_period_start)} - {formatDate(data.subscription.current_period_end)}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-gray-600 mb-1">Monthly Quota</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {data.usage.quota_limit.toLocaleString()} <span className="text-base font-normal text-gray-500">verifications</span>
+                <p className="text-sm text-neutral-400 mb-1">Monthly Quota</p>
+                <p className="text-2xl font-bold text-white">
+                  {data.usage.quota_limit.toLocaleString()} <span className="text-base font-normal text-neutral-500">verifications</span>
                 </p>
               </div>
 
               {canManage && (
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-neutral-700">
                   <Button 
                     variant="outline" 
                     className="w-full"
@@ -278,33 +278,33 @@ export default function Billing() {
           </Card>
 
           {/* Usage This Month */}
-          <Card className="p-6">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Usage This Month</h3>
-              <TrendingUp className="h-5 w-5 text-gray-400" />
+              <h3 className="text-lg font-semibold text-white">Usage This Month</h3>
+              <TrendingUp className="h-5 w-5 text-neutral-500" />
             </div>
 
             <div className="space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm text-gray-600">Verifications Used</p>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm text-neutral-400">Verifications Used</p>
+                  <p className="text-sm font-medium text-white">
                     {data.usage.quota_used.toLocaleString()} / {data.usage.quota_limit.toLocaleString()}
                   </p>
                 </div>
                 <Progress value={usagePercent} className="h-3" />
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-neutral-500 mt-2">
                   {Math.round(usagePercent)}% of quota used
                 </p>
               </div>
 
               {data.usage.overage_count > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
                   <div className="flex items-start gap-2">
-                    <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
                     <div className="text-sm">
-                      <p className="font-medium text-amber-900">Overage Usage</p>
-                      <p className="text-amber-800 mt-1">
+                      <p className="font-medium text-amber-300">Overage Usage</p>
+                      <p className="text-amber-200 mt-1">
                         {data.usage.overage_count.toLocaleString()} verifications over quota
                       </p>
                     </div>
@@ -313,12 +313,12 @@ export default function Billing() {
               )}
 
               {usagePercent >= 90 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
                   <div className="flex items-start gap-2">
-                    <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
                     <div className="text-sm">
-                      <p className="font-medium text-red-900">Quota Warning</p>
-                      <p className="text-red-800 mt-1">
+                      <p className="font-medium text-red-300">Quota Warning</p>
+                      <p className="text-red-200 mt-1">
                         You're approaching your monthly quota. Consider upgrading your plan.
                       </p>
                     </div>
@@ -330,11 +330,11 @@ export default function Billing() {
         </div>
 
         {/* Payment Method */}
-        <Card className="p-6">
+        <Card className="p-6 bg-neutral-900 border-neutral-800">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Payment Method</h3>
+              <CreditCard className="h-5 w-5 text-neutral-400" />
+              <h3 className="text-lg font-semibold text-white">Payment Method</h3>
             </div>
             {canManage && (
               <Button 
@@ -353,71 +353,72 @@ export default function Billing() {
                 <CreditCard className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-white">
                   {data.payment_method.type} ending in {data.payment_method.last4}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-neutral-500">
                   Expires {data.payment_method.exp_month}/{data.payment_method.exp_year}
                 </p>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-500">No payment method on file</p>
+            <p className="text-sm text-neutral-500">No payment method on file</p>
           )}
         </Card>
 
         {/* Invoice History */}
-        <Card className="p-6">
+        <Card className="p-6 bg-neutral-900 border-neutral-800">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <Receipt className="h-5 w-5 text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Invoice History</h3>
+              <Receipt className="h-5 w-5 text-neutral-400" />
+              <h3 className="text-lg font-semibold text-white">Invoice History</h3>
             </div>
           </div>
 
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Invoice</TableHead>
-                <TableHead>Period</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="w-24">Actions</TableHead>
+              <TableRow className="border-neutral-700 hover:bg-neutral-800/50">
+                <TableHead className="text-neutral-300">Invoice</TableHead>
+                <TableHead className="text-neutral-300">Period</TableHead>
+                <TableHead className="text-neutral-300">Amount</TableHead>
+                <TableHead className="text-neutral-300">Status</TableHead>
+                <TableHead className="w-24 text-neutral-300">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.invoices.map((invoice) => (
-                <TableRow key={invoice.id}>
+                <TableRow key={invoice.id} className="border-neutral-700 hover:bg-neutral-800/50">
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-900">
+                      <Calendar className="h-4 w-4 text-neutral-500" />
+                      <span className="text-sm text-white">
                         {formatDate(invoice.created_at)}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-neutral-400">
                     {formatDate(invoice.period_start)} - {formatDate(invoice.period_end)}
                   </TableCell>
-                  <TableCell className="text-sm font-medium text-gray-900">
+                  <TableCell className="text-sm font-medium text-white">
                     {formatCurrency(invoice.amount)}
                   </TableCell>
                   <TableCell>
                     {invoice.status === 'paid' ? (
-                      <Badge className="bg-green-100 text-green-800 border-green-300">
+                      <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
                         <CheckCircle2 className="h-3 w-3 mr-1" />
                         Paid
                       </Badge>
                     ) : invoice.status === 'open' ? (
-                      <Badge className="bg-blue-100 text-blue-800 border-blue-300">Open</Badge>
+                      <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">Open</Badge>
                     ) : (
-                      <Badge className="bg-red-100 text-red-800 border-red-300">Past Due</Badge>
+                      <Badge className="bg-red-500/20 text-red-300 border-red-500/30">Past Due</Badge>
                     )}
                   </TableCell>
                   <TableCell>
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="text-neutral-400 hover:text-white"
                       onClick={() => handleDownloadInvoice(invoice.id)}
                     >
                       <Download className="h-4 w-4" />
@@ -426,10 +427,10 @@ export default function Billing() {
                 </TableRow>
               ))}
               {data.invoices.length === 0 && (
-                <TableRow>
+                <TableRow className="border-neutral-700">
                   <TableCell colSpan={5} className="text-center py-12">
-                    <Receipt className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">No invoices yet</p>
+                    <Receipt className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
+                    <p className="text-neutral-400">No invoices yet</p>
                   </TableCell>
                 </TableRow>
               )}

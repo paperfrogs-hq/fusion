@@ -31,7 +31,7 @@ export default function OrgSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="w-full justify-between px-3 h-14 hover:bg-gray-100"
+          className="w-full justify-between px-3 h-14 hover:bg-neutral-800"
         >
           <div className="flex items-center gap-3 min-w-0">
             {currentOrg.logo_url ? (
@@ -41,22 +41,22 @@ export default function OrgSwitcher() {
                 className="h-8 w-8 rounded object-cover flex-shrink-0"
               />
             ) : (
-              <div className="h-8 w-8 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
-                <Building2 className="h-5 w-5 text-gray-600" />
+              <div className="h-8 w-8 rounded bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                <Building2 className="h-5 w-5 text-neutral-400" />
               </div>
             )}
             <div className="text-left min-w-0 flex-1">
-              <div className="font-semibold text-sm truncate">{currentOrg.name}</div>
-              <div className="text-xs text-gray-500 truncate">
+              <div className="font-semibold text-sm truncate text-white">{currentOrg.name}</div>
+              <div className="text-xs text-neutral-500 truncate">
                 {currentOrg.plan_type} plan
               </div>
             </div>
           </div>
-          <ChevronDown className="h-4 w-4 text-gray-500 flex-shrink-0 ml-2" />
+          <ChevronDown className="h-4 w-4 text-neutral-500 flex-shrink-0 ml-2" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-72">
-        <DropdownMenuLabel className="text-xs text-gray-500 uppercase">
+      <DropdownMenuContent align="start" className="w-72 bg-neutral-900 border-neutral-800">
+        <DropdownMenuLabel className="text-xs text-neutral-500 uppercase">
           Your Organizations
         </DropdownMenuLabel>
         
@@ -64,7 +64,7 @@ export default function OrgSwitcher() {
           <DropdownMenuItem
             key={org.id}
             onClick={() => handleSwitchOrg(org.id)}
-            className="flex items-center gap-3 p-3 cursor-pointer"
+            className="flex items-center gap-3 p-3 cursor-pointer hover:bg-neutral-800"
           >
             {org.logo_url ? (
               <img
@@ -73,18 +73,18 @@ export default function OrgSwitcher() {
                 className="h-8 w-8 rounded object-cover flex-shrink-0"
               />
             ) : (
-              <div className="h-8 w-8 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
-                <Building2 className="h-5 w-5 text-gray-600" />
+              <div className="h-8 w-8 rounded bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                <Building2 className="h-5 w-5 text-neutral-400" />
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="font-medium text-sm truncate">{org.name}</div>
-              <div className="text-xs text-gray-500 capitalize truncate">
+              <div className="font-medium text-sm truncate text-white">{org.name}</div>
+              <div className="text-xs text-neutral-500 capitalize truncate">
                 {org.role || 'member'} · {org.plan_type}
               </div>
             </div>
             {currentOrg.id === org.id && (
-              <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+              <Check className="h-4 w-4 text-green-400 flex-shrink-0" />
             )}
           </DropdownMenuItem>
         ))}

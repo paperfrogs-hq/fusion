@@ -4,7 +4,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 exports.handler = async (event) => {
@@ -70,19 +70,26 @@ exports.handler = async (event) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Build webhook data
+    const webhookData = {
+      organization_id: organizationId,
+      environment_id: environmentId,
+      endpoint_url: endpointUrl,
+      event_types: eventTypes,
+      signing_secret: signingSecret,
+      is_active: true,
+      retry_policy: retryPolicy || { max_attempts: 3, backoff: 'exponential' },
+    };
+    
+    // Only add created_by if provided
+    if (createdBy) {
+      webhookData.created_by = createdBy;
+    }
+
     // Create webhook
     const { data: webhook, error } = await supabase
       .from('client_webhooks')
-      .insert({
-        organization_id: organizationId,
-        environment_id: environmentId,
-        endpoint_url: endpointUrl,
-        event_types: eventTypes,
-        signing_secret: signingSecret,
-        is_active: true,
-        retry_policy: retryPolicy || { max_attempts: 3, backoff: 'exponential' },
-        created_by: createdBy,
-      })
+      .insert(webhookData)
       .select()
       .single();
 

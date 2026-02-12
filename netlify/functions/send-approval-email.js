@@ -110,7 +110,7 @@ exports.handler = async (event) => {
             <div class="container">
               <div class="box">
                 <div class="logo">Fusion<span>.</span></div>
-                <h1>🎉 Your Account is Approved!</h1>
+                <h1>Your Account is Approved!</h1>
                 <p>Hi ${userName},</p>
                 <p>Great news! Your business account for <strong>${orgName}</strong> has been approved.</p>
                 <div class="highlight">

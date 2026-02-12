@@ -138,14 +138,14 @@ export default function CreateWebhookModal({
               onChange={(e) => setEndpointUrl(e.target.value)}
               required
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-neutral-500">
               Must be a valid HTTPS URL that can receive POST requests
             </p>
           </div>
 
           <div className="space-y-2">
             <Label>Event Types</Label>
-            <div className="space-y-3 border border-gray-200 rounded-md p-3 max-h-48 overflow-y-auto">
+            <div className="space-y-3 border border-neutral-800 rounded-md p-3 max-h-48 overflow-y-auto">
               {eventTypes.map((event) => (
                 <div key={event.id} className="flex items-start gap-3">
                   <Checkbox
@@ -160,7 +160,7 @@ export default function CreateWebhookModal({
                     >
                       {event.label}
                     </label>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-xs text-neutral-500 mt-0.5">
                       {event.description}
                     </p>
                   </div>
@@ -182,17 +182,17 @@ export default function CreateWebhookModal({
                 <SelectItem value="10">10 attempts</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-neutral-500">
               Failed deliveries will be retried with exponential backoff
             </p>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-md p-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-900">
+              <AlertCircle className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-blue-300">
                 <strong>Webhook Security:</strong> Each webhook receives a unique signing secret. 
-                Use it to verify that requests are from Fusion by validating the <code className="bg-blue-100 px-1 rounded">X-Fusion-Signature</code> header.
+                Use it to verify that requests are from Fusion by validating the <code className="bg-blue-500/20 px-1 rounded">X-Fusion-Signature</code> header.
               </div>
             </div>
           </div>

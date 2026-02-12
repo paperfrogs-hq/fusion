@@ -169,42 +169,42 @@ export default function SystemTest() {
     .reduce((sum, r) => sum + (r.duration || 0), 0) / results.filter(r => r.duration).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-neutral-950 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">System Test & Verification</h1>
-          <p className="text-gray-600 mt-1">Test all backend endpoints and verify functionality</p>
+          <h1 className="text-3xl font-bold text-white">System Test & Verification</h1>
+          <p className="text-neutral-400 mt-1">Test all backend endpoints and verify functionality</p>
         </div>
 
         {/* Summary Stats */}
         {results.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="p-4">
-              <div className="text-sm text-gray-600 mb-1">Total Tests</div>
-              <div className="text-2xl font-bold text-gray-900">{results.length}</div>
+            <Card className="p-4 bg-neutral-900 border-neutral-800">
+              <div className="text-sm text-neutral-400 mb-1">Total Tests</div>
+              <div className="text-2xl font-bold text-white">{results.length}</div>
             </Card>
-            <Card className="p-4">
-              <div className="text-sm text-gray-600 mb-1">Successful</div>
-              <div className="text-2xl font-bold text-green-600">{successCount}</div>
+            <Card className="p-4 bg-neutral-900 border-neutral-800">
+              <div className="text-sm text-neutral-400 mb-1">Successful</div>
+              <div className="text-2xl font-bold text-green-400">{successCount}</div>
             </Card>
-            <Card className="p-4">
-              <div className="text-sm text-gray-600 mb-1">Failed</div>
-              <div className="text-2xl font-bold text-red-600">{errorCount}</div>
+            <Card className="p-4 bg-neutral-900 border-neutral-800">
+              <div className="text-sm text-neutral-400 mb-1">Failed</div>
+              <div className="text-2xl font-bold text-red-400">{errorCount}</div>
             </Card>
-            <Card className="p-4">
-              <div className="text-sm text-gray-600 mb-1">Avg Duration</div>
-              <div className="text-2xl font-bold text-blue-600">{avgDuration.toFixed(0)}ms</div>
+            <Card className="p-4 bg-neutral-900 border-neutral-800">
+              <div className="text-sm text-neutral-400 mb-1">Avg Duration</div>
+              <div className="text-2xl font-bold text-blue-400">{avgDuration.toFixed(0)}ms</div>
             </Card>
           </div>
         )}
 
         {/* Control Panel */}
-        <Card className="p-6">
+        <Card className="p-6 bg-neutral-900 border-neutral-800">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Test Suite</h2>
-              <p className="text-sm text-gray-600">Run comprehensive tests on all backend functions</p>
+              <h2 className="text-lg font-semibold text-white">Test Suite</h2>
+              <p className="text-sm text-neutral-400">Run comprehensive tests on all backend functions</p>
             </div>
             <Button onClick={runAllTests} disabled={testing} size="lg">
               {testing ? (
@@ -221,23 +221,23 @@ export default function SystemTest() {
 
         {/* Test Results */}
         {results.length > 0 && (
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Test Results</h2>
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
+            <h2 className="text-lg font-semibold text-white mb-4">Test Results</h2>
             <div className="space-y-3">
               {results.map((result, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-4 bg-neutral-800 rounded-lg">
                   <div className="flex items-center gap-3 flex-1">
                     {getStatusIcon(result.status)}
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{result.name}</div>
+                      <div className="font-medium text-white">{result.name}</div>
                       {result.message && (
-                        <div className="text-sm text-gray-600">{result.message}</div>
+                        <div className="text-sm text-neutral-400">{result.message}</div>
                       )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     {result.duration && (
-                      <span className="text-sm text-gray-500">{result.duration}ms</span>
+                      <span className="text-sm text-neutral-500">{result.duration}ms</span>
                     )}
                     {getStatusBadge(result.status)}
                   </div>
@@ -249,12 +249,12 @@ export default function SystemTest() {
 
         {/* Instructions */}
         {results.length === 0 && (
-          <Card className="p-6">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
             <div className="flex items-start gap-4">
-              <AlertTriangle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-1" />
+              <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Test Instructions</h3>
-                <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <h3 className="font-semibold text-white mb-2">Test Instructions</h3>
+                <ul className="text-sm text-neutral-400 space-y-1 list-disc list-inside">
                   <li>This will test all backend endpoints to verify they are functioning</li>
                   <li>Most tests will fail with validation errors (expected behavior)</li>
                   <li>Green = endpoint is responding correctly</li>

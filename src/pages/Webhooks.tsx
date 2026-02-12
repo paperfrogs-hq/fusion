@@ -175,7 +175,7 @@ export default function Webhooks() {
     return (
       <ClientLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </ClientLayout>
     );
@@ -185,9 +185,9 @@ export default function Webhooks() {
     return (
       <ClientLayout>
         <div className="max-w-4xl mx-auto text-center py-12">
-          <AlertCircle className="h-12 w-12 text-amber-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Environment Selected</h2>
-          <p className="text-gray-600">Please select an environment to manage webhooks.</p>
+          <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">No Environment Selected</h2>
+          <p className="text-neutral-400">Please select an environment to manage webhooks.</p>
         </div>
       </ClientLayout>
     );
@@ -199,8 +199,8 @@ export default function Webhooks() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Webhooks</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-white">Webhooks</h1>
+            <p className="text-neutral-400 mt-1">
               Receive real-time notifications for {env.display_name} environment
             </p>
           </div>
@@ -214,67 +214,67 @@ export default function Webhooks() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Webhooks</p>
-                <p className="text-2xl font-bold text-gray-900">{webhooks.length}</p>
+                <p className="text-sm text-neutral-400">Total Webhooks</p>
+                <p className="text-2xl font-bold text-white">{webhooks.length}</p>
               </div>
-              <Webhook className="h-8 w-8 text-gray-400" />
+              <Webhook className="h-8 w-8 text-neutral-600" />
             </div>
           </Card>
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Active</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-sm text-neutral-400">Active</p>
+                <p className="text-2xl font-bold text-green-400">
                   {webhooks.filter(w => w.is_active).length}
                 </p>
               </div>
-              <CheckCircle2 className="h-8 w-8 text-green-400" />
+              <CheckCircle2 className="h-8 w-8 text-green-500" />
             </div>
           </Card>
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Deliveries</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-sm text-neutral-400">Total Deliveries</p>
+                <p className="text-2xl font-bold text-blue-400">
                   {webhooks.reduce((sum, w) => sum + w.success_count + w.failure_count, 0)}
                 </p>
               </div>
-              <Activity className="h-8 w-8 text-blue-400" />
+              <Activity className="h-8 w-8 text-blue-500" />
             </div>
           </Card>
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Failed Deliveries</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-sm text-neutral-400">Failed Deliveries</p>
+                <p className="text-2xl font-bold text-red-400">
                   {webhooks.reduce((sum, w) => sum + w.failure_count, 0)}
                 </p>
               </div>
-              <XCircle className="h-8 w-8 text-red-400" />
+              <XCircle className="h-8 w-8 text-red-500" />
             </div>
           </Card>
         </div>
 
         {/* Webhooks Table */}
-        <Card>
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <Card className="bg-neutral-900 border-neutral-800">
+          <div className="p-6 border-b border-neutral-700">
+            <h2 className="text-lg font-semibold text-white">
               Configured Webhooks ({webhooks.length})
             </h2>
           </div>
           
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Endpoint</TableHead>
-                <TableHead>Events</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Success Rate</TableHead>
-                <TableHead>Last Triggered</TableHead>
-                {canManage && <TableHead className="w-40">Actions</TableHead>}
+              <TableRow className="border-neutral-700 hover:bg-neutral-800/50">
+                <TableHead className="text-neutral-300">Endpoint</TableHead>
+                <TableHead className="text-neutral-300">Events</TableHead>
+                <TableHead className="text-neutral-300">Status</TableHead>
+                <TableHead className="text-neutral-300">Success Rate</TableHead>
+                <TableHead className="text-neutral-300">Last Triggered</TableHead>
+                {canManage && <TableHead className="w-40 text-neutral-300">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -282,15 +282,15 @@ export default function Webhooks() {
                 const successRate = getSuccessRate(webhook);
                 
                 return (
-                  <TableRow key={webhook.id}>
+                  <TableRow key={webhook.id} className="border-neutral-700 hover:bg-neutral-800/50">
                     <TableCell>
                       <div className="flex items-start gap-2">
-                        <Webhook className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                        <Webhook className="h-4 w-4 text-neutral-500 flex-shrink-0 mt-0.5" />
                         <div className="min-w-0">
-                          <code className="text-xs text-gray-900 break-all">
+                          <code className="text-xs text-neutral-300 break-all">
                             {webhook.endpoint_url}
                           </code>
-                          <div className="text-xs text-gray-500 mt-0.5">
+                          <div className="text-xs text-neutral-500 mt-0.5">
                             {webhook.retry_policy.max_attempts} retries · {webhook.retry_policy.backoff} backoff
                           </div>
                         </div>
@@ -299,7 +299,7 @@ export default function Webhooks() {
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {webhook.event_types.map((event) => (
-                          <Badge key={event} variant="outline" className="text-xs">
+                          <Badge key={event} variant="outline" className="text-xs border-neutral-600 text-neutral-300">
                             {event}
                           </Badge>
                         ))}
@@ -312,33 +312,33 @@ export default function Webhooks() {
                           onCheckedChange={() => handleToggleActive(webhook.id, webhook.is_active)}
                           disabled={!canManage}
                         />
-                        <span className="text-sm">
+                        <span className="text-sm text-neutral-300">
                           {webhook.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className="w-full bg-gray-200 rounded-full h-2 max-w-[80px]">
+                        <div className="w-full bg-neutral-700 rounded-full h-2 max-w-[80px]">
                           <div 
                             className={`h-2 rounded-full ${
-                              successRate >= 95 ? 'bg-green-600' :
-                              successRate >= 80 ? 'bg-yellow-600' :
-                              'bg-red-600'
+                              successRate >= 95 ? 'bg-green-500' :
+                              successRate >= 80 ? 'bg-yellow-500' :
+                              'bg-red-500'
                             }`}
                             style={{ width: `${successRate}%` }}
                           />
                         </div>
-                        <span className="text-sm text-gray-900 font-medium">
+                        <span className="text-sm text-white font-medium">
                           {successRate}%
                         </span>
                       </div>
-                      <div className="text-xs text-gray-500 mt-0.5">
+                      <div className="text-xs text-neutral-500 mt-0.5">
                         {webhook.success_count} success · {webhook.failure_count} failed
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="flex items-center gap-1 text-gray-600">
+                      <div className="flex items-center gap-1 text-neutral-400">
                         <Clock className="h-3 w-3" />
                         {formatDate(webhook.last_triggered_at)}
                       </div>
@@ -351,6 +351,7 @@ export default function Webhooks() {
                             size="sm"
                             onClick={() => setSelectedWebhook(webhook.id)}
                             title="View delivery log"
+                            className="text-neutral-400 hover:text-white"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -359,6 +360,7 @@ export default function Webhooks() {
                             size="sm"
                             onClick={() => handleTestWebhook(webhook.id)}
                             title="Send test"
+                            className="text-neutral-400 hover:text-white"
                           >
                             <Play className="h-4 w-4" />
                           </Button>
@@ -366,7 +368,7 @@ export default function Webhooks() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteWebhook(webhook.id)}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-400 hover:text-red-300"
                             title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -378,10 +380,10 @@ export default function Webhooks() {
                 );
               })}
               {webhooks.length === 0 && (
-                <TableRow>
+                <TableRow className="border-neutral-700">
                   <TableCell colSpan={6} className="text-center py-12">
-                    <Webhook className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 mb-4">No webhooks configured</p>
+                    <Webhook className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
+                    <p className="text-neutral-400 mb-4">No webhooks configured</p>
                     {canManage && (
                       <Button onClick={() => setShowCreateModal(true)}>
                         <Plus className="h-4 w-4 mr-2" />
@@ -396,10 +398,10 @@ export default function Webhooks() {
         </Card>
 
         {/* Info Card */}
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-blue-500/10 border-blue-500/30">
           <div className="p-6">
-            <h3 className="font-semibold text-blue-900 mb-3">Webhook Events</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-800">
+            <h3 className="font-semibold text-blue-300 mb-3">Webhook Events</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-200">
               <div>
                 <strong>verification.completed:</strong> Audio verification succeeded
               </div>

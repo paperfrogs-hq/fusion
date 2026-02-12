@@ -68,9 +68,9 @@ export default function OrganizationSettings() {
     return (
       <ClientLayout>
         <div className="max-w-4xl mx-auto text-center py-12">
-          <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600">You don't have permission to manage organization settings.</p>
+          <Building2 className="h-12 w-12 text-neutral-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
+          <p className="text-neutral-400">You don't have permission to manage organization settings.</p>
         </div>
       </ClientLayout>
     );
@@ -80,11 +80,11 @@ export default function OrganizationSettings() {
     <ClientLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Organization Settings</h1>
-          <p className="text-gray-600 mt-1">Manage your organization's information</p>
+          <h1 className="text-3xl font-bold text-white">Organization Settings</h1>
+          <p className="text-neutral-400 mt-1">Manage your organization's information</p>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-neutral-900 border-neutral-800">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name">Organization Name *</Label>

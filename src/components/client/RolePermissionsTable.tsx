@@ -28,18 +28,18 @@ const permissions = [
 
 const PermissionIcon = ({ allowed }: { allowed: boolean }) => {
   return allowed ? (
-    <Check className="h-5 w-5 text-green-600 mx-auto" />
+    <Check className="h-5 w-5 text-green-400 mx-auto" />
   ) : (
-    <X className="h-5 w-5 text-gray-300 mx-auto" />
+    <X className="h-5 w-5 text-neutral-600 mx-auto" />
   );
 };
 
 export default function RolePermissionsTable() {
   return (
-    <Card>
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Role Permissions</h2>
-        <p className="text-sm text-gray-600 mt-1">
+    <Card className="bg-neutral-900 border-neutral-800">
+      <div className="p-6 border-b border-neutral-800">
+        <h2 className="text-lg font-semibold text-white">Role Permissions</h2>
+        <p className="text-sm text-neutral-400 mt-1">
           Overview of what each role can do in your organization
         </p>
       </div>
@@ -81,13 +81,13 @@ export default function RolePermissionsTable() {
         </Table>
       </div>
       
-      <div className="p-4 bg-gray-50 border-t border-gray-200">
-        <div className="text-sm text-gray-600 space-y-1">
-          <p><strong>Owner:</strong> Full control including billing and organization deletion</p>
-          <p><strong>Admin:</strong> Full access except billing management</p>
-          <p><strong>Developer:</strong> Technical access for API integration and development</p>
-          <p><strong>Analyst:</strong> View and analyze data, generate reports</p>
-          <p><strong>Read Only:</strong> View-only access to all data and settings</p>
+      <div className="p-4 bg-neutral-800 border-t border-neutral-700">
+        <div className="text-sm text-neutral-400 space-y-1">
+          <p><strong className="text-white">Owner:</strong> Full control including billing and organization deletion</p>
+          <p><strong className="text-white">Admin:</strong> Full access except billing management</p>
+          <p><strong className="text-white">Developer:</strong> Technical access for API integration and development</p>
+          <p><strong className="text-white">Analyst:</strong> View and analyze data, generate reports</p>
+          <p><strong className="text-white">Read Only:</strong> View-only access to all data and settings</p>
         </div>
       </div>
     </Card>

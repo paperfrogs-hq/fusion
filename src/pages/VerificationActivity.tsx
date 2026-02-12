@@ -150,20 +150,20 @@ export default function VerificationActivity() {
 
   const getResultIcon = (result: string) => {
     if (result === 'authentic') {
-      return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+      return <CheckCircle2 className="h-5 w-5 text-green-400" />;
     }
     if (result === 'tampered') {
-      return <AlertTriangle className="h-5 w-5 text-red-600" />;
+      return <AlertTriangle className="h-5 w-5 text-red-400" />;
     }
-    return <XCircle className="h-5 w-5 text-gray-400" />;
+    return <XCircle className="h-5 w-5 text-neutral-500" />;
   };
 
   const getResultBadge = (result: string) => {
     if (result === 'authentic') {
-      return <Badge className="bg-green-100 text-green-800 border-green-300">Authentic</Badge>;
+      return <Badge className="bg-green-500/20 text-green-300 border-green-500/30">Authentic</Badge>;
     }
     if (result === 'tampered') {
-      return <Badge className="bg-red-100 text-red-800 border-red-300">Tampered</Badge>;
+      return <Badge className="bg-red-500/20 text-red-300 border-red-500/30">Tampered</Badge>;
     }
     return <Badge variant="outline">Failed</Badge>;
   };
@@ -188,7 +188,7 @@ export default function VerificationActivity() {
     return (
       <ClientLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </ClientLayout>
     );
@@ -198,9 +198,9 @@ export default function VerificationActivity() {
     return (
       <ClientLayout>
         <div className="max-w-4xl mx-auto text-center py-12">
-          <Shield className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Environment Selected</h2>
-          <p className="text-gray-600">Please select an environment to view activity.</p>
+          <Shield className="h-12 w-12 text-neutral-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">No Environment Selected</h2>
+          <p className="text-neutral-400">Please select an environment to view activity.</p>
         </div>
       </ClientLayout>
     );
@@ -212,8 +212,8 @@ export default function VerificationActivity() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Verification Activity</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-white">Verification Activity</h1>
+            <p className="text-neutral-400 mt-1">
               Complete history of audio verifications in {env.display_name}
             </p>
           </div>
@@ -224,10 +224,10 @@ export default function VerificationActivity() {
         </div>
 
         {/* Search and Filters */}
-        <Card className="p-4">
+        <Card className="p-4 bg-neutral-900 border-neutral-800">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-500" />
               <Input
                 placeholder="Search by file name..."
                 value={searchQuery}
@@ -265,30 +265,30 @@ export default function VerificationActivity() {
         </Card>
 
         {/* Activity Table */}
-        <Card>
+        <Card className="bg-neutral-900 border-neutral-800">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>File</TableHead>
-                <TableHead>Result</TableHead>
-                <TableHead>Confidence</TableHead>
-                <TableHead>API Key</TableHead>
-                <TableHead>Processing Time</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="w-20">Actions</TableHead>
+              <TableRow className="border-neutral-700 hover:bg-neutral-800/50">
+                <TableHead className="text-neutral-300">File</TableHead>
+                <TableHead className="text-neutral-300">Result</TableHead>
+                <TableHead className="text-neutral-300">Confidence</TableHead>
+                <TableHead className="text-neutral-300">API Key</TableHead>
+                <TableHead className="text-neutral-300">Processing Time</TableHead>
+                <TableHead className="text-neutral-300">Date</TableHead>
+                <TableHead className="w-20 text-neutral-300">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {activities.map((activity) => (
-                <TableRow key={activity.id}>
+                <TableRow key={activity.id} className="border-neutral-700 hover:bg-neutral-800/50">
                   <TableCell>
                     <div className="flex items-start gap-2">
                       {getResultIcon(activity.result)}
                       <div className="min-w-0">
-                        <p className="font-medium text-gray-900 truncate max-w-xs">
+                        <p className="font-medium text-white truncate max-w-xs">
                           {activity.file_name}
                         </p>
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                        <div className="flex items-center gap-2 text-xs text-neutral-500 mt-0.5">
                           <span>{activity.file_type}</span>
                           <span>•</span>
                           <span>{formatFileSize(activity.file_size)}</span>
@@ -302,37 +302,38 @@ export default function VerificationActivity() {
                   <TableCell>
                     {activity.confidence_score !== undefined ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div className="w-16 bg-neutral-700 rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full ${
-                              activity.confidence_score >= 90 ? 'bg-green-600' :
-                              activity.confidence_score >= 70 ? 'bg-yellow-600' :
-                              'bg-red-600'
+                              activity.confidence_score >= 90 ? 'bg-green-500' :
+                              activity.confidence_score >= 70 ? 'bg-yellow-500' :
+                              'bg-red-500'
                             }`}
                             style={{ width: `${activity.confidence_score}%` }}
                           />
                         </div>
-                        <span className="text-sm text-gray-900 font-medium">
+                        <span className="text-sm text-white font-medium">
                           {Math.round(activity.confidence_score)}%
                         </span>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">N/A</span>
+                      <span className="text-sm text-neutral-500">N/A</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-neutral-400">
                     {activity.api_key_name}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-neutral-400">
                     {activity.processing_time_ms}ms
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-neutral-400">
                     {formatDate(activity.created_at)}
                   </TableCell>
                   <TableCell>
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="text-neutral-400 hover:text-white"
                       onClick={() => setSelectedActivity(activity.id)}
                     >
                       <Eye className="h-4 w-4" />
@@ -341,11 +342,11 @@ export default function VerificationActivity() {
                 </TableRow>
               ))}
               {activities.length === 0 && (
-                <TableRow>
+                <TableRow className="border-neutral-700">
                   <TableCell colSpan={7} className="text-center py-12">
-                    <Shield className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 mb-2">No verification activity found</p>
-                    <p className="text-sm text-gray-400">
+                    <Shield className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
+                    <p className="text-neutral-400 mb-2">No verification activity found</p>
+                    <p className="text-sm text-neutral-500">
                       {searchQuery || Object.keys(filters).length > 0
                         ? 'Try adjusting your search or filters'
                         : 'Start verifying audio files using your API keys'}
@@ -358,8 +359,8 @@ export default function VerificationActivity() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-neutral-700">
+              <p className="text-sm text-neutral-400">
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">

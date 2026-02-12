@@ -36,15 +36,15 @@ export default function TablePagination({
   return (
     <div className="flex items-center justify-between px-2 py-4">
       <div className="flex items-center gap-4">
-        <p className="text-sm text-gray-700">
-          Showing <span className="font-medium">{startItem}</span> to{' '}
-          <span className="font-medium">{endItem}</span> of{' '}
-          <span className="font-medium">{totalItems}</span> results
+        <p className="text-sm text-neutral-400">
+          Showing <span className="font-medium text-white">{startItem}</span> to{' '}
+          <span className="font-medium text-white">{endItem}</span> of{' '}
+          <span className="font-medium text-white">{totalItems}</span> results
         </p>
 
         {onPageSizeChange && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-700">Rows per page:</span>
+            <span className="text-sm text-neutral-400">Rows per page:</span>
             <Select
               value={pageSize.toString()}
               onValueChange={(value) => onPageSizeChange(parseInt(value))}
@@ -81,7 +81,7 @@ export default function TablePagination({
           <ChevronLeft className="h-4 w-4" />
         </Button>
 
-        <span className="text-sm text-gray-700 px-2">
+        <span className="text-sm text-neutral-400 px-2">
           Page {currentPage} of {totalPages}
         </span>
 

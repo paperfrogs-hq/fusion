@@ -38,7 +38,11 @@ const OrganizationSettings = lazy(() => import("./pages/OrganizationSettings"));
 const Billing = lazy(() => import("./pages/Billing"));
 const StatusIncidents = lazy(() => import("./pages/StatusIncidents"));
 const Reports = lazy(() => import("./pages/Reports"));
+const CreateOrganization = lazy(() => import("./pages/CreateOrganization"));
 const SystemTest = lazy(() => import("./pages/SystemTest"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const WaitlistSignup = lazy(() => import("./pages/WaitlistSignup"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +87,17 @@ const App = () => (
               <Route path="/user/subscription" element={<ComingSoon />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               
+              {/* Forgot Password & Reset Password Routes */}
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/user/forgot-password" element={<ForgotPassword />} />
+              <Route path="/user/reset-password" element={<ResetPassword />} />
+              <Route path="/client/forgot-password" element={<ForgotPassword />} />
+              <Route path="/client/reset-password" element={<ResetPassword />} />
+              
+              {/* Waitlist Signup Route */}
+              <Route path="/waitlist/signup" element={<WaitlistSignup />} />
+              
               {/* Business Pricing */}
               <Route path="/business/pricing" element={<BusinessPricing />} />
               
@@ -90,6 +105,7 @@ const App = () => (
               <Route path="/client/login" element={<ClientLogin />} />
               <Route path="/client/signup" element={<ClientSignup />} />
               <Route path="/client/select-org" element={<ClientSelectOrg />} />
+              <Route path="/client/create-organization" element={<CreateOrganization />} />
               <Route path="/client/pricing" element={<BusinessPricing />} />
               <Route path="/client/dashboard" element={<ClientDashboard />} />
               <Route path="/client/activity" element={<Activity />} />

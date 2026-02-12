@@ -3,20 +3,41 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Trash2, Users, CheckCircle, Mail } from "lucide-react";
+import { Download, Trash2, Users, CheckCircle, Mail, UserPlus } from "lucide-react";
 import { supabase } from "@/lib/supabase-client";
 import { motion } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface WaitlistUser {
   id: number;
   email: string;
   confirmed: boolean;
   created_at: string;
+  invite_sent_at?: string;
+  invite_used_at?: string;
 }
 
 const WaitlistModule = () => {
   const [users, setUsers] = useState<WaitlistUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<WaitlistUser | null>(null);
+  const [signupType, setSignupType] = useState<"user" | "client">("client");
+  const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -100,6 +121,50 @@ const WaitlistModule = () => {
         description: error instanceof Error ? error.message : "Failed to send early access",
         variant: "destructive",
       });
+    }
+  };
+
+  const openInviteModal = (user: WaitlistUser) => {
+    setSelectedUser(user);
+    setSignupType("client");
+    setInviteModalOpen(true);
+  };
+
+  const handleSendInvite = async () => {
+    if (!selectedUser) return;
+    setIsSending(true);
+
+    try {
+      const response = await fetch("/.netlify/functions/send-waitlist-invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: selectedUser.id,
+          email: selectedUser.email,
+          signupType,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send invite");
+      }
+
+      toast({
+        title: "Invitation Sent",
+        description: `Signup invitation sent to ${selectedUser.email}`,
+      });
+      setInviteModalOpen(false);
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send invite",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -235,6 +300,15 @@ const WaitlistModule = () => {
                       <Button
                         size="sm"
                         variant="ghost"
+                        onClick={() => openInviteModal(user)}
+                        title={user.invite_sent_at ? "Resend signup invitation" : "Send signup invitation"}
+                        className={user.invite_sent_at ? "text-purple-600" : "text-cyan-600"}
+                      >
+                        <UserPlus className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
                         onClick={() => handleSendEarlyAccess(user.id, user.email)}
                         title="Send early access credentials"
                       >
@@ -255,6 +329,64 @@ const WaitlistModule = () => {
           </table>
         </div>
       </div>
+
+      {/* Invite Modal */}
+      <Dialog open={inviteModalOpen} onOpenChange={setInviteModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send Signup Invitation</DialogTitle>
+            <DialogDescription>
+              Send a direct signup link to {selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label>Account Type</Label>
+              <Select
+                value={signupType}
+                onValueChange={(value: "user" | "client") => setSignupType(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="client">
+                    Business Account (Client Portal)
+                  </SelectItem>
+                  <SelectItem value="user">
+                    Individual Account (User Portal)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {signupType === "client"
+                  ? "Invites to create an organization with API access"
+                  : "Invites to create a personal user account"}
+              </p>
+            </div>
+
+            {selectedUser?.invite_sent_at && (
+              <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                ⚠️ An invitation was sent on{" "}
+                {new Date(selectedUser.invite_sent_at).toLocaleDateString()}
+              </p>
+            )}
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setInviteModalOpen(false)}
+                disabled={isSending}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSendInvite} disabled={isSending}>
+                {isSending ? "Sending..." : "Send Invitation"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

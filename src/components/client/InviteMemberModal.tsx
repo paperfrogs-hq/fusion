@@ -96,7 +96,7 @@ export default function InviteMemberModal({ organizationId, onClose, onSuccess }
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <Mail className="absolute left-3 top-2.5 h-5 w-5 text-neutral-500" />
               <Input
                 id="email"
                 type="email"
@@ -120,7 +120,7 @@ export default function InviteMemberModal({ organizationId, onClose, onSuccess }
                   <SelectItem key={r.value} value={r.value}>
                     <div>
                       <div className="font-medium">{r.label}</div>
-                      <div className="text-xs text-gray-500">{r.description}</div>
+                      <div className="text-xs text-neutral-500">{r.description}</div>
                     </div>
                   </SelectItem>
                 ))}
@@ -128,7 +128,7 @@ export default function InviteMemberModal({ organizationId, onClose, onSuccess }
             </Select>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm text-blue-900">
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-md p-3 text-sm text-blue-300">
             <strong>Note:</strong> The invitation will expire in 7 days. They'll need to create an account if they don't have one.
           </div>
 

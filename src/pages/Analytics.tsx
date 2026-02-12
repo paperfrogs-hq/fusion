@@ -116,7 +116,7 @@ export default function Analytics() {
     return (
       <ClientLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </ClientLayout>
     );
@@ -126,9 +126,9 @@ export default function Analytics() {
     return (
       <ClientLayout>
         <div className="max-w-4xl mx-auto text-center py-12">
-          <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Environment Selected</h2>
-          <p className="text-gray-600">Please select an environment to view analytics.</p>
+          <BarChart3 className="h-12 w-12 text-neutral-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">No Environment Selected</h2>
+          <p className="text-neutral-400">Please select an environment to view analytics.</p>
         </div>
       </ClientLayout>
     );
@@ -142,17 +142,17 @@ export default function Analytics() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Analytics & Reports</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-white">Analytics & Reports</h1>
+            <p className="text-neutral-400 mt-1">
               Insights and compliance reporting for {env.display_name}
             </p>
           </div>
           <div className="flex gap-3">
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40 bg-neutral-800 border-neutral-700 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-neutral-800 border-neutral-700">
                 <SelectItem value="7d">Last 7 days</SelectItem>
                 <SelectItem value="30d">Last 30 days</SelectItem>
                 <SelectItem value="90d">Last 90 days</SelectItem>
@@ -168,59 +168,59 @@ export default function Analytics() {
 
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-6">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600">Total Verifications</h3>
-              <Shield className="h-5 w-5 text-blue-600" />
+              <h3 className="text-sm font-medium text-neutral-400">Total Verifications</h3>
+              <Shield className="h-5 w-5 text-blue-400" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-3xl font-bold text-white">
               {data.overview.total_verifications.toLocaleString()}
             </p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600">Success Rate</h3>
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <h3 className="text-sm font-medium text-neutral-400">Success Rate</h3>
+              <CheckCircle2 className="h-5 w-5 text-green-400" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-3xl font-bold text-white">
               {getSuccessRate()}%
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-neutral-500 mt-1">
               {data.overview.authentic_count.toLocaleString()} authentic
             </p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600">Tamper Detection</h3>
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+              <h3 className="text-sm font-medium text-neutral-400">Tamper Detection</h3>
+              <AlertTriangle className="h-5 w-5 text-red-400" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-3xl font-bold text-white">
               {getTamperRate()}%
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-neutral-500 mt-1">
               {data.overview.tampered_count.toLocaleString()} tampered
             </p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600">Avg Confidence</h3>
-              <TrendingUp className="h-5 w-5 text-purple-600" />
+              <h3 className="text-sm font-medium text-neutral-400">Avg Confidence</h3>
+              <TrendingUp className="h-5 w-5 text-purple-400" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-3xl font-bold text-white">
               {Math.round(data.overview.avg_confidence)}%
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-neutral-500 mt-1">
               {data.overview.avg_processing_time}ms avg time
             </p>
           </Card>
         </div>
 
         {/* Verification Trends Chart */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+        <Card className="p-6 bg-neutral-900 border-neutral-800">
+          <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
             Verification Trends
           </h3>
@@ -239,8 +239,8 @@ export default function Analytics() {
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top API Keys */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               Top API Keys
             </h3>
@@ -252,16 +252,16 @@ export default function Analytics() {
                 return (
                   <div key={idx}>
                     <div className="flex items-center justify-between text-sm mb-2">
-                      <span className="text-gray-900 font-medium truncate">
+                      <span className="text-white font-medium truncate">
                         {apiKey.name}
                       </span>
-                      <span className="text-gray-600 ml-2">
+                      <span className="text-neutral-400 ml-2">
                         {apiKey.count.toLocaleString()}
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-neutral-700 rounded-full h-2">
                       <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        className="bg-blue-500 h-2 rounded-full transition-all"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -269,14 +269,14 @@ export default function Analytics() {
                 );
               })}
               {data.topApiKeys.length === 0 && (
-                <p className="text-center text-gray-500 py-8">No API key usage data</p>
+                <p className="text-center text-neutral-500 py-8">No API key usage data</p>
               )}
             </div>
           </Card>
 
           {/* File Type Distribution */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+          <Card className="p-6 bg-neutral-900 border-neutral-800">
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               File Type Distribution
             </h3>
@@ -288,21 +288,21 @@ export default function Analytics() {
                 return (
                   <div key={idx}>
                     <div className="flex items-center justify-between text-sm mb-2">
-                      <span className="text-gray-900 font-medium">
+                      <span className="text-white font-medium">
                         {fileType.type}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-600">
+                        <span className="text-neutral-400">
                           {fileType.count.toLocaleString()}
                         </span>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs border-neutral-600 text-neutral-300">
                           {percentage.toFixed(0)}%
                         </Badge>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-neutral-700 rounded-full h-2">
                       <div 
-                        className="bg-purple-600 h-2 rounded-full transition-all"
+                        className="bg-purple-500 h-2 rounded-full transition-all"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -310,15 +310,15 @@ export default function Analytics() {
                 );
               })}
               {data.fileTypeDistribution.length === 0 && (
-                <p className="text-center text-gray-500 py-8">No file type data</p>
+                <p className="text-center text-neutral-500 py-8">No file type data</p>
               )}
             </div>
           </Card>
         </div>
 
         {/* Hourly Distribution */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+        <Card className="p-6 bg-neutral-900 border-neutral-800">
+          <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
             <Clock className="h-5 w-5" />
             Usage by Hour of Day
           </h3>
@@ -334,16 +334,16 @@ export default function Analytics() {
         </Card>
 
         {/* Compliance Summary */}
-        <Card className="bg-blue-50 border-blue-200 p-6">
+        <Card className="bg-blue-500/10 border-blue-500/30 p-6">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <FileText className="h-6 w-6 text-blue-600" />
+            <div className="p-3 bg-blue-500/20 rounded-lg">
+              <FileText className="h-6 w-6 text-blue-400" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">
+              <h3 className="text-lg font-semibold text-blue-300 mb-2">
                 Compliance Reporting
               </h3>
-              <p className="text-blue-800 mb-4">
+              <p className="text-blue-200/80 mb-4">
                 Generate detailed compliance reports for auditing and regulatory requirements. 
                 Reports include verification statistics, tamper detection summaries, and detailed activity logs.
               </p>

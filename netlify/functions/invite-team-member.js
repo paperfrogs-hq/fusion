@@ -5,7 +5,7 @@ const { createClient } = require('@supabase/supabase-js');
 const { Resend } = require('resend');
 const crypto = require('crypto');
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -109,17 +109,24 @@ exports.handler = async (event) => {
 
     const orgName = org?.name || 'a Fusion organization';
 
+    // Build invitation data
+    const invitationData = {
+      organization_id: organizationId,
+      email: email.toLowerCase(),
+      role: role,
+      invitation_token: invitationToken,
+      expires_at: expiresAt.toISOString(),
+    };
+    
+    // Only add invited_by if provided
+    if (invitedBy) {
+      invitationData.invited_by = invitedBy;
+    }
+
     // Create invitation
     const { data: invitation, error } = await supabase
       .from('organization_invitations')
-      .insert({
-        organization_id: organizationId,
-        email: email.toLowerCase(),
-        role: role,
-        invited_by: invitedBy,
-        invitation_token: invitationToken,
-        expires_at: expiresAt.toISOString(),
-      })
+      .insert(invitationData)
       .select()
       .single();
 

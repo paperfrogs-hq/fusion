@@ -162,19 +162,19 @@ export default function APIKeys() {
   };
 
   const getKeyStatus = (key: APIKey) => {
-    if (key.revoked_at) return { label: 'Revoked', color: 'bg-red-100 text-red-800 border-red-300' };
+    if (key.revoked_at) return { label: 'Revoked', color: 'bg-red-500/20 text-red-400 border-red-500/30' };
     if (key.expires_at && new Date(key.expires_at) < new Date()) {
-      return { label: 'Expired', color: 'bg-gray-100 text-gray-800 border-gray-300' };
+      return { label: 'Expired', color: 'bg-neutral-700 text-neutral-400 border-neutral-600' };
     }
-    if (!key.is_active) return { label: 'Inactive', color: 'bg-gray-100 text-gray-800 border-gray-300' };
-    return { label: 'Active', color: 'bg-green-100 text-green-800 border-green-300' };
+    if (!key.is_active) return { label: 'Inactive', color: 'bg-neutral-700 text-neutral-400 border-neutral-600' };
+    return { label: 'Active', color: 'bg-green-500/20 text-green-400 border-green-500/30' };
   };
 
   if (loading) {
     return (
       <ClientLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </ClientLayout>
     );
@@ -184,9 +184,9 @@ export default function APIKeys() {
     return (
       <ClientLayout>
         <div className="max-w-4xl mx-auto text-center py-12">
-          <AlertTriangle className="h-12 w-12 text-amber-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Environment Selected</h2>
-          <p className="text-gray-600">Please select an environment to view API keys.</p>
+          <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">No Environment Selected</h2>
+          <p className="text-neutral-400">Please select an environment to view API keys.</p>
         </div>
       </ClientLayout>
     );
@@ -198,8 +198,8 @@ export default function APIKeys() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">API Keys</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-white">API Keys</h1>
+            <p className="text-neutral-400 mt-1">
               Manage API keys for {env.display_name} environment
             </p>
           </div>
@@ -213,10 +213,10 @@ export default function APIKeys() {
 
         {/* Warning Banner */}
         {env.is_production && (
-          <Card className="bg-amber-50 border-amber-200">
+          <Card className="bg-amber-500/10 border-amber-500/30">
             <div className="p-4 flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-amber-900">
+              <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-amber-200">
                 <strong>Production Environment:</strong> These keys have access to live data. 
                 Keep them secure and rotate them regularly.
               </div>
@@ -226,57 +226,57 @@ export default function APIKeys() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Keys</p>
-                <p className="text-2xl font-bold text-gray-900">{apiKeys.length}</p>
+                <p className="text-sm text-neutral-400">Total Keys</p>
+                <p className="text-2xl font-bold text-white">{apiKeys.length}</p>
               </div>
-              <Key className="h-8 w-8 text-gray-400" />
+              <Key className="h-8 w-8 text-neutral-600" />
             </div>
           </Card>
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Active Keys</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-sm text-neutral-400">Active Keys</p>
+                <p className="text-2xl font-bold text-green-400">
                   {apiKeys.filter(k => k.is_active && !k.revoked_at).length}
                 </p>
               </div>
-              <CheckCircle2 className="h-8 w-8 text-green-400" />
+              <CheckCircle2 className="h-8 w-8 text-green-500" />
             </div>
           </Card>
-          <Card className="p-4">
+          <Card className="p-4 bg-neutral-900 border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Revoked Keys</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-sm text-neutral-400">Revoked Keys</p>
+                <p className="text-2xl font-bold text-red-400">
                   {apiKeys.filter(k => k.revoked_at).length}
                 </p>
               </div>
-              <Trash2 className="h-8 w-8 text-red-400" />
+              <Trash2 className="h-8 w-8 text-red-500" />
             </div>
           </Card>
         </div>
 
         {/* API Keys Table */}
-        <Card>
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <Card className="bg-neutral-900 border-neutral-800">
+          <div className="p-6 border-b border-neutral-700">
+            <h2 className="text-lg font-semibold text-white">
               API Keys ({apiKeys.length})
             </h2>
           </div>
           
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Key</TableHead>
-                <TableHead>Scopes</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last Used</TableHead>
-                <TableHead>Rate Limits</TableHead>
-                {canManage && <TableHead className="w-32">Actions</TableHead>}
+              <TableRow className="border-neutral-700 hover:bg-neutral-800/50">
+                <TableHead className="text-neutral-300">Name</TableHead>
+                <TableHead className="text-neutral-300">Key</TableHead>
+                <TableHead className="text-neutral-300">Scopes</TableHead>
+                <TableHead className="text-neutral-300">Status</TableHead>
+                <TableHead className="text-neutral-300">Last Used</TableHead>
+                <TableHead className="text-neutral-300">Rate Limits</TableHead>
+                {canManage && <TableHead className="w-32 text-neutral-300">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -284,22 +284,22 @@ export default function APIKeys() {
                 const status = getKeyStatus(key);
                 
                 return (
-                  <TableRow key={key.id}>
+                  <TableRow key={key.id} className="border-neutral-700 hover:bg-neutral-800/50">
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Key className="h-4 w-4 text-gray-400" />
-                        <span className="font-medium">{key.key_name}</span>
+                        <Key className="h-4 w-4 text-neutral-500" />
+                        <span className="font-medium text-white">{key.key_name}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <code className="text-xs bg-gray-100 px-2 py-1 rounded font-mono">
+                        <code className="text-xs bg-neutral-800 px-2 py-1 rounded font-mono text-neutral-300">
                           {key.key_prefix}••••••••{key.key_secret_partial}
                         </code>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-7 w-7 text-neutral-400 hover:text-white"
                           onClick={() => handleCopyKey(key.key_prefix, key.key_secret_partial)}
                         >
                           <Copy className="h-3 w-3" />
@@ -309,7 +309,7 @@ export default function APIKeys() {
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {key.scopes.map((scope) => (
-                          <Badge key={scope} variant="outline" className="text-xs">
+                          <Badge key={scope} variant="outline" className="text-xs border-neutral-600 text-neutral-300">
                             {scope}
                           </Badge>
                         ))}
@@ -321,19 +321,19 @@ export default function APIKeys() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="flex items-center gap-1 text-gray-600">
+                      <div className="flex items-center gap-1 text-neutral-400">
                         <Clock className="h-3 w-3" />
                         {formatDate(key.last_used_at)}
                       </div>
                       {key.last_used_ip && (
-                        <div className="text-xs text-gray-400 mt-0.5">
+                        <div className="text-xs text-neutral-500 mt-0.5">
                           {key.last_used_ip}
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-neutral-400">
                       <div>{key.rate_limit_per_minute}/min</div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-neutral-500">
                         {key.rate_limit_per_day.toLocaleString()}/day
                       </div>
                     </TableCell>
@@ -354,7 +354,7 @@ export default function APIKeys() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleRevokeKey(key.id)}
-                                className="text-red-600 hover:text-red-700"
+                                className="text-red-400 hover:text-red-300"
                                 title="Revoke key"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -368,10 +368,10 @@ export default function APIKeys() {
                 );
               })}
               {apiKeys.length === 0 && (
-                <TableRow>
+                <TableRow className="border-neutral-700">
                   <TableCell colSpan={7} className="text-center py-12">
-                    <Key className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 mb-4">No API keys yet</p>
+                    <Key className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
+                    <p className="text-neutral-400 mb-4">No API keys yet</p>
                     {canManage && (
                       <Button onClick={() => setShowCreateModal(true)}>
                         <Plus className="h-4 w-4 mr-2" />
@@ -386,10 +386,10 @@ export default function APIKeys() {
         </Card>
 
         {/* Best Practices */}
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-blue-500/10 border-blue-500/30">
           <div className="p-6">
-            <h3 className="font-semibold text-blue-900 mb-3">API Key Best Practices</h3>
-            <ul className="space-y-2 text-sm text-blue-800">
+            <h3 className="font-semibold text-blue-300 mb-3">API Key Best Practices</h3>
+            <ul className="space-y-2 text-sm text-blue-200">
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 flex-shrink-0 mt-0.5" />
                 <span>Store API keys securely in environment variables, never commit them to version control</span>

@@ -39,14 +39,14 @@ response = requests.post(
 )`;
 
   return (
-    <Card className="p-6 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+    <Card className="p-6 border-blue-500/30 bg-gradient-to-br from-blue-950/50 to-neutral-900">
       <div className="flex items-start gap-4 mb-6">
-        <div className="p-3 bg-blue-100 rounded-lg">
-          <Rocket className="h-6 w-6 text-blue-600" />
+        <div className="p-3 bg-blue-500/20 rounded-lg">
+          <Rocket className="h-6 w-6 text-blue-400" />
         </div>
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Get Started with Fusion API</h3>
-          <p className="text-gray-600">
+          <h3 className="text-xl font-bold text-white mb-2">Get Started with Fusion API</h3>
+          <p className="text-neutral-400">
             Follow these steps to start verifying audio authenticity in minutes
           </p>
         </div>
@@ -61,11 +61,11 @@ response = requests.post(
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
               <Key className="h-4 w-4" />
               Create an API Key
             </h4>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-neutral-400 mb-3">
               Generate your first API key to authenticate requests. Keys can have specific scopes and rate limits.
             </p>
             <Button 
@@ -85,25 +85,25 @@ response = requests.post(
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
               <Code className="h-4 w-4" />
               Make Your First Request
             </h4>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-neutral-400 mb-3">
               Use your API key to verify audio files. Here are examples in different languages:
             </p>
 
             {/* Code Examples */}
             <div className="space-y-3">
               {/* cURL */}
-              <div className="bg-gray-900 rounded-lg p-4 relative">
+              <div className="bg-neutral-900 rounded-lg p-4 relative">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" className="text-xs bg-gray-800 text-gray-300 border-gray-700">
+                  <Badge variant="outline" className="text-xs bg-neutral-800 text-neutral-300 border-neutral-700">
                     cURL
                   </Badge>
                   <button
                     onClick={() => handleCopy(curlExample, 'curl')}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-neutral-400 hover:text-white transition-colors"
                   >
                     {copied === 'curl' ? (
                       <Check className="h-4 w-4" />
@@ -118,14 +118,14 @@ response = requests.post(
               </div>
 
               {/* Node.js */}
-              <div className="bg-gray-900 rounded-lg p-4 relative">
+              <div className="bg-neutral-900 rounded-lg p-4 relative">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" className="text-xs bg-gray-800 text-gray-300 border-gray-700">
+                  <Badge variant="outline" className="text-xs bg-neutral-800 text-neutral-300 border-neutral-700">
                     Node.js
                   </Badge>
                   <button
                     onClick={() => handleCopy(nodeExample, 'node')}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-neutral-400 hover:text-white transition-colors"
                   >
                     {copied === 'node' ? (
                       <Check className="h-4 w-4" />
@@ -140,14 +140,14 @@ response = requests.post(
               </div>
 
               {/* Python */}
-              <div className="bg-gray-900 rounded-lg p-4 relative">
+              <div className="bg-neutral-900 rounded-lg p-4 relative">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" className="text-xs bg-gray-800 text-gray-300 border-gray-700">
+                  <Badge variant="outline" className="text-xs bg-neutral-800 text-neutral-300 border-neutral-700">
                     Python
                   </Badge>
                   <button
                     onClick={() => handleCopy(pythonExample, 'python')}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-neutral-400 hover:text-white transition-colors"
                   >
                     {copied === 'python' ? (
                       <Check className="h-4 w-4" />
@@ -172,11 +172,11 @@ response = requests.post(
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4" />
               Monitor & Analyze
             </h4>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-neutral-400 mb-3">
               Track verification activity, analyze results, and configure webhooks for real-time notifications.
             </p>
             <div className="flex gap-2">
@@ -200,14 +200,14 @@ response = requests.post(
       </div>
 
       {/* Documentation Link */}
-      <div className="mt-6 pt-6 border-t border-blue-200">
-        <p className="text-sm text-gray-600">
+      <div className="mt-6 pt-6 border-t border-blue-500/30">
+        <p className="text-sm text-neutral-400">
           Need more help? Check out our{' '}
-          <a href="/docs" className="text-blue-600 hover:underline font-medium">
+          <a href="/docs" className="text-blue-400 hover:underline font-medium">
             API documentation
           </a>
           {' '}or{' '}
-          <a href="/support" className="text-blue-600 hover:underline font-medium">
+          <a href="/support" className="text-blue-400 hover:underline font-medium">
             contact support
           </a>
           .

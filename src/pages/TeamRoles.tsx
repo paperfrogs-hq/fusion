@@ -176,23 +176,23 @@ export default function TeamRoles() {
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'owner': return <Crown className="h-4 w-4 text-yellow-600" />;
-      case 'admin': return <Shield className="h-4 w-4 text-blue-600" />;
-      case 'developer': return <Code className="h-4 w-4 text-green-600" />;
-      case 'analyst': return <BarChart className="h-4 w-4 text-purple-600" />;
-      case 'read_only': return <Eye className="h-4 w-4 text-gray-600" />;
-      default: return <Users className="h-4 w-4 text-gray-600" />;
+      case 'owner': return <Crown className="h-4 w-4 text-yellow-400" />;
+      case 'admin': return <Shield className="h-4 w-4 text-blue-400" />;
+      case 'developer': return <Code className="h-4 w-4 text-green-400" />;
+      case 'analyst': return <BarChart className="h-4 w-4 text-purple-400" />;
+      case 'read_only': return <Eye className="h-4 w-4 text-neutral-400" />;
+      default: return <Users className="h-4 w-4 text-neutral-400" />;
     }
   };
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'owner': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'admin': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'developer': return 'bg-green-100 text-green-800 border-green-300';
-      case 'analyst': return 'bg-purple-100 text-purple-800 border-purple-300';
-      case 'read_only': return 'bg-gray-100 text-gray-800 border-gray-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'owner': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+      case 'admin': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'developer': return 'bg-green-500/20 text-green-300 border-green-500/30';
+      case 'analyst': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+      case 'read_only': return 'bg-neutral-700 text-neutral-300 border-neutral-600';
+      default: return 'bg-neutral-700 text-neutral-300 border-neutral-600';
     }
   };
 
@@ -208,7 +208,7 @@ export default function TeamRoles() {
     return (
       <ClientLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </ClientLayout>
     );
@@ -220,8 +220,8 @@ export default function TeamRoles() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Team & Roles</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-white">Team & Roles</h1>
+            <p className="text-neutral-400 mt-1">
               Manage team members and their permissions
             </p>
           </div>
@@ -245,26 +245,26 @@ export default function TeamRoles() {
         {showPermissions && <RolePermissionsTable />}
 
         {/* Team Members */}
-        <Card>
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <Card className="bg-neutral-900 border-neutral-800">
+          <div className="p-6 border-b border-neutral-700">
+            <h2 className="text-lg font-semibold text-white">
               Team Members ({members.length})
             </h2>
           </div>
           
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Member</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Joined</TableHead>
-                <TableHead>Last Active</TableHead>
+              <TableRow className="border-neutral-700 hover:bg-neutral-800/50">
+                <TableHead className="text-neutral-300">Member</TableHead>
+                <TableHead className="text-neutral-300">Role</TableHead>
+                <TableHead className="text-neutral-300">Joined</TableHead>
+                <TableHead className="text-neutral-300">Last Active</TableHead>
                 {canManage && <TableHead className="w-12"></TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {members.map((member) => (
-                <TableRow key={member.id}>
+                <TableRow key={member.id} className="border-neutral-700 hover:bg-neutral-800/50">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       {member.avatar_url ? (
@@ -274,13 +274,13 @@ export default function TeamRoles() {
                           className="h-10 w-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          <Users className="h-5 w-5 text-gray-600" />
+                        <div className="h-10 w-10 rounded-full bg-neutral-800 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-neutral-400" />
                         </div>
                       )}
                       <div>
-                        <div className="font-medium text-gray-900">{member.full_name}</div>
-                        <div className="text-sm text-gray-500">{member.email}</div>
+                        <div className="font-medium text-white">{member.full_name}</div>
+                        <div className="text-sm text-neutral-500">{member.email}</div>
                       </div>
                     </div>
                   </TableCell>
@@ -290,10 +290,10 @@ export default function TeamRoles() {
                       <span className="capitalize">{member.role.replace('_', ' ')}</span>
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-neutral-400">
                     {formatDate(member.joined_at)}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-neutral-400">
                     {member.last_active_at ? formatDate(member.last_active_at) : 'Never'}
                   </TableCell>
                   {canManage && (
@@ -324,7 +324,7 @@ export default function TeamRoles() {
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               onClick={() => handleRemoveMember(member.id)}
-                              className="text-red-600"
+                              className="text-red-400"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Remove Member
@@ -337,8 +337,8 @@ export default function TeamRoles() {
                 </TableRow>
               ))}
               {members.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                <TableRow className="border-neutral-700">
+                  <TableCell colSpan={5} className="text-center py-8 text-neutral-500">
                     No team members yet
                   </TableCell>
                 </TableRow>
@@ -349,30 +349,30 @@ export default function TeamRoles() {
 
         {/* Pending Invitations */}
         {invitations.length > 0 && (
-          <Card>
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">
+          <Card className="bg-neutral-900 border-neutral-800">
+            <div className="p-6 border-b border-neutral-700">
+              <h2 className="text-lg font-semibold text-white">
                 Pending Invitations ({invitations.length})
               </h2>
             </div>
             
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Invited By</TableHead>
-                  <TableHead>Expires</TableHead>
+                <TableRow className="border-neutral-700 hover:bg-neutral-800/50">
+                  <TableHead className="text-neutral-300">Email</TableHead>
+                  <TableHead className="text-neutral-300">Role</TableHead>
+                  <TableHead className="text-neutral-300">Invited By</TableHead>
+                  <TableHead className="text-neutral-300">Expires</TableHead>
                   {canManage && <TableHead className="w-12"></TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {invitations.map((invite) => (
-                  <TableRow key={invite.id}>
+                  <TableRow key={invite.id} className="border-neutral-700 hover:bg-neutral-800/50">
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                        <span className="font-medium">{invite.email}</span>
+                        <Mail className="h-4 w-4 text-neutral-500" />
+                        <span className="font-medium text-white">{invite.email}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -380,10 +380,10 @@ export default function TeamRoles() {
                         {invite.role.replace('_', ' ')}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-neutral-400">
                       {invite.invited_by_name}
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-neutral-400">
                       {formatDate(invite.expires_at)}
                     </TableCell>
                     {canManage && (

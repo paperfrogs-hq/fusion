@@ -4,7 +4,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Generate a secure random API key
@@ -74,7 +74,7 @@ exports.handler = async (event) => {
     // Get environment to determine key prefix
     const { data: environment, error: envError } = await supabase
       .from('environments')
-      .select('is_production')
+      .select('name, is_active')
       .eq('id', environmentId)
       .single();
 
@@ -86,8 +86,9 @@ exports.handler = async (event) => {
       };
     }
 
-    // Generate key with appropriate prefix
-    const keyPrefix = environment.is_production ? 'fus_live_' : 'fus_test_';
+    // Generate key with appropriate prefix based on environment name
+    const isProduction = environment.name === 'production';
+    const keyPrefix = isProduction ? 'fus_live_' : 'fus_test_';
     const fullKey = generateAPIKey(keyPrefix);
     const keyHash = hashAPIKey(fullKey);
     
@@ -95,21 +96,27 @@ exports.handler = async (event) => {
     const keySecretPartial = fullKey.slice(-4);
 
     // Create API key record
+    const insertData = {
+      organization_id: organizationId,
+      environment_id: environmentId,
+      key_name: keyName,
+      key_prefix: keyPrefix,
+      key_hash: keyHash,
+      key_secret_partial: keySecretPartial,
+      scopes: scopes,
+      is_active: true,
+      rate_limit_per_minute: 100,
+      rate_limit_per_day: 10000,
+    };
+    
+    // Only add created_by if provided
+    if (createdBy) {
+      insertData.created_by = createdBy;
+    }
+
     const { data: apiKey, error } = await supabase
       .from('api_keys')
-      .insert({
-        organization_id: organizationId,
-        environment_id: environmentId,
-        key_name: keyName,
-        key_prefix: keyPrefix,
-        key_hash: keyHash,
-        key_secret_partial: keySecretPartial,
-        scopes: scopes,
-        created_by: createdBy,
-        is_active: true,
-        rate_limit_per_minute: 100,
-        rate_limit_per_day: 10000,
-      })
+      .insert(insertData)
       .select()
       .single();
 

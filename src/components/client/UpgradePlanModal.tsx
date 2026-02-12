@@ -165,15 +165,15 @@ export default function UpgradePlanModal({
                 )}
 
                 <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                  <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
                   <div className="flex items-baseline justify-center gap-1">
                     {plan.price > 0 ? (
                       <>
-                        <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
-                        <span className="text-gray-600">/month</span>
+                        <span className="text-4xl font-bold text-white">${plan.price}</span>
+                        <span className="text-neutral-400">/month</span>
                       </>
                     ) : (
-                      <span className="text-2xl font-bold text-gray-900">Custom</span>
+                      <span className="text-2xl font-bold text-white">Custom</span>
                     )}
                   </div>
                 </div>
@@ -181,8 +181,8 @@ export default function UpgradePlanModal({
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{feature}</span>
+                      <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-neutral-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -199,8 +199,8 @@ export default function UpgradePlanModal({
           })}
         </div>
 
-        <div className="flex justify-between items-center mt-6 pt-6 border-t">
-          <p className="text-sm text-gray-600">
+        <div className="flex justify-between items-center mt-6 pt-6 border-t border-neutral-800">
+          <p className="text-sm text-neutral-400">
             All plans include SSL encryption, 99.9% uptime, and GDPR compliance
           </p>
           <div className="flex gap-3">

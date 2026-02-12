@@ -109,7 +109,7 @@ export default function CreateAPIKeyModal({
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <CheckCircle2 className="h-5 w-5 text-green-400" />
               API Key Created Successfully
             </DialogTitle>
             <DialogDescription>
@@ -118,10 +118,10 @@ export default function CreateAPIKeyModal({
           </DialogHeader>
 
           <div className="space-y-4 mt-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-md p-4">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-amber-900">
+                <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-amber-300">
                   <strong>Important:</strong> Copy this key now and store it securely. 
                   You won't be able to see the full key again after closing this dialog.
                 </div>
@@ -131,7 +131,7 @@ export default function CreateAPIKeyModal({
             <div className="space-y-2">
               <Label>Your API Key</Label>
               <div className="flex items-center gap-2">
-                <code className="flex-1 text-xs bg-gray-900 text-green-400 px-4 py-3 rounded font-mono break-all">
+                <code className="flex-1 text-xs bg-neutral-900 text-green-400 px-4 py-3 rounded font-mono break-all">
                   {newKey}
                 </code>
                 <Button
@@ -141,7 +141,7 @@ export default function CreateAPIKeyModal({
                   className="flex-shrink-0"
                 >
                   {copied ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
@@ -149,12 +149,12 @@ export default function CreateAPIKeyModal({
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-              <h4 className="font-semibold text-blue-900 text-sm mb-2">Next Steps:</h4>
-              <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-md p-4">
+              <h4 className="font-semibold text-blue-300 text-sm mb-2">Next Steps:</h4>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-blue-200">
                 <li>Store this key in your environment variables</li>
                 <li>Never commit it to version control</li>
-                <li>Use it in your API requests as: <code className="bg-blue-100 px-1 rounded">Authorization: Bearer {'{key}'}</code></li>
+                <li>Use it in your API requests as: <code className="bg-blue-500/20 px-1 rounded">Authorization: Bearer {'{key}'}</code></li>
               </ol>
             </div>
 
@@ -192,14 +192,14 @@ export default function CreateAPIKeyModal({
               onChange={(e) => setKeyName(e.target.value)}
               required
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-neutral-500">
               A descriptive name to help you identify this key
             </p>
           </div>
 
           <div className="space-y-2">
             <Label>Scopes (Permissions)</Label>
-            <div className="space-y-3 border border-gray-200 rounded-md p-3">
+            <div className="space-y-3 border border-neutral-800 rounded-md p-3">
               {availableScopes.map((scope) => (
                 <div key={scope.id} className="flex items-start gap-3">
                   <Checkbox
@@ -214,20 +214,20 @@ export default function CreateAPIKeyModal({
                     >
                       {scope.label}
                     </label>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-xs text-neutral-500 mt-0.5">
                       {scope.description}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-neutral-500">
               Select the minimum permissions needed for your use case
             </p>
           </div>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-md p-3 text-sm text-gray-700">
-            <strong>Rate Limits:</strong> Default limits are 100 requests/min and 10,000 requests/day. 
+          <div className="bg-neutral-800 border border-neutral-700 rounded-md p-3 text-sm text-neutral-300">
+            <strong className="text-white">Rate Limits:</strong> Default limits are 100 requests/min and 10,000 requests/day. 
             Contact support for higher limits.
           </div>
 

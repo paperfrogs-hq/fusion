@@ -76,20 +76,20 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
 
   const getResultIcon = (result: string) => {
     if (result === 'authentic') {
-      return <CheckCircle2 className="h-6 w-6 text-green-600" />;
+      return <CheckCircle2 className="h-6 w-6 text-green-400" />;
     }
     if (result === 'tampered') {
-      return <AlertTriangle className="h-6 w-6 text-red-600" />;
+      return <AlertTriangle className="h-6 w-6 text-red-400" />;
     }
-    return <XCircle className="h-6 w-6 text-gray-400" />;
+    return <XCircle className="h-6 w-6 text-neutral-500" />;
   };
 
   const getResultBadge = (result: string) => {
     if (result === 'authentic') {
-      return <Badge className="bg-green-100 text-green-800 border-green-300">Authentic</Badge>;
+      return <Badge className="bg-green-500/20 text-green-300 border-green-500/30">Authentic</Badge>;
     }
     if (result === 'tampered') {
-      return <Badge className="bg-red-100 text-red-800 border-red-300">Tampered</Badge>;
+      return <Badge className="bg-red-500/20 text-red-300 border-red-500/30">Tampered</Badge>;
     }
     return <Badge variant="outline">Failed</Badge>;
   };
@@ -112,7 +112,7 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
       <Dialog open={true} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-2xl">
           <div className="flex items-center justify-center h-48">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         </DialogContent>
       </Dialog>
@@ -124,7 +124,7 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
       <Dialog open={true} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-2xl">
           <div className="text-center py-12">
-            <p className="text-gray-500">Verification not found</p>
+            <p className="text-neutral-400">Verification not found</p>
           </div>
         </DialogContent>
       </Dialog>
@@ -143,25 +143,25 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
 
         <div className="space-y-6 mt-4">
           {/* Result Summary */}
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-neutral-800 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-gray-900">Result</h3>
+              <h3 className="font-semibold text-white">Result</h3>
               {getResultBadge(detail.result)}
             </div>
             {detail.confidence_score !== undefined && (
               <div>
                 <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-gray-600">Confidence Score</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-neutral-400">Confidence Score</span>
+                  <span className="font-semibold text-white">
                     {Math.round(detail.confidence_score)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-neutral-700 rounded-full h-2">
                   <div 
                     className={`h-2 rounded-full ${
-                      detail.confidence_score >= 90 ? 'bg-green-600' :
-                      detail.confidence_score >= 70 ? 'bg-yellow-600' :
-                      'bg-red-600'
+                      detail.confidence_score >= 90 ? 'bg-green-500' :
+                      detail.confidence_score >= 70 ? 'bg-yellow-500' :
+                      'bg-red-500'
                     }`}
                     style={{ width: `${detail.confidence_score}%` }}
                   />
@@ -172,15 +172,15 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
 
           {/* Tamper Indicators */}
           {detail.tamper_indicators && detail.tamper_indicators.length > 0 && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <h3 className="font-semibold text-red-900 mb-3 flex items-center gap-2">
+            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+              <h3 className="font-semibold text-red-300 mb-3 flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4" />
                 Detected Issues
               </h3>
               <ul className="space-y-2">
                 {detail.tamper_indicators.map((indicator, idx) => (
-                  <li key={idx} className="text-sm text-red-800 flex items-start gap-2">
-                    <span className="text-red-600 font-bold">•</span>
+                  <li key={idx} className="text-sm text-red-200 flex items-start gap-2">
+                    <span className="text-red-400 font-bold">•</span>
                     {indicator}
                   </li>
                 ))}
@@ -190,41 +190,41 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
 
           {/* File Information */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
               <FileAudio className="h-4 w-4" />
               File Information
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600 mb-1">File Name</p>
-                <p className="text-sm text-gray-900 font-medium truncate">
+                <p className="text-sm text-neutral-400 mb-1">File Name</p>
+                <p className="text-sm text-white font-medium truncate">
                   {detail.file_name}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">File Size</p>
-                <p className="text-sm text-gray-900 font-medium">
+                <p className="text-sm text-neutral-400 mb-1">File Size</p>
+                <p className="text-sm text-white font-medium">
                   {formatFileSize(detail.file_size)}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">File Type</p>
-                <p className="text-sm text-gray-900 font-medium">
+                <p className="text-sm text-neutral-400 mb-1">File Type</p>
+                <p className="text-sm text-white font-medium">
                   {detail.file_type}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Processing Time</p>
-                <p className="text-sm text-gray-900 font-medium">
+                <p className="text-sm text-neutral-400 mb-1">Processing Time</p>
+                <p className="text-sm text-white font-medium">
                   {detail.processing_time_ms}ms
                 </p>
               </div>
             </div>
 
             <div className="mt-4">
-              <p className="text-sm text-gray-600 mb-1">File Hash (SHA-256)</p>
+              <p className="text-sm text-neutral-400 mb-1">File Hash (SHA-256)</p>
               <div className="flex items-center gap-2">
-                <code className="text-xs bg-gray-100 px-3 py-2 rounded flex-1 break-all">
+                <code className="text-xs bg-neutral-800 px-3 py-2 rounded flex-1 break-all text-green-400">
                   {detail.file_hash}
                 </code>
                 <Button
@@ -233,7 +233,7 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
                   onClick={() => handleCopy(detail.file_hash, 'hash')}
                 >
                   {copied === 'hash' ? (
-                    <Check className="h-4 w-4 text-green-600" />
+                    <Check className="h-4 w-4 text-green-400" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
@@ -245,36 +245,36 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
           {/* Audio Metadata */}
           {detail.metadata && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">Audio Properties</h3>
+              <h3 className="font-semibold text-white mb-3">Audio Properties</h3>
               <div className="grid grid-cols-2 gap-4">
                 {detail.metadata.duration_seconds !== undefined && (
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Duration</p>
-                    <p className="text-sm text-gray-900 font-medium">
+                    <p className="text-sm text-neutral-400 mb-1">Duration</p>
+                    <p className="text-sm text-white font-medium">
                       {formatDuration(detail.metadata.duration_seconds)}
                     </p>
                   </div>
                 )}
                 {detail.metadata.sample_rate && (
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Sample Rate</p>
-                    <p className="text-sm text-gray-900 font-medium">
+                    <p className="text-sm text-neutral-400 mb-1">Sample Rate</p>
+                    <p className="text-sm text-white font-medium">
                       {detail.metadata.sample_rate} Hz
                     </p>
                   </div>
                 )}
                 {detail.metadata.channels && (
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Channels</p>
-                    <p className="text-sm text-gray-900 font-medium">
+                    <p className="text-sm text-neutral-400 mb-1">Channels</p>
+                    <p className="text-sm text-white font-medium">
                       {detail.metadata.channels === 1 ? 'Mono' : detail.metadata.channels === 2 ? 'Stereo' : `${detail.metadata.channels} channels`}
                     </p>
                   </div>
                 )}
                 {detail.metadata.codec && (
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Codec</p>
-                    <p className="text-sm text-gray-900 font-medium">
+                    <p className="text-sm text-neutral-400 mb-1">Codec</p>
+                    <p className="text-sm text-white font-medium">
                       {detail.metadata.codec}
                     </p>
                   </div>
@@ -285,30 +285,30 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
 
           {/* Verification Details */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">Verification Details</h3>
+            <h3 className="font-semibold text-white mb-3">Verification Details</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                <p className="text-sm text-neutral-400 mb-1 flex items-center gap-1">
                   <Key className="h-3 w-3" />
                   API Key
                 </p>
-                <p className="text-sm text-gray-900 font-medium">
+                <p className="text-sm text-white font-medium">
                   {detail.api_key_name}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                <p className="text-sm text-neutral-400 mb-1 flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   Verified At
                 </p>
-                <p className="text-sm text-gray-900 font-medium">
+                <p className="text-sm text-white font-medium">
                   {new Date(detail.created_at).toLocaleString()}
                 </p>
               </div>
               {detail.verification_method && (
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Method</p>
-                  <p className="text-sm text-gray-900 font-medium">
+                  <p className="text-sm text-neutral-400 mb-1">Method</p>
+                  <p className="text-sm text-white font-medium">
                     {detail.verification_method}
                   </p>
                 </div>
@@ -316,9 +316,9 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
             </div>
 
             <div className="mt-4">
-              <p className="text-sm text-gray-600 mb-1">Request ID</p>
+              <p className="text-sm text-neutral-400 mb-1">Request ID</p>
               <div className="flex items-center gap-2">
-                <code className="text-xs bg-gray-100 px-3 py-2 rounded flex-1">
+                <code className="text-xs bg-neutral-800 px-3 py-2 rounded flex-1 text-green-400">
                   {detail.request_id}
                 </code>
                 <Button
@@ -327,7 +327,7 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
                   onClick={() => handleCopy(detail.request_id, 'request')}
                 >
                   {copied === 'request' ? (
-                    <Check className="h-4 w-4 text-green-600" />
+                    <Check className="h-4 w-4 text-green-400" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
@@ -337,7 +337,7 @@ export default function VerificationDetailModal({ verificationId, onClose }: Ver
           </div>
         </div>
 
-        <div className="flex justify-end mt-6 pt-6 border-t">
+        <div className="flex justify-end mt-6 pt-6 border-t border-neutral-800">
           <Button onClick={onClose}>Close</Button>
         </div>
       </DialogContent>

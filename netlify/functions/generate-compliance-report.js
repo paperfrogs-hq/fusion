@@ -3,7 +3,7 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Simple HTML to PDF conversion (in production, use a proper library like puppeteer or pdfkit)
@@ -240,7 +240,7 @@ exports.handler = async (event) => {
 
     // Get organization and environment details
     const { data: org } = await supabase
-      .from('client_organizations')
+      .from('organizations')
       .select('name')
       .eq('id', organizationId)
       .single();

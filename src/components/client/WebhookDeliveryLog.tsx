@@ -65,20 +65,20 @@ export default function WebhookDeliveryLog({ webhookId, onClose }: WebhookDelive
 
   const getStatusIcon = (status: number) => {
     if (status >= 200 && status < 300) {
-      return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+      return <CheckCircle2 className="h-4 w-4 text-green-400" />;
     }
-    return <XCircle className="h-4 w-4 text-red-600" />;
+    return <XCircle className="h-4 w-4 text-red-400" />;
   };
 
   const getStatusBadge = (status: number) => {
     if (status >= 200 && status < 300) {
-      return <Badge className="bg-green-100 text-green-800 border-green-300">Success</Badge>;
+      return <Badge className="bg-green-500/20 text-green-300 border-green-500/30">Success</Badge>;
     }
     if (status >= 400 && status < 500) {
-      return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Client Error</Badge>;
+      return <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30">Client Error</Badge>;
     }
     if (status >= 500) {
-      return <Badge className="bg-red-100 text-red-800 border-red-300">Server Error</Badge>;
+      return <Badge className="bg-red-500/20 text-red-300 border-red-500/30">Server Error</Badge>;
     }
     return <Badge variant="outline">Unknown</Badge>;
   };
@@ -113,12 +113,12 @@ export default function WebhookDeliveryLog({ webhookId, onClose }: WebhookDelive
         <div className="flex-1 overflow-auto">
           {loading ? (
             <div className="flex items-center justify-center h-48">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
           ) : deliveries.length === 0 ? (
             <div className="text-center py-12">
-              <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">No deliveries yet</p>
+              <Clock className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
+              <p className="text-neutral-400">No deliveries yet</p>
             </div>
           ) : (
             <Table>
@@ -135,7 +135,7 @@ export default function WebhookDeliveryLog({ webhookId, onClose }: WebhookDelive
                 {deliveries.map((delivery) => (
                   <TableRow key={delivery.id}>
                     <TableCell>
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                      <code className="text-xs bg-neutral-800 px-2 py-1 rounded text-green-400">
                         {delivery.event_type}
                       </code>
                     </TableCell>
@@ -143,12 +143,12 @@ export default function WebhookDeliveryLog({ webhookId, onClose }: WebhookDelive
                       <div className="flex items-center gap-2">
                         {getStatusIcon(delivery.response_status)}
                         {getStatusBadge(delivery.response_status)}
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-neutral-400">
                           {delivery.response_status}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-neutral-400">
                       {delivery.response_time_ms}ms
                     </TableCell>
                     <TableCell>
@@ -156,12 +156,12 @@ export default function WebhookDeliveryLog({ webhookId, onClose }: WebhookDelive
                         Attempt {delivery.attempt_number}
                       </Badge>
                       {delivery.next_retry_at && (
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-neutral-500 mt-1">
                           Retry: {formatDate(delivery.next_retry_at)}
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-neutral-400">
                       {formatDate(delivery.delivered_at)}
                     </TableCell>
                   </TableRow>
@@ -171,8 +171,8 @@ export default function WebhookDeliveryLog({ webhookId, onClose }: WebhookDelive
           )}
         </div>
 
-        <div className="border-t pt-4 flex justify-between items-center">
-          <p className="text-sm text-gray-600">
+        <div className="border-t border-neutral-800 pt-4 flex justify-between items-center">
+          <p className="text-sm text-neutral-400">
             Showing last 50 deliveries
           </p>
           <Button onClick={onClose}>Close</Button>

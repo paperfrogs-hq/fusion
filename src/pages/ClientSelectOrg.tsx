@@ -47,33 +47,33 @@ export default function ClientSelectOrg() {
       case 'enterprise': return 'bg-purple-600 text-white';
       case 'professional': return 'bg-blue-600 text-white';
       case 'starter': return 'bg-green-600 text-white';
-      default: return 'bg-gray-600 text-white';
+      default: return 'bg-neutral-600 text-white';
     }
   };
 
   const getRoleIcon = (role?: string) => {
-    if (role === 'owner') return <Crown className="h-4 w-4 text-yellow-500" />;
-    return <Users className="h-4 w-4 text-gray-400" />;
+    if (role === 'owner') return <Crown className="h-4 w-4 text-yellow-400" />;
+    return <Users className="h-4 w-4 text-neutral-400" />;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-neutral-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <Building2 className="h-12 w-12 text-gray-900 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <Building2 className="h-12 w-12 text-white mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-white mb-2">
             Select Organization
           </h1>
-          <p className="text-gray-600">
+          <p className="text-neutral-400">
             Welcome back, {user?.full_name}. Choose an organization to continue.
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function ClientSelectOrg() {
           {organizations.map((org) => (
             <Card 
               key={org.id} 
-              className="p-6 hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-gray-300"
+              className="p-6 bg-neutral-900 border-neutral-800 hover:border-neutral-600 transition-all cursor-pointer"
               onClick={() => handleSelectOrg(org)}
             >
               <div className="flex items-start justify-between">
@@ -96,18 +96,18 @@ export default function ClientSelectOrg() {
                         className="h-10 w-10 rounded object-cover"
                       />
                     ) : (
-                      <div className="h-10 w-10 rounded bg-gray-200 flex items-center justify-center">
-                        <Building2 className="h-6 w-6 text-gray-600" />
+                      <div className="h-10 w-10 rounded bg-neutral-800 flex items-center justify-center">
+                        <Building2 className="h-6 w-6 text-neutral-400" />
                       </div>
                     )}
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-xl font-semibold text-gray-900">
+                        <h3 className="text-xl font-semibold text-white">
                           {org.name}
                         </h3>
                         {getRoleIcon(org.role)}
                       </div>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-neutral-500">
                         @{org.slug}
                       </p>
                     </div>

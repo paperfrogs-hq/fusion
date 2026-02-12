@@ -34,21 +34,21 @@ export default class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full p-8">
+        <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full p-8 bg-neutral-900 border-neutral-800">
             <div className="text-center">
-              <div className="rounded-full bg-red-100 p-4 inline-flex mb-4">
-                <AlertTriangle className="h-12 w-12 text-red-600" />
+              <div className="rounded-full bg-red-500/20 p-4 inline-flex mb-4">
+                <AlertTriangle className="h-12 w-12 text-red-400" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-white mb-2">
                 Something went wrong
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-neutral-400 mb-6">
                 We encountered an unexpected error. Please try refreshing the page.
               </p>
               {this.state.error && (
-                <div className="bg-gray-100 rounded-lg p-4 mb-6 text-left">
-                  <p className="text-xs font-mono text-gray-700 break-all">
+                <div className="bg-neutral-800 rounded-lg p-4 mb-6 text-left">
+                  <p className="text-xs font-mono text-red-300 break-all">
                     {this.state.error.message}
                   </p>
                 </div>

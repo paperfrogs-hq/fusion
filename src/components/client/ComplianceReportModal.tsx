@@ -135,7 +135,7 @@ export default function ComplianceReportModal({
           </div>
 
           {/* Report Options */}
-          <div className="space-y-3 border border-gray-200 rounded-lg p-4">
+          <div className="space-y-3 border border-neutral-800 rounded-lg p-4">
             <Label className="text-sm font-semibold">Report Contents</Label>
             
             <div className="flex items-start gap-3">
@@ -151,7 +151,7 @@ export default function ComplianceReportModal({
                 >
                   Detailed Verification Logs
                 </label>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-neutral-500 mt-0.5">
                   Complete list of all verifications with timestamps and results
                 </p>
               </div>
@@ -170,7 +170,7 @@ export default function ComplianceReportModal({
                 >
                   Tamper Detection Analysis
                 </label>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-neutral-500 mt-0.5">
                   Detailed breakdown of detected tampering incidents
                 </p>
               </div>
@@ -189,7 +189,7 @@ export default function ComplianceReportModal({
                 >
                   Technical Metadata
                 </label>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-neutral-500 mt-0.5">
                   Audio file properties, processing times, and system information
                 </p>
               </div>
@@ -197,12 +197,12 @@ export default function ComplianceReportModal({
           </div>
 
           {/* Report Preview Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-900">
+              <CheckCircle2 className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-blue-300">
                 <p className="font-medium mb-1">Report includes:</p>
-                <ul className="space-y-1 text-blue-800">
+                <ul className="space-y-1 text-blue-200">
                   <li>• Executive summary with key metrics</li>
                   <li>• Verification statistics and trends</li>
                   <li>• Success rate and confidence analysis</li>

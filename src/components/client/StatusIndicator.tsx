@@ -15,33 +15,33 @@ interface StatusIndicatorProps {
 
 const statusConfig = {
   active: {
-    color: 'bg-green-100 text-green-800 border-green-300',
-    dotColor: 'text-green-600',
+    color: 'bg-green-500/20 text-green-300 border-green-500/30',
+    dotColor: 'text-green-400',
     label: 'Active',
   },
   success: {
-    color: 'bg-green-100 text-green-800 border-green-300',
-    dotColor: 'text-green-600',
+    color: 'bg-green-500/20 text-green-300 border-green-500/30',
+    dotColor: 'text-green-400',
     label: 'Success',
   },
   inactive: {
-    color: 'bg-gray-100 text-gray-800 border-gray-300',
-    dotColor: 'text-gray-600',
+    color: 'bg-neutral-500/20 text-neutral-300 border-neutral-500/30',
+    dotColor: 'text-neutral-400',
     label: 'Inactive',
   },
   pending: {
-    color: 'bg-blue-100 text-blue-800 border-blue-300',
-    dotColor: 'text-blue-600',
+    color: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    dotColor: 'text-blue-400',
     label: 'Pending',
   },
   warning: {
-    color: 'bg-amber-100 text-amber-800 border-amber-300',
-    dotColor: 'text-amber-600',
+    color: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+    dotColor: 'text-amber-400',
     label: 'Warning',
   },
   error: {
-    color: 'bg-red-100 text-red-800 border-red-300',
-    dotColor: 'text-red-600',
+    color: 'bg-red-500/20 text-red-300 border-red-500/30',
+    dotColor: 'text-red-400',
     label: 'Error',
   },
 };

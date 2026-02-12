@@ -62,7 +62,7 @@ export default function AnalyticsChart({
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center" style={{ height }}>
-        <p className="text-gray-500">No data available</p>
+        <p className="text-neutral-500">No data available</p>
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function AnalyticsChart({
               className="w-3 h-3 rounded-full" 
               style={{ backgroundColor: line.color }}
             />
-            <span className="text-sm text-gray-600">{line.name}</span>
+            <span className="text-sm text-neutral-400">{line.name}</span>
           </div>
         ))}
         {type === 'bar' && bars.map(bar => (
@@ -86,7 +86,7 @@ export default function AnalyticsChart({
               className="w-3 h-3 rounded" 
               style={{ backgroundColor: bar.color }}
             />
-            <span className="text-sm text-gray-600">{bar.name}</span>
+            <span className="text-sm text-neutral-400">{bar.name}</span>
           </div>
         ))}
       </div>
@@ -94,7 +94,7 @@ export default function AnalyticsChart({
       {/* Chart */}
       <div className="relative" style={{ height }}>
         {/* Y-axis */}
-        <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-gray-500 w-12">
+        <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-neutral-500 w-12">
           {yAxisTicks.reverse().map((tick, idx) => (
             <div key={idx} className="text-right pr-2">
               {tick}
@@ -103,12 +103,12 @@ export default function AnalyticsChart({
         </div>
 
         {/* Chart area */}
-        <div className="absolute left-14 right-0 top-0 bottom-8 border-l border-b border-gray-200">
+        <div className="absolute left-14 right-0 top-0 bottom-8 border-l border-b border-neutral-700">
           {/* Horizontal grid lines */}
           {yAxisTicks.map((_, idx) => (
             <div 
               key={idx}
-              className="absolute left-0 right-0 border-t border-gray-100"
+              className="absolute left-0 right-0 border-t border-neutral-800"
               style={{ top: `${(idx / (yAxisTicks.length - 1)) * 100}%` }}
             />
           ))}
@@ -212,7 +212,7 @@ export default function AnalyticsChart({
             return (
               <div 
                 key={idx}
-                className="text-xs text-gray-500 text-center"
+                className="text-xs text-neutral-500 text-center"
                 style={{ 
                   width: `${100 / data.length}%`,
                   marginLeft: `${(idx / data.length) * 100}%`,
