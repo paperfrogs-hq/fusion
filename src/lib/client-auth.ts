@@ -5,11 +5,14 @@ export interface ClientUser {
   id: string;
   email: string;
   full_name: string;
+  phone?: string;
+  company?: string;
   email_verified: boolean;
   totp_enabled: boolean;
   account_status: string;
   avatar_url?: string;
   timezone?: string;
+  created_at?: string;
   notification_preferences?: {
     security_alerts: boolean;
     webhook_failures: boolean;
