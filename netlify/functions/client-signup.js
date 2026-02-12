@@ -81,7 +81,7 @@ exports.handler = async (event) => {
         name: organizationName,
         slug: orgSlug,
         organization_type: 'business',
-        account_status: 'active',
+        account_status: 'pending_approval',
         plan_type: 'free',
         billing_status: 'trial',
         trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days
@@ -110,7 +110,7 @@ exports.handler = async (event) => {
         password_hash: passwordHash,
         email_verified: false,
         email_verification_token: verificationToken,
-        account_status: 'pending_verification',
+        account_status: 'pending_approval',
         accepted_terms_version: 'v1.0',
         accepted_terms_at: new Date().toISOString()
       }])
@@ -176,8 +176,7 @@ exports.handler = async (event) => {
         success: true,
         userId: user.id,
         organizationId: organization.id,
-        verificationToken, // Remove this in production
-        message: 'Account created successfully. Please check your email to verify your account.'
+        message: 'Your business account application has been submitted. We will review your application and notify you once approved.'
       })
     };
 

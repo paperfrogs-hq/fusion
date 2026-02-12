@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Building2, CheckCircle2 } from 'lucide-react';
+import { Loader2, Building2, Clock } from 'lucide-react';
 
 export default function ClientSignup() {
   const navigate = useNavigate();
@@ -50,9 +50,6 @@ export default function ClientSignup() {
       }
 
       setSuccess(true);
-      setTimeout(() => {
-        navigate('/client/login');
-      }, 3000);
     } catch (err: any) {
       console.error('Signup error:', err);
       if (err.message === 'Failed to fetch') {
@@ -68,14 +65,27 @@ export default function ClientSignup() {
   if (success) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-green-500/20">
+        <Card className="w-full max-w-md border-primary/20">
           <CardHeader className="text-center">
-            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <CardTitle className="text-2xl">Account Created!</CardTitle>
-            <CardDescription>
-              Your account has been successfully created. Please check your email to verify your account.
+            <Clock className="w-16 h-16 text-primary mx-auto mb-4" />
+            <CardTitle className="text-2xl">Application Submitted!</CardTitle>
+            <CardDescription className="text-base mt-4">
+              Thank you for applying for a Fusion business account.
             </CardDescription>
           </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <div className="bg-muted rounded-lg p-4">
+              <p className="text-sm text-muted-foreground">
+                Our team will review your application and get back to you within <strong>1-2 business days</strong>.
+              </p>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              You will receive an email notification once your account is approved and ready to use.
+            </p>
+            <Button variant="outline" className="w-full" onClick={() => navigate('/')}>
+              Return to Homepage
+            </Button>
+          </CardContent>
         </Card>
       </div>
     );

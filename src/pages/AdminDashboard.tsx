@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, Key, FileAudio, Users, AlertTriangle, BarChart3, 
-  Settings, LogOut, Menu, X, Database, Lock, Activity, FileText, Music
+  Settings, LogOut, Menu, X, Database, Lock, Activity, FileText, Music, Building2
 } from "lucide-react";
 import { getSession, clearSession, hasPermission } from "@/lib/admin-auth";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ import WaitlistModule from "@/components/admin/WaitlistModule";
 import UserAudioManagementModule from "@/components/admin/UserAudioManagementModule";
 import UserManagementModule from "@/components/admin/UserManagementModule";
 import SecurityMonitoringModule from "@/components/admin/SecurityMonitoringModule";
+import BusinessApprovalModule from "@/components/admin/BusinessApprovalModule";
 
 type Module = 
   | "overview"
@@ -35,6 +36,7 @@ type Module =
   | "user-audio"
   | "users"
   | "clients"
+  | "business-approvals"
   | "incidents"
   | "security"
   | "analytics"
@@ -78,6 +80,7 @@ const AdminDashboard = () => {
     { id: "user-audio", label: "User Audio Files", icon: Music, permission: "read_analytics" },
     { id: "users", label: "User Management", icon: Users, permission: "client_management" },
     { id: "clients", label: "Clients", icon: Users, permission: "client_management" },
+    { id: "business-approvals", label: "Business Approvals", icon: Building2, permission: "client_management" },
     { id: "verification-policy", label: "Verification Policy", icon: Shield, permission: "verification_control" },
     { id: "security", label: "Security Monitor", icon: Shield, permission: "security_incidents" },
     { id: "incidents", label: "Incidents", icon: AlertTriangle, permission: "security_incidents" },
@@ -107,6 +110,8 @@ const AdminDashboard = () => {
         return <UserManagementModule />;
       case "clients":
         return <ClientManagementModule />;
+      case "business-approvals":
+        return <BusinessApprovalModule />;
       case "incidents":
         return <IncidentMonitoringModule />;
       case "security":
