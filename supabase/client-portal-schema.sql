@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS public.client_users (
   email TEXT NOT NULL UNIQUE,
   full_name TEXT NOT NULL,
   password_hash TEXT NOT NULL, -- bcrypt
+  phone TEXT,
+  company TEXT,
   email_verified BOOLEAN DEFAULT false,
   email_verification_token TEXT,
   totp_secret TEXT, -- For 2FA
@@ -54,6 +56,7 @@ CREATE TABLE IF NOT EXISTS public.client_users (
   accepted_terms_version TEXT,
   accepted_terms_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ,
   suspended_at TIMESTAMPTZ
 );
 
@@ -192,6 +195,19 @@ CREATE TABLE IF NOT EXISTS public.audit_reports (
   generated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Notifications (user notifications for portal)
+CREATE TABLE IF NOT EXISTS public.notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.client_users(id) ON DELETE CASCADE,
+  organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE,
+  type TEXT NOT NULL DEFAULT 'info', -- info, success, warning, error
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  read BOOLEAN DEFAULT false,
+  action_url TEXT, -- Optional link to relevant page
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Webhooks (per environment)
 CREATE TABLE IF NOT EXISTS public.client_webhooks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -273,6 +289,7 @@ ALTER TABLE public.client_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.login_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.verification_activity ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.client_webhooks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.webhook_deliveries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.usage_metrics ENABLE ROW LEVEL SECURITY;
@@ -309,6 +326,9 @@ CREATE POLICY "Allow anon manage verification_activity" ON public.verification_a
 DROP POLICY IF EXISTS "Allow anon manage audit_reports" ON public.audit_reports;
 CREATE POLICY "Allow anon manage audit_reports" ON public.audit_reports FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow anon manage notifications" ON public.notifications;
+CREATE POLICY "Allow anon manage notifications" ON public.notifications FOR ALL USING (true) WITH CHECK (true);
+
 DROP POLICY IF EXISTS "Allow anon manage client_webhooks" ON public.client_webhooks;
 CREATE POLICY "Allow anon manage client_webhooks" ON public.client_webhooks FOR ALL USING (true) WITH CHECK (true);
 
@@ -325,22 +345,24 @@ CREATE POLICY "Allow anon manage invoices" ON public.invoices FOR ALL USING (tru
 -- INDEXES FOR PERFORMANCE
 -- ============================================
 
-CREATE INDEX idx_organizations_slug ON public.organizations(slug);
-CREATE INDEX idx_client_users_email ON public.client_users(email);
-CREATE INDEX idx_organization_members_org_id ON public.organization_members(organization_id);
-CREATE INDEX idx_organization_members_user_id ON public.organization_members(user_id);
-CREATE INDEX idx_client_sessions_user_id ON public.client_sessions(user_id);
-CREATE INDEX idx_client_sessions_token ON public.client_sessions(session_token);
-CREATE INDEX idx_login_history_user_id ON public.login_history(user_id, created_at DESC);
-CREATE INDEX idx_environments_org_id ON public.environments(organization_id);
-CREATE INDEX idx_api_keys_org_id ON public.api_keys(organization_id);
-CREATE INDEX idx_api_keys_env_id ON public.api_keys(environment_id);
-CREATE INDEX idx_api_keys_key_hash ON public.api_keys(key_hash);
-CREATE INDEX idx_verification_activity_org_id ON public.verification_activity(organization_id, created_at DESC);
-CREATE INDEX idx_verification_activity_env_id ON public.verification_activity(environment_id);
-CREATE INDEX idx_client_webhooks_org_id ON public.client_webhooks(organization_id);
-CREATE INDEX idx_webhook_deliveries_webhook_id ON public.webhook_deliveries(webhook_id, delivered_at DESC);
-CREATE INDEX idx_usage_metrics_org_date ON public.usage_metrics(organization_id, metric_date DESC);
+CREATE INDEX IF NOT EXISTS idx_organizations_slug ON public.organizations(slug);
+CREATE INDEX IF NOT EXISTS idx_client_users_email ON public.client_users(email);
+CREATE INDEX IF NOT EXISTS idx_organization_members_org_id ON public.organization_members(organization_id);
+CREATE INDEX IF NOT EXISTS idx_organization_members_user_id ON public.organization_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_client_sessions_user_id ON public.client_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_client_sessions_token ON public.client_sessions(session_token);
+CREATE INDEX IF NOT EXISTS idx_login_history_user_id ON public.login_history(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_environments_org_id ON public.environments(organization_id);
+CREATE INDEX IF NOT EXISTS idx_api_keys_org_id ON public.api_keys(organization_id);
+CREATE INDEX IF NOT EXISTS idx_api_keys_env_id ON public.api_keys(environment_id);
+CREATE INDEX IF NOT EXISTS idx_api_keys_key_hash ON public.api_keys(key_hash);
+CREATE INDEX IF NOT EXISTS idx_verification_activity_org_id ON public.verification_activity(organization_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_verification_activity_env_id ON public.verification_activity(environment_id);
+CREATE INDEX IF NOT EXISTS idx_client_webhooks_org_id ON public.client_webhooks(organization_id);
+CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_webhook_id ON public.webhook_deliveries(webhook_id, delivered_at DESC);
+CREATE INDEX IF NOT EXISTS idx_usage_metrics_org_date ON public.usage_metrics(organization_id, metric_date DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON public.notifications(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_read ON public.notifications(user_id, read);
 
 -- ============================================
 -- FUNCTIONS FOR AUTOMATED TASKS

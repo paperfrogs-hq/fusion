@@ -314,7 +314,7 @@ const ClientManagementModule = () => {
                           {org.account_status.replace(/_/g, " ")}
                         </Badge>
                         <Badge variant="outline" className="bg-neutral-700/50 text-neutral-300 border-neutral-600">
-                          {org.plan_type || "free"}
+                          {org.plan_type || "trial"}
                         </Badge>
                       </div>
                     </div>

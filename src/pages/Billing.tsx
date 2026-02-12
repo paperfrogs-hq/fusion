@@ -128,12 +128,12 @@ export default function Billing() {
 
   const getPlanBadge = (planType: string) => {
     const badges = {
-      free: <Badge variant="outline">Free</Badge>,
+      trial: <Badge variant="outline">14-Day Trial</Badge>,
       starter: <Badge className="bg-green-500/20 text-green-300 border-green-500/30">Starter</Badge>,
       professional: <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">Professional</Badge>,
       enterprise: <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">Enterprise</Badge>,
     };
-    return badges[planType] || badges.free;
+    return badges[planType] || badges.trial;
   };
 
   const getStatusBadge = (status: string) => {

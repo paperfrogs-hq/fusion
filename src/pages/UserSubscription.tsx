@@ -152,7 +152,7 @@ export default function UserSubscription() {
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="text-3xl font-bold text-foreground mb-4">No Active Subscription</h1>
           <p className="text-muted-foreground mb-8">
-            You're currently on the free plan. Upgrade to unlock more features.
+            Your trial has ended. Upgrade to unlock more features.
           </p>
           <Button
             onClick={() => window.location.href = '/user/pricing'}
