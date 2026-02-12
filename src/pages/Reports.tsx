@@ -127,9 +127,21 @@ export default function Reports() {
       });
 
       if (response.ok) {
-        toast.success('Report generated successfully');
+        // Get the HTML content and trigger download
+        const htmlContent = await response.text();
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `compliance-report-${new Date().toISOString().split('T')[0]}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        toast.success('Report downloaded successfully');
       } else {
-        toast.error('Failed to generate report');
+        const error = await response.json();
+        toast.error(error.error || 'Failed to generate report');
       }
     } catch (error) {
       console.error('Report generation error:', error);

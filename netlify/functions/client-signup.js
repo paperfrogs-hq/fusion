@@ -26,9 +26,11 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { email, fullName, organizationName, password, acceptedTerms } = JSON.parse(event.body);
+    const { email, fullName, organizationName, companyName, password, acceptedTerms, fromWaitlist } = JSON.parse(event.body);
 
-    if (!email || !fullName || !organizationName || !password) {
+    const orgName = organizationName || companyName;
+
+    if (!email || !fullName || !orgName || !password) {
       return {
         statusCode: 400,
         headers,
@@ -44,7 +46,8 @@ exports.handler = async (event) => {
       };
     }
 
-    if (!acceptedTerms) {
+    // Waitlist users already agreed to terms when joining waitlist
+    if (!acceptedTerms && !fromWaitlist) {
       return {
         statusCode: 400,
         headers,
@@ -78,14 +81,14 @@ exports.handler = async (event) => {
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
     // Create organization
-    const orgSlug = organizationName.toLowerCase()
+    const orgSlug = orgName.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '') + '-' + crypto.randomBytes(4).toString('hex');
 
     const { data: organization, error: orgError } = await supabase
       .from('organizations')
       .insert([{
-        name: organizationName,
+        name: orgName,
         slug: orgSlug,
         organization_type: 'business',
         account_status: 'pending_approval',

@@ -1,8 +1,38 @@
-const { createClient } = require("@supabase/supabase-js");
+const crypto = require("crypto");
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+// Verify signed invite token
+function verifySignedToken(token) {
+  try {
+    const secret = process.env.INVITE_SECRET || supabaseServiceKey.slice(0, 32);
+    const decoded = Buffer.from(token, 'base64url').toString();
+    const parts = decoded.split('|');
+    
+    if (parts.length !== 4) {
+      return { valid: false, error: 'Invalid token format' };
+    }
+    
+    const [email, signupType, expiresAt, signature] = parts;
+    
+    // Verify signature
+    const payload = `${email}|${signupType}|${expiresAt}`;
+    const expectedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex').slice(0, 16);
+    
+    if (signature !== expectedSignature) {
+      return { valid: false, error: 'Invalid token signature' };
+    }
+    
+    // Check expiry
+    if (Date.now() > parseInt(expiresAt)) {
+      return { valid: false, error: 'This invitation has expired. Please contact support for a new invitation.' };
+    }
+    
+    return { valid: true, email, signupType };
+  } catch (err) {
+    return { valid: false, error: 'Invalid token' };
+  }
+}
 
 exports.handler = async (event) => {
   const headers = {
@@ -24,47 +54,24 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { token, email } = JSON.parse(event.body || "{}");
+    const { token } = JSON.parse(event.body || "{}");
 
-    if (!token || !email) {
+    if (!token) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: "Token and email are required" }),
+        body: JSON.stringify({ error: "Token is required" }),
       };
     }
 
-    // Find waitlist entry with matching token and email
-    const { data: waitlistEntry, error: findError } = await supabase
-      .from("early_access_signups")
-      .select("*")
-      .eq("email", email.toLowerCase())
-      .eq("invite_token", token)
-      .single();
+    // Verify the signed token
+    const result = verifySignedToken(token);
 
-    if (!waitlistEntry || findError) {
+    if (!result.valid) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: "Invalid invitation link" }),
-      };
-    }
-
-    // Check if token is expired
-    if (new Date(waitlistEntry.invite_expires_at) < new Date()) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: "This invitation has expired. Please contact support for a new invitation." }),
-      };
-    }
-
-    // Check if already used
-    if (waitlistEntry.invite_used_at) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: "This invitation has already been used" }),
+        body: JSON.stringify({ error: result.error }),
       };
     }
 
@@ -73,8 +80,8 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({ 
         valid: true,
-        email: waitlistEntry.email,
-        signupType: waitlistEntry.invited_to || "client"
+        email: result.email,
+        signupType: result.signupType
       }),
     };
   } catch (error) {

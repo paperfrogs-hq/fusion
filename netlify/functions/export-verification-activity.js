@@ -64,69 +64,117 @@ exports.handler = async (event) => {
       };
     }
 
-    // Mock data for export (replace with actual database query)
-    const mockData = Array.from({ length: 100 }, (_, i) => ({
-      id: `ver_${i + 1}`,
-      file_name: [
-        'interview_recording.mp3',
-        'podcast_episode.wav',
-        'voice_memo.m4a',
-        'conference_call.mp3',
-        'suspicious_audio.wav'
-      ][i % 5],
-      file_size: Math.floor(Math.random() * 10000000) + 100000,
-      file_type: ['audio/mp3', 'audio/wav', 'audio/m4a'][i % 3],
-      result: ['authentic', 'authentic', 'authentic', 'tampered', 'failed'][i % 5],
-      confidence_score: i % 5 === 4 ? 'N/A' : (90 + Math.random() * 10).toFixed(1),
-      processing_time_ms: Math.floor(Math.random() * 800) + 200,
-      api_key_name: ['Production App', 'Mobile Client', 'Testing'][i % 3],
-      created_at: new Date(Date.now() - i * 3600000).toISOString(),
-    }));
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Apply filters (same as get-verification-activity.js)
-    let filtered = mockData;
-    if (search) {
-      filtered = filtered.filter(item => 
-        item.file_name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-    if (filters.result) {
-      filtered = filtered.filter(item => item.result === filters.result);
-    }
-    if (filters.dateFrom) {
-      const fromDate = new Date(filters.dateFrom);
-      filtered = filtered.filter(item => new Date(item.created_at) >= fromDate);
-    }
-    if (filters.dateTo) {
-      const toDate = new Date(filters.dateTo);
-      toDate.setHours(23, 59, 59, 999);
-      filtered = filtered.filter(item => new Date(item.created_at) <= toDate);
-    }
+    try {
+      // Build query for verification_activity table
+      let query = supabase
+        .from('verification_activity')
+        .select(`
+          id,
+          audio_filename,
+          audio_size_bytes,
+          audio_format,
+          verification_result,
+          confidence_score,
+          processing_time_ms,
+          tamper_detected,
+          created_at,
+          api_key_id
+        `)
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId);
 
-    // Format data for CSV
-    const csvData = filtered.map(item => ({
-      'Verification ID': item.id,
-      'File Name': item.file_name,
-      'File Size (bytes)': item.file_size,
-      'File Type': item.file_type,
-      'Result': item.result,
-      'Confidence Score (%)': item.confidence_score,
-      'Processing Time (ms)': item.processing_time_ms,
-      'API Key': item.api_key_name,
-      'Date': new Date(item.created_at).toLocaleString(),
-    }));
+      // Apply search filter
+      if (search) {
+        query = query.ilike('audio_filename', `%${search}%`);
+      }
 
-    const csv = arrayToCSV(csvData);
+      // Apply result filter
+      if (filters.result) {
+        const resultMap = {
+          'authentic': 'verified',
+          'tampered': 'tampered',
+          'failed': 'unverified'
+        };
+        query = query.eq('verification_result', resultMap[filters.result] || filters.result);
+      }
 
-    return {
-      statusCode: 200,
-      headers: {
-        ...headers,
-        'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="verification-activity-${new Date().toISOString().split('T')[0]}.csv"`,
-      },
-      body: csv,
-    };
+      // Apply date filters
+      if (filters.dateFrom) {
+        query = query.gte('created_at', new Date(filters.dateFrom).toISOString());
+      }
+      if (filters.dateTo) {
+        const toDate = new Date(filters.dateTo);
+        toDate.setHours(23, 59, 59, 999);
+        query = query.lte('created_at', toDate.toISOString());
+      }
+
+      // Order and limit to 1000 for export
+      query = query
+        .order('created_at', { ascending: false })
+        .limit(1000);
+
+      const { data: activities, error } = await query;
+
+      if (error) throw error;
+
+      // Get API key names
+      const apiKeyIds = [...new Set(activities?.map(a => a.api_key_id).filter(Boolean) || [])];
+      let apiKeyMap = {};
+      
+      if (apiKeyIds.length > 0) {
+        const { data: apiKeys } = await supabase
+          .from('api_keys')
+          .select('id, name')
+          .in('id', apiKeyIds);
+        
+        apiKeyMap = (apiKeys || []).reduce((acc, key) => {
+          acc[key.id] = key.name;
+          return acc;
+        }, {});
+      }
+
+      // Format data for CSV
+      const csvData = (activities || []).map(item => ({
+        'Verification ID': item.id,
+        'File Name': item.audio_filename || 'Unknown',
+        'File Size (bytes)': item.audio_size_bytes || 0,
+        'File Type': item.audio_format || 'unknown',
+        'Result': item.tamper_detected ? 'tampered' :
+                  item.verification_result === 'verified' ? 'authentic' : 
+                  item.verification_result === 'unverified' ? 'failed' : item.verification_result,
+        'Confidence Score (%)': item.confidence_score ? (parseFloat(item.confidence_score) * 100).toFixed(1) : 'N/A',
+        'Processing Time (ms)': item.processing_time_ms || 0,
+        'API Key': apiKeyMap[item.api_key_id] || 'Unknown',
+        'Date': new Date(item.created_at).toLocaleString(),
+      }));
+
+      const csv = arrayToCSV(csvData);
+
+      return {
+        statusCode: 200,
+        headers: {
+          ...headers,
+          'Content-Type': 'text/csv',
+          'Content-Disposition': `attachment; filename="verification-activity-${new Date().toISOString().split('T')[0]}.csv"`,
+        },
+        body: csv,
+      };
+    } catch (dbError) {
+      // If table doesn't exist, return empty CSV
+      console.log('Export verification activity error:', dbError.message);
+      const emptyCsv = 'Verification ID,File Name,File Size (bytes),File Type,Result,Confidence Score (%),Processing Time (ms),API Key,Date\n';
+      return {
+        statusCode: 200,
+        headers: {
+          ...headers,
+          'Content-Type': 'text/csv',
+          'Content-Disposition': `attachment; filename="verification-activity-${new Date().toISOString().split('T')[0]}.csv"`,
+        },
+        body: emptyCsv,
+      };
+    }
   } catch (error) {
     console.error('Export verification activity error:', error);
     return {

@@ -37,43 +37,95 @@ exports.handler = async (event) => {
       };
     }
 
-    // Mock detailed data (replace with actual database query)
-    const isTampered = verificationId.includes('2') || verificationId.includes('5');
-    const isFailed = verificationId.includes('6');
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const mockDetail = {
-      id: verificationId,
-      file_name: 'interview_recording_final.mp3',
-      file_size: 4567890,
-      file_type: 'audio/mp3',
-      file_hash: 'a7f8d9e1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9',
-      result: isFailed ? 'failed' : isTampered ? 'tampered' : 'authentic',
-      confidence_score: isFailed ? null : isTampered ? 87.2 : 98.5,
-      processing_time_ms: 342,
-      api_key_name: 'Production App',
-      created_at: new Date().toISOString(),
-      metadata: {
-        duration_seconds: 247,
-        sample_rate: 44100,
-        channels: 2,
-        codec: 'MP3',
-      },
-      tamper_indicators: isTampered ? [
-        'Spectral anomalies detected at 2:15 - 2:47',
-        'Discontinuity in audio waveform at 3:12',
-        'Metadata timestamp mismatch',
-      ] : undefined,
-      verification_method: 'Deep Neural Network Analysis v2.1',
-      request_id: `req_${Math.random().toString(36).substr(2, 9)}`,
-    };
+    try {
+      // Query actual verification record
+      const { data: verification, error } = await supabase
+        .from('verification_activity')
+        .select(`
+          id,
+          audio_filename,
+          audio_size_bytes,
+          audio_format,
+          audio_hash,
+          verification_result,
+          confidence_score,
+          processing_time_ms,
+          tamper_detected,
+          tamper_details,
+          policy_used,
+          watermark_version,
+          origin_detected,
+          created_at,
+          api_key_id
+        `)
+        .eq('id', verificationId)
+        .single();
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        verification: mockDetail,
-      }),
-    };
+      if (error) throw error;
+
+      if (!verification) {
+        return {
+          statusCode: 404,
+          headers,
+          body: JSON.stringify({ error: 'Verification not found' }),
+        };
+      }
+
+      // Get API key name if exists
+      let apiKeyName = 'Unknown';
+      if (verification.api_key_id) {
+        const { data: apiKey } = await supabase
+          .from('api_keys')
+          .select('name')
+          .eq('id', verification.api_key_id)
+          .single();
+        
+        if (apiKey) apiKeyName = apiKey.name;
+      }
+
+      // Format response
+      const detail = {
+        id: verification.id,
+        file_name: verification.audio_filename || 'Unknown file',
+        file_size: verification.audio_size_bytes || 0,
+        file_type: verification.audio_format || 'audio/unknown',
+        file_hash: verification.audio_hash || null,
+        result: verification.tamper_detected ? 'tampered' :
+                verification.verification_result === 'verified' ? 'authentic' : 
+                verification.verification_result === 'unverified' ? 'failed' : verification.verification_result,
+        confidence_score: verification.confidence_score ? parseFloat(verification.confidence_score) * 100 : null,
+        processing_time_ms: verification.processing_time_ms || 0,
+        api_key_name: apiKeyName,
+        created_at: verification.created_at,
+        metadata: {
+          origin_detected: verification.origin_detected,
+          watermark_version: verification.watermark_version,
+          policy_used: verification.policy_used,
+        },
+        tamper_indicators: verification.tamper_detected && verification.tamper_details 
+          ? (Array.isArray(verification.tamper_details) ? verification.tamper_details : [verification.tamper_details])
+          : undefined,
+        verification_method: 'Fusion Audio Verification Engine',
+        request_id: `req_${verification.id.split('-')[0]}`,
+      };
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          verification: detail,
+        }),
+      };
+    } catch (dbError) {
+      console.log('Verification detail query error:', dbError.message);
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ error: 'Verification not found' }),
+      };
+    }
   } catch (error) {
     console.error('Get verification detail error:', error);
     return {

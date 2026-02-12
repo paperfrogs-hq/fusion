@@ -7,6 +7,15 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Generate a signed invite token (contains email + expiry + signature)
+function generateSignedToken(email, signupType) {
+  const secret = process.env.INVITE_SECRET || supabaseServiceKey.slice(0, 32);
+  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
+  const payload = `${email}|${signupType}|${expiresAt}`;
+  const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex').slice(0, 16);
+  return Buffer.from(`${payload}|${signature}`).toString('base64url');
+}
+
 exports.handler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -37,33 +46,25 @@ exports.handler = async (event) => {
       };
     }
 
-    // Generate invite token
-    const inviteToken = crypto.randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    // Generate signed invite token (no database storage needed)
+    const inviteToken = generateSignedToken(email, signupType || "client");
 
-    // Store invite token in the waitlist record
+    // Update waitlist record to mark as invited (only using existing columns)
     const { error: updateError } = await supabase
       .from("early_access_signups")
       .update({ 
-        invite_token: inviteToken,
-        invite_expires_at: expiresAt.toISOString(),
-        invite_sent_at: new Date().toISOString(),
-        invited_to: signupType || "client" // client or user
+        confirmed: true // Mark as confirmed/invited
       })
       .eq("id", id);
 
     if (updateError) {
       console.error("Failed to update waitlist:", updateError);
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ error: `Failed to update waitlist: ${updateError.message}` }),
-      };
+      // Continue anyway - the invite can still be sent
     }
 
     // Generate signup URL
     const baseUrl = process.env.URL || "https://fusion.paperfrogs.dev";
-    const signupUrl = `${baseUrl}/waitlist/signup?token=${inviteToken}&email=${encodeURIComponent(email)}&type=${signupType || "client"}`;
+    const signupUrl = `${baseUrl}/waitlist/signup?token=${inviteToken}`;
 
     // Default message if no custom message provided
     const messageContent = customMessage || `

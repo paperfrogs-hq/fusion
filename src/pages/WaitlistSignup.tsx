@@ -13,8 +13,6 @@ export default function WaitlistSignup() {
   const [searchParams] = useSearchParams();
   
   const token = searchParams.get('token') || '';
-  const emailParam = searchParams.get('email') || '';
-  const typeParam = searchParams.get('type') || 'client';
   
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(true);
@@ -22,10 +20,10 @@ export default function WaitlistSignup() {
   const [error, setError] = useState('');
   const [verifyError, setVerifyError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [signupType, setSignupType] = useState(typeParam);
+  const [signupType, setSignupType] = useState('client');
   
   const [formData, setFormData] = useState({
-    email: decodeURIComponent(emailParam),
+    email: '',
     fullName: '',
     password: '',
     confirmPassword: '',
@@ -34,10 +32,10 @@ export default function WaitlistSignup() {
 
   useEffect(() => {
     verifyInvite();
-  }, [token, emailParam]);
+  }, [token]);
 
   const verifyInvite = async () => {
-    if (!token || !emailParam) {
+    if (!token) {
       setVerifyError('Invalid invitation link');
       setVerifying(false);
       return;
@@ -47,7 +45,7 @@ export default function WaitlistSignup() {
       const response = await fetch('/.netlify/functions/verify-waitlist-invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, email: decodeURIComponent(emailParam) })
+        body: JSON.stringify({ token })
       });
 
       const data = await response.json();
@@ -126,7 +124,7 @@ export default function WaitlistSignup() {
       await fetch('/.netlify/functions/use-waitlist-invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, email: formData.email })
+        body: JSON.stringify({ email: formData.email })
       });
 
       // Redirect to appropriate login

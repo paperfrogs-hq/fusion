@@ -37,72 +37,78 @@ exports.handler = async (event) => {
       };
     }
 
-    // Mock recent activity data (replace with actual verification_logs table query when it exists)
-    // This would typically be:
-    // const { data: activities } = await supabase
-    //   .from('verification_logs')
-    //   .select('id, type, file_name, result, confidence_score, created_at, api_key_name')
-    //   .eq('organization_id', organizationId)
-    //   .eq('environment_id', environmentId)
-    //   .order('created_at', { ascending: false })
-    //   .limit(limit);
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const mockActivities = [
-      {
-        id: '1',
-        type: 'verification.completed',
-        file_name: 'interview_recording.mp3',
-        result: 'authentic',
-        confidence_score: 98.5,
-        created_at: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
-        api_key_name: 'Production App',
-      },
-      {
-        id: '2',
-        type: 'tamper.detected',
-        file_name: 'suspicious_audio.wav',
-        result: 'tampered',
-        confidence_score: 87.2,
-        created_at: new Date(Date.now() - 900000).toISOString(), // 15 minutes ago
-        api_key_name: 'Mobile Client',
-      },
-      {
-        id: '3',
-        type: 'verification.completed',
-        file_name: 'podcast_episode_12.mp3',
-        result: 'authentic',
-        confidence_score: 99.1,
-        created_at: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
-        api_key_name: 'Production App',
-      },
-      {
-        id: '4',
-        type: 'verification.completed',
-        file_name: 'voice_memo_2024.m4a',
-        result: 'authentic',
-        confidence_score: 96.8,
-        created_at: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-        api_key_name: 'Testing',
-      },
-      {
-        id: '5',
-        type: 'verification.failed',
-        file_name: 'corrupted_file.mp3',
-        result: 'failed',
-        confidence_score: null,
-        created_at: new Date(Date.now() - 5400000).toISOString(), // 1.5 hours ago
-        api_key_name: 'Mobile Client',
-      },
-    ];
+    try {
+      // Query real verification activity data
+      const { data: activities, error } = await supabase
+        .from('verification_activity')
+        .select(`
+          id,
+          verification_result,
+          audio_filename,
+          confidence_score,
+          tamper_detected,
+          created_at,
+          api_key_id
+        `)
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        activities: mockActivities.slice(0, limit),
-        count: mockActivities.length,
-      }),
-    };
+      if (error) throw error;
+
+      // Get API key names for the activities
+      const apiKeyIds = [...new Set(activities?.map(a => a.api_key_id).filter(Boolean) || [])];
+      let apiKeyMap = {};
+      
+      if (apiKeyIds.length > 0) {
+        const { data: apiKeys } = await supabase
+          .from('api_keys')
+          .select('id, name')
+          .in('id', apiKeyIds);
+        
+        apiKeyMap = (apiKeys || []).reduce((acc, key) => {
+          acc[key.id] = key.name;
+          return acc;
+        }, {});
+      }
+
+      // Transform data to expected format
+      const formattedActivities = (activities || []).map(activity => ({
+        id: activity.id,
+        type: activity.tamper_detected ? 'tamper.detected' : 
+              activity.verification_result === 'verified' ? 'verification.completed' :
+              activity.verification_result === 'unverified' ? 'verification.failed' : 'verification.completed',
+        file_name: activity.audio_filename || 'Unknown file',
+        result: activity.verification_result === 'verified' ? 'authentic' : 
+                activity.tamper_detected ? 'tampered' : activity.verification_result,
+        confidence_score: activity.confidence_score ? parseFloat(activity.confidence_score) * 100 : null,
+        created_at: activity.created_at,
+        api_key_name: apiKeyMap[activity.api_key_id] || 'Unknown',
+      }));
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          activities: formattedActivities,
+          count: formattedActivities.length,
+        }),
+      };
+    } catch (dbError) {
+      // If table doesn't exist, return empty array
+      console.log('Verification activity query error:', dbError.message);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          activities: [],
+          count: 0,
+        }),
+      };
+    }
   } catch (error) {
     console.error('Get recent activity error:', error);
     return {

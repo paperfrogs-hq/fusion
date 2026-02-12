@@ -120,15 +120,25 @@ exports.handler = async (event) => {
       };
     }
 
-    // Create default environment
+    // Create sandbox and production environments
     const { error: envError } = await supabase
       .from('environments')
-      .insert([{
-        organization_id: organization.id,
-        name: 'production',
-        display_name: 'Production',
-        is_active: true
-      }]);
+      .insert([
+        {
+          organization_id: organization.id,
+          name: 'sandbox',
+          display_name: 'Sandbox',
+          description: 'Test environment for development',
+          is_production: false
+        },
+        {
+          organization_id: organization.id,
+          name: 'production',
+          display_name: 'Production',
+          description: 'Live production environment',
+          is_production: true
+        }
+      ]);
 
     if (envError) {
       console.error('Error creating default environment:', envError);

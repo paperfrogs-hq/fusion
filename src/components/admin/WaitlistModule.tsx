@@ -27,8 +27,6 @@ interface WaitlistUser {
   email: string;
   confirmed: boolean;
   created_at: string;
-  invite_sent_at?: string;
-  invite_used_at?: string;
 }
 
 const WaitlistModule = () => {
@@ -301,8 +299,8 @@ const WaitlistModule = () => {
                         size="sm"
                         variant="ghost"
                         onClick={() => openInviteModal(user)}
-                        title={user.invite_sent_at ? "Resend signup invitation" : "Send signup invitation"}
-                        className={user.invite_sent_at ? "text-purple-600" : "text-cyan-600"}
+                        title="Send signup invitation"
+                        className="text-cyan-600"
                       >
                         <UserPlus className="w-4 h-4" />
                       </Button>
@@ -364,13 +362,6 @@ const WaitlistModule = () => {
                   : "Invites to create a personal user account"}
               </p>
             </div>
-
-            {selectedUser?.invite_sent_at && (
-              <p className="text-sm text-yellow-600 dark:text-yellow-400">
-                ⚠️ An invitation was sent on{" "}
-                {new Date(selectedUser.invite_sent_at).toLocaleDateString()}
-              </p>
-            )}
 
             <div className="flex gap-2 justify-end">
               <Button

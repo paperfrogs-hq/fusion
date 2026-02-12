@@ -44,70 +44,119 @@ exports.handler = async (event) => {
       };
     }
 
-    // Mock data for now (replace with actual verification_logs table query when it exists)
-    // In production, this would query the verification_logs table with proper filtering
-    
-    const mockData = Array.from({ length: 147 }, (_, i) => ({
-      id: `ver_${i + 1}`,
-      file_name: [
-        'interview_recording.mp3',
-        'podcast_episode.wav',
-        'voice_memo.m4a',
-        'conference_call.mp3',
-        'suspicious_audio.wav',
-        'music_track.mp3',
-        'news_broadcast.mp3',
-        'lecture_recording.wav'
-      ][i % 8],
-      file_size: Math.floor(Math.random() * 10000000) + 100000,
-      file_type: ['audio/mp3', 'audio/wav', 'audio/m4a'][i % 3],
-      result: ['authentic', 'authentic', 'authentic', 'authentic', 'tampered', 'failed'][i % 6],
-      confidence_score: i % 6 === 4 ? 87.2 : i % 6 === 5 ? null : 90 + Math.random() * 10,
-      processing_time_ms: Math.floor(Math.random() * 800) + 200,
-      api_key_name: ['Production App', 'Mobile Client', 'Testing', 'Staging'][i % 4],
-      created_at: new Date(Date.now() - i * 3600000).toISOString(),
-    }));
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Apply search filter
-    let filtered = mockData;
-    if (search) {
-      filtered = filtered.filter(item => 
-        item.file_name.toLowerCase().includes(search.toLowerCase())
-      );
+    try {
+      // Build query for verification_activity table
+      let query = supabase
+        .from('verification_activity')
+        .select(`
+          id,
+          audio_filename,
+          audio_size_bytes,
+          audio_format,
+          verification_result,
+          confidence_score,
+          processing_time_ms,
+          tamper_detected,
+          created_at,
+          api_key_id
+        `, { count: 'exact' })
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId);
+
+      // Apply search filter
+      if (search) {
+        query = query.ilike('audio_filename', `%${search}%`);
+      }
+
+      // Apply result filter
+      if (filters.result) {
+        const resultMap = {
+          'authentic': 'verified',
+          'tampered': 'tampered',
+          'failed': 'unverified'
+        };
+        query = query.eq('verification_result', resultMap[filters.result] || filters.result);
+      }
+
+      // Apply date filters
+      if (filters.dateFrom) {
+        query = query.gte('created_at', new Date(filters.dateFrom).toISOString());
+      }
+      if (filters.dateTo) {
+        const toDate = new Date(filters.dateTo);
+        toDate.setHours(23, 59, 59, 999);
+        query = query.lte('created_at', toDate.toISOString());
+      }
+
+      // Order and pagination
+      const offset = (page - 1) * limit;
+      query = query
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      const { data: activities, count: total, error } = await query;
+
+      if (error) throw error;
+
+      // Get API key names
+      const apiKeyIds = [...new Set(activities?.map(a => a.api_key_id).filter(Boolean) || [])];
+      let apiKeyMap = {};
+      
+      if (apiKeyIds.length > 0) {
+        const { data: apiKeys } = await supabase
+          .from('api_keys')
+          .select('id, name')
+          .in('id', apiKeyIds);
+        
+        apiKeyMap = (apiKeys || []).reduce((acc, key) => {
+          acc[key.id] = key.name;
+          return acc;
+        }, {});
+      }
+
+      // Transform data to expected format
+      const formattedActivities = (activities || []).map(activity => ({
+        id: activity.id,
+        file_name: activity.audio_filename || 'Unknown file',
+        file_size: activity.audio_size_bytes || 0,
+        file_type: activity.audio_format || 'audio/unknown',
+        result: activity.tamper_detected ? 'tampered' :
+                activity.verification_result === 'verified' ? 'authentic' : 
+                activity.verification_result === 'unverified' ? 'failed' : activity.verification_result,
+        confidence_score: activity.confidence_score ? parseFloat(activity.confidence_score) * 100 : null,
+        processing_time_ms: activity.processing_time_ms || 0,
+        api_key_name: apiKeyMap[activity.api_key_id] || 'Unknown',
+        created_at: activity.created_at,
+      }));
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          activities: formattedActivities,
+          total: total || 0,
+          page,
+          limit,
+          totalPages: Math.ceil((total || 0) / limit),
+        }),
+      };
+    } catch (dbError) {
+      // If table doesn't exist, return empty data
+      console.log('Verification activity query error:', dbError.message);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          activities: [],
+          total: 0,
+          page,
+          limit,
+          totalPages: 0,
+        }),
+      };
     }
-
-    // Apply result filter
-    if (filters.result) {
-      filtered = filtered.filter(item => item.result === filters.result);
-    }
-
-    // Apply date filters
-    if (filters.dateFrom) {
-      const fromDate = new Date(filters.dateFrom);
-      filtered = filtered.filter(item => new Date(item.created_at) >= fromDate);
-    }
-    if (filters.dateTo) {
-      const toDate = new Date(filters.dateTo);
-      toDate.setHours(23, 59, 59, 999);
-      filtered = filtered.filter(item => new Date(item.created_at) <= toDate);
-    }
-
-    // Pagination
-    const total = filtered.length;
-    const offset = (page - 1) * limit;
-    const activities = filtered.slice(offset, offset + limit);
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        activities,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      }),
-    };
   } catch (error) {
     console.error('Get verification activity error:', error);
     return {

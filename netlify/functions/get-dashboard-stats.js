@@ -41,25 +41,95 @@ exports.handler = async (event) => {
 
     // Get organization details for quota
     const { data: org } = await supabase
-      .from('client_organizations')
+      .from('organizations')
       .select('quota_limit, quota_used')
       .eq('id', organizationId)
       .single();
 
-    // Get verification stats (mock data for now - replace with actual verification_logs table)
+    // Get verification stats from verification_activity table
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    // Mock verification stats (replace with actual queries when verification_logs table exists)
-    const stats = {
-      total_verifications: 1247,
-      verifications_today: 23,
-      verifications_this_month: 458,
-      success_rate: 94,
-      tamper_detected_count: 12,
-      avg_response_time_ms: 342,
+    // Query actual verification stats
+    let stats = {
+      total_verifications: 0,
+      verifications_today: 0,
+      verifications_this_month: 0,
+      success_rate: 0,
+      tamper_detected_count: 0,
+      avg_response_time_ms: 0,
     };
+
+    try {
+      // Total verifications
+      const { count: totalCount } = await supabase
+        .from('verification_activity')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId);
+      
+      stats.total_verifications = totalCount || 0;
+
+      // Verifications today
+      const { count: todayCount } = await supabase
+        .from('verification_activity')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId)
+        .gte('created_at', today.toISOString());
+      
+      stats.verifications_today = todayCount || 0;
+
+      // Verifications this month
+      const { count: monthCount } = await supabase
+        .from('verification_activity')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId)
+        .gte('created_at', firstDayOfMonth.toISOString());
+      
+      stats.verifications_this_month = monthCount || 0;
+
+      // Success rate (verified verifications)
+      const { count: successCount } = await supabase
+        .from('verification_activity')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId)
+        .eq('verification_result', 'verified');
+      
+      if (totalCount && totalCount > 0) {
+        stats.success_rate = Math.round((successCount / totalCount) * 100);
+      }
+
+      // Tamper detected count
+      const { count: tamperCount } = await supabase
+        .from('verification_activity')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId)
+        .eq('tamper_detected', true);
+      
+      stats.tamper_detected_count = tamperCount || 0;
+
+      // Average response time
+      const { data: avgData } = await supabase
+        .from('verification_activity')
+        .select('processing_time_ms')
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId)
+        .not('processing_time_ms', 'is', null)
+        .limit(100);
+      
+      if (avgData && avgData.length > 0) {
+        const sum = avgData.reduce((acc, item) => acc + (item.processing_time_ms || 0), 0);
+        stats.avg_response_time_ms = Math.round(sum / avgData.length);
+      }
+    } catch (verificationError) {
+      // If verification_activity table doesn't exist, use default values
+      console.log('Verification activity table may not exist, using defaults');
+    }
 
     // Get API keys count
     const { data: apiKeys } = await supabase

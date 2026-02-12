@@ -13,7 +13,8 @@ import {
   LogOut,
   Bell,
   User,
-  ChevronRight
+  ChevronRight,
+  Shield
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -43,6 +44,7 @@ interface ClientLayoutProps {
 
 const navigation = [
   { name: 'Dashboard', href: '/client/dashboard', icon: LayoutDashboard },
+  { name: 'Verify Audio', href: '/client/verify', icon: Shield },
   { name: 'Verification Activity', href: '/client/activity', icon: Activity },
   { name: 'Reports & Exports', href: '/client/reports', icon: FileText },
   { name: 'API Keys', href: '/client/api-keys', icon: Key },

@@ -26,25 +26,23 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { token, email } = JSON.parse(event.body);
+    const { email } = JSON.parse(event.body);
 
-    if (!token || !email) {
+    if (!email) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: "Token and email are required" })
+        body: JSON.stringify({ error: "Email is required" })
       };
     }
 
-    // Update the early_access_signups record to mark invite as used
+    // Update the early_access_signups record to mark as converted (using existing columns only)
     const { error } = await supabase
       .from("early_access_signups")
       .update({
-        invite_used_at: new Date().toISOString(),
-        status: "converted"
+        confirmed: true
       })
-      .eq("email", email.toLowerCase())
-      .eq("invite_token", token);
+      .eq("email", email.toLowerCase());
 
     if (error) {
       console.error("Error marking invite as used:", error);

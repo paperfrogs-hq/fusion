@@ -74,20 +74,21 @@ exports.handler = async (event) => {
     // Get environment to determine key prefix
     const { data: environment, error: envError } = await supabase
       .from('environments')
-      .select('name, is_active')
+      .select('name, is_production')
       .eq('id', environmentId)
       .single();
 
     if (envError || !environment) {
+      console.error('Environment lookup error:', envError);
       return {
         statusCode: 404,
         headers,
-        body: JSON.stringify({ error: 'Environment not found' }),
+        body: JSON.stringify({ error: 'Environment not found. Please switch environments and try again.' }),
       };
     }
 
-    // Generate key with appropriate prefix based on environment name
-    const isProduction = environment.name === 'production';
+    // Generate key with appropriate prefix based on environment
+    const isProduction = environment.is_production || environment.name === 'production';
     const keyPrefix = isProduction ? 'fus_live_' : 'fus_test_';
     const fullKey = generateAPIKey(keyPrefix);
     const keyHash = hashAPIKey(fullKey);

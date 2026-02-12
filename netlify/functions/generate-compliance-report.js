@@ -225,15 +225,27 @@ exports.handler = async (event) => {
       environmentId, 
       dateFrom, 
       dateTo,
+      dateRange,
+      reportType,
       options = {}
     } = JSON.parse(event.body);
 
-    if (!organizationId || !environmentId || !dateFrom || !dateTo) {
+    if (!organizationId) {
       return {
         statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Missing required parameters' }),
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Organization ID is required' }),
       };
+    }
+
+    // Calculate date range if not provided directly
+    let startDate = dateFrom;
+    let endDate = dateTo;
+    
+    if (!startDate || !endDate) {
+      const days = dateRange || 30;
+      endDate = new Date().toISOString().split('T')[0];
+      startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -251,31 +263,73 @@ exports.handler = async (event) => {
       .eq('id', environmentId)
       .single();
 
-    // Mock verification data (replace with actual query)
-    const mockVerifications = Array.from({ length: 100 }, (_, i) => ({
-      id: `ver_${i}`,
-      file_name: `audio_file_${i}.mp3`,
-      result: i % 10 === 0 ? 'tampered' : i % 20 === 0 ? 'failed' : 'authentic',
-      confidence_score: i % 20 === 0 ? null : 90 + Math.random() * 10,
-      created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-    }));
-
-    const stats = {
-      total: mockVerifications.length,
-      authentic: mockVerifications.filter(v => v.result === 'authentic').length,
-      tampered: mockVerifications.filter(v => v.result === 'tampered').length,
-      failed: mockVerifications.filter(v => v.result === 'failed').length,
-      successRate: Math.round((mockVerifications.filter(v => v.result === 'authentic').length / mockVerifications.length) * 100),
-      avgConfidence: 94.2,
+    // Query actual verification data
+    let verifications = [];
+    let stats = {
+      total: 0,
+      authentic: 0,
+      tampered: 0,
+      failed: 0,
+      successRate: 0,
+      avgConfidence: 0,
     };
+
+    try {
+      const { data: dbVerifications, error } = await supabase
+        .from('verification_activity')
+        .select(`
+          id,
+          audio_filename,
+          verification_result,
+          confidence_score,
+          tamper_detected,
+          created_at
+        `)
+        .eq('organization_id', organizationId)
+        .eq('environment_id', environmentId)
+        .gte('created_at', new Date(startDate).toISOString())
+        .lte('created_at', new Date(endDate + 'T23:59:59.999Z').toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1000);
+
+      if (!error && dbVerifications) {
+        verifications = dbVerifications.map(v => ({
+          id: v.id,
+          file_name: v.audio_filename || 'Unknown',
+          result: v.tamper_detected ? 'tampered' :
+                  v.verification_result === 'verified' ? 'authentic' : 
+                  v.verification_result === 'unverified' ? 'failed' : v.verification_result,
+          confidence_score: v.confidence_score ? parseFloat(v.confidence_score) * 100 : null,
+          created_at: v.created_at,
+        }));
+
+        const authenticCount = verifications.filter(v => v.result === 'authentic').length;
+        const tamperedCount = verifications.filter(v => v.result === 'tampered').length;
+        const failedCount = verifications.filter(v => v.result === 'failed').length;
+        const validConfidences = verifications.filter(v => v.confidence_score !== null);
+        
+        stats = {
+          total: verifications.length,
+          authentic: authenticCount,
+          tampered: tamperedCount,
+          failed: failedCount,
+          successRate: verifications.length > 0 ? Math.round((authenticCount / verifications.length) * 100) : 0,
+          avgConfidence: validConfidences.length > 0 
+            ? Math.round(validConfidences.reduce((sum, v) => sum + v.confidence_score, 0) / validConfidences.length * 10) / 10
+            : 0,
+        };
+      }
+    } catch (dbError) {
+      console.log('Verification query error:', dbError.message);
+    }
 
     const reportData = {
       organizationName: org?.name || 'Unknown Organization',
       environmentName: env?.display_name || 'Unknown Environment',
-      dateFrom,
-      dateTo,
+      dateFrom: startDate,
+      dateTo: endDate,
       stats,
-      verifications: mockVerifications,
+      verifications,
     };
 
     const htmlContent = generateReportHTML(reportData, options);
@@ -287,7 +341,7 @@ exports.handler = async (event) => {
       headers: {
         ...headers,
         'Content-Type': 'text/html',
-        'Content-Disposition': `attachment; filename="compliance-report-${dateFrom}-to-${dateTo}.html"`,
+        'Content-Disposition': `attachment; filename="compliance-report-${startDate}-to-${endDate}.html"`,
       },
       body: htmlContent,
     };
