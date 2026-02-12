@@ -29,6 +29,9 @@ const UserManagementModule = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailForm, setEmailForm] = useState({ subject: "", message: "" });
+  const [sendingEmail, setSendingEmail] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -164,6 +167,58 @@ const UserManagementModule = () => {
         description: error instanceof Error ? error.message : "Failed to delete user. Check console for details.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!selectedUser) return;
+    if (!emailForm.subject.trim() || !emailForm.message.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in both subject and message",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const response = await fetch("/.netlify/functions/send-custom-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userEmail: selectedUser.email,
+          userName: selectedUser.full_name,
+          subject: emailForm.subject,
+          message: emailForm.message,
+          adminEmail: "admin@fusion.paperfrogs.dev",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to send email");
+      }
+
+      await logAdminAction("custom_email_sent", "user", selectedUser.id);
+
+      toast({
+        title: "Email Sent",
+        description: `Email sent successfully to ${selectedUser.email}`,
+      });
+
+      setShowEmailModal(false);
+      setEmailForm({ subject: "", message: "" });
+    } catch (error) {
+      console.error("Send email error:", error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send email",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -481,6 +536,13 @@ const UserManagementModule = () => {
                   {selectedUser.account_status === "active" ? "Suspend Account" : "Activate Account"}
                 </Button>
                 <Button
+                  variant="secondary"
+                  onClick={() => setShowEmailModal(true)}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Send Email
+                </Button>
+                <Button
                   variant="destructive"
                   onClick={() => handleDeleteUser(selectedUser.id, selectedUser.email)}
                 >
@@ -490,6 +552,84 @@ const UserManagementModule = () => {
                   Close
                 </Button>
               </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Email Modal */}
+      {showEmailModal && selectedUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-card rounded-xl p-6 max-w-lg w-full shadow-2xl border border-border"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-foreground">Send Email</h3>
+                <p className="text-sm text-muted-foreground">To: {selectedUser.email}</p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowEmailModal(false);
+                  setEmailForm({ subject: "", message: "" });
+                }}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Subject</label>
+                <Input
+                  placeholder="Enter email subject..."
+                  value={emailForm.subject}
+                  onChange={(e) => setEmailForm({ ...emailForm, subject: e.target.value })}
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Message</label>
+                <textarea
+                  placeholder="Enter your message..."
+                  value={emailForm.message}
+                  onChange={(e) => setEmailForm({ ...emailForm, message: e.target.value })}
+                  rows={6}
+                  className="w-full px-3 py-2 bg-background border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-6 pt-4 border-t border-border">
+              <Button
+                onClick={handleSendEmail}
+                disabled={sendingEmail || !emailForm.subject.trim() || !emailForm.message.trim()}
+                className="flex-1"
+              >
+                {sendingEmail ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground border-t-transparent mr-2" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Send Email
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowEmailModal(false);
+                  setEmailForm({ subject: "", message: "" });
+                }}
+              >
+                Cancel
+              </Button>
             </div>
           </motion.div>
         </div>

@@ -200,39 +200,38 @@ export default function UserDashboard() {
     setUploadingPicture(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/avatar.${fileExt}`;
+      // Convert image to base64 and store in users table directly
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const base64 = e.target?.result as string;
+          
+          // Update user record with base64 image
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({ avatar_url: base64 })
+            .eq('id', user.id);
 
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, { upsert: true });
+          if (updateError) throw updateError;
 
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      // Add cache buster to URL
-      const avatarUrl = `${publicUrl}?t=${Date.now()}`;
-
-      // Update user record
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ avatar_url: avatarUrl })
-        .eq('id', user.id);
-
-      if (updateError) throw updateError;
-
-      setProfilePicture(avatarUrl);
-      setUser((prev: any) => ({ ...prev, avatar_url: avatarUrl }));
-      toast({ title: 'Success', description: 'Profile picture updated successfully' });
+          setProfilePicture(base64);
+          setUser((prev: any) => ({ ...prev, avatar_url: base64 }));
+          toast({ title: 'Success', description: 'Profile picture updated successfully' });
+        } catch (error: any) {
+          console.error('Update error:', error);
+          toast({ title: 'Upload failed', description: error.message, variant: 'destructive' });
+        } finally {
+          setUploadingPicture(false);
+        }
+      };
+      reader.onerror = () => {
+        toast({ title: 'Upload failed', description: 'Failed to read image file', variant: 'destructive' });
+        setUploadingPicture(false);
+      };
+      reader.readAsDataURL(file);
     } catch (error: any) {
       console.error('Upload error:', error);
       toast({ title: 'Upload failed', description: error.message, variant: 'destructive' });
-    } finally {
       setUploadingPicture(false);
     }
   };
