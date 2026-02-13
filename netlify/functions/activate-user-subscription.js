@@ -21,7 +21,7 @@ const PLAN_CONFIGS = {
 };
 
 exports.handler = async (event) => {
-  console.log("Create user subscription request received");
+  console.log("Activate user subscription request received");
 
   if (event.httpMethod !== "POST") {
     return {
@@ -36,7 +36,11 @@ exports.handler = async (event) => {
       userId, 
       planCode, 
       billingCycle, 
-      isTrial, // New: trial without card
+      cardNumber, 
+      cardName,
+      expMonth, 
+      expYear, 
+      cvc 
     } = JSON.parse(event.body);
 
     // Validate required fields
@@ -58,21 +62,30 @@ exports.handler = async (event) => {
       };
     }
 
+    // Validate card
+    if (!cardNumber || cardNumber.length !== 16 || !expMonth || !expYear || !cvc) {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: "Invalid card details" }),
+      };
+    }
+
+    // Simple card validation (in production, use Stripe or similar)
+    const cardBrand = getCardBrand(cardNumber);
+    const cardLast4 = cardNumber.slice(-4);
+
     // Get plan from database
-    const { data: planData, error: planError } = await supabase
+    const { data: planData } = await supabase
       .from('subscription_plans')
       .select('id')
       .eq('plan_code', planCode)
       .single();
     
-    // If plan doesn't exist in DB, create without plan_id reference
     const planId = planData?.id || null;
 
-    // Calculate dates
+    // Calculate dates - subscription starts NOW (trial ended)
     const now = new Date();
-    const trialEnd = new Date(now);
-    trialEnd.setDate(trialEnd.getDate() + 14); // 14-day trial
-    
     const periodEnd = new Date(now);
     if (billingCycle === 'yearly') {
       periodEnd.setFullYear(periodEnd.getFullYear() + 1);
@@ -80,26 +93,28 @@ exports.handler = async (event) => {
       periodEnd.setMonth(periodEnd.getMonth() + 1);
     }
 
-    // Check if subscription already exists
+    // Check if subscription exists
     const { data: existingSub } = await supabase
       .from('user_subscriptions')
       .select('id')
       .eq('user_id', userId)
       .single();
 
+    const price = billingCycle === 'yearly' ? planConfig.price_yearly : planConfig.price_monthly;
+
     const subscriptionData = {
       user_id: userId,
-      plan_id: planId, // Reference to subscription_plans table
-      status: 'trialing',
+      plan_id: planId,
+      status: 'active', // Now active with payment
       billing_cycle: billingCycle,
       current_period_start: now.toISOString(),
       current_period_end: periodEnd.toISOString(),
-      trial_start: now.toISOString(),
-      trial_end: trialEnd.toISOString(),
-      card_brand: null, // Card added after trial
-      card_last4: null,
-      card_exp_month: null,
-      card_exp_year: null,
+      trial_start: null,
+      trial_end: null,
+      card_brand: cardBrand,
+      card_last4: cardLast4,
+      card_exp_month: expMonth,
+      card_exp_year: expYear,
       usage_verifications: 0,
       cancel_at_period_end: false,
       updated_at: now.toISOString(),
@@ -130,24 +145,22 @@ exports.handler = async (event) => {
       result = data;
     }
 
-    // Create payment transaction record for trial start
-    const price = billingCycle === 'yearly' ? planConfig.price_yearly : planConfig.price_monthly;
-    
+    // Create payment transaction record
     await supabase.from('payment_transactions').insert([{
       user_id: userId,
       subscription_id: result.id,
-      amount: 0, // Trial starts at $0
+      amount: price * 100, // Store in cents
       currency: 'USD',
       status: 'succeeded',
-      payment_method_type: 'trial',
-      description: `${planConfig.plan_name} Plan - 14-day trial started`,
-      card_last4: null,
-      card_brand: null,
+      payment_method_type: 'card',
+      description: `${planConfig.plan_name} Plan - ${billingCycle} subscription activated`,
+      card_last4: cardLast4,
+      card_brand: cardBrand,
       paid_at: now.toISOString(),
       created_at: now.toISOString(),
     }]);
 
-    console.log("Subscription created successfully:", result.id);
+    console.log("Subscription activated successfully:", result.id);
 
     return {
       statusCode: 200,
@@ -157,17 +170,17 @@ exports.handler = async (event) => {
         subscription: {
           id: result.id,
           plan: planConfig.plan_name,
-          status: 'trialing',
-          trial_end: trialEnd.toISOString(),
+          status: 'active',
+          period_end: periodEnd.toISOString(),
         },
       }),
     };
   } catch (error) {
-    console.error("Subscription creation error:", error);
+    console.error("Subscription activation error:", error);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: error.message || "Failed to create subscription" }),
+      body: JSON.stringify({ error: error.message || "Failed to activate subscription" }),
     };
   }
 };

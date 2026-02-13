@@ -20,6 +20,7 @@ import ComingSoon from "./pages/ComingSoon";
 import BusinessPricing from "./pages/BusinessPricing";
 import UserPricing from "./pages/UserPricing";
 import UserCheckout from "./pages/UserCheckout";
+import UserPayment from "./pages/UserPayment";
 import UserSubscription from "./pages/UserSubscription";
 import ErrorBoundary from "./components/client/ErrorBoundary";
 
@@ -93,6 +94,7 @@ const App = () => (
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/user/pricing" element={<UserPricing />} />
               <Route path="/user/checkout" element={<UserCheckout />} />
+              <Route path="/user/payment" element={<UserPayment />} />
               <Route path="/user/subscription" element={<UserSubscription />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               

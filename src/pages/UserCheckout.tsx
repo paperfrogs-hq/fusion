@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CreditCard, Lock, Check, ArrowLeft, Loader2, ShieldCheck } from 'lucide-react';
+import { Check, ArrowLeft, Loader2, ShieldCheck, Sparkles, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { supabase } from '../lib/supabase-client';
 
 interface Plan {
   plan_code: string;
@@ -44,16 +43,11 @@ export default function UserCheckout() {
   const planCode = searchParams.get('plan') || 'user_creator';
   const billingCycle = (searchParams.get('billing') || 'monthly') as 'monthly' | 'yearly';
 
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvc, setCvc] = useState('');
   const [processing, setProcessing] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const plan = plans[planCode];
   const price = billingCycle === 'yearly' ? plan?.price_yearly : plan?.price_monthly;
-  const monthlyPrice = billingCycle === 'yearly' ? Math.round((plan?.price_yearly || 0) / 12) : plan?.price_monthly;
 
   useEffect(() => {
     // Check if user is logged in
@@ -61,69 +55,50 @@ export default function UserCheckout() {
     const userId = localStorage.getItem('fusion_user_id');
     if (!token || !userId) {
       navigate(`/user/signup?plan=${planCode}&billing=${billingCycle}`);
+      return;
     }
+
+    // Check if user already has a subscription
+    const checkSubscription = async () => {
+      try {
+        const { data: subscription } = await supabase
+          .from('user_subscriptions')
+          .select('status, trial_end')
+          .eq('user_id', userId)
+          .single();
+
+        if (subscription) {
+          // User already has a subscription
+          if (subscription.status === 'trialing') {
+            const trialEnd = new Date(subscription.trial_end);
+            if (trialEnd < new Date()) {
+              // Trial expired, redirect to payment
+              navigate(`/user/payment?plan=${planCode}&billing=${billingCycle}`);
+            } else {
+              // Trial still active, go to dashboard
+              navigate('/user/dashboard');
+            }
+          } else if (subscription.status === 'active') {
+            // Already subscribed
+            navigate('/user/dashboard');
+          } else {
+            // Trial expired or cancelled, redirect to payment
+            navigate(`/user/payment?plan=${planCode}&billing=${billingCycle}`);
+          }
+        }
+        // No subscription exists, allow them to start trial
+      } catch (error) {
+        console.error('Error checking subscription:', error);
+        // Continue to trial page on error
+      }
+    };
+
+    checkSubscription();
   }, [navigate, planCode, billingCycle]);
 
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = (matches && matches[0]) || '';
-    const parts = [];
-
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-
-    return parts.length ? parts.join(' ') : value;
-  };
-
-  const formatExpiry = (value: string) => {
-    const v = value.replace(/\D/g, '');
-    if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4);
-    }
-    return v;
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value);
-    if (formatted.replace(/\s/g, '').length <= 16) {
-      setCardNumber(formatted);
-    }
-  };
-
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatExpiry(e.target.value.replace('/', ''));
-    setExpiry(formatted);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const cardDigits = cardNumber.replace(/\s/g, '');
-    if (cardDigits.length !== 16) {
-      toast.error('Please enter a valid 16-digit card number');
-      return;
-    }
-
-    const [expMonth, expYear] = expiry.split('/');
-    if (!expMonth || !expYear || parseInt(expMonth) > 12 || parseInt(expMonth) < 1) {
-      toast.error('Please enter a valid expiration date');
-      return;
-    }
-
-    if (cvc.length < 3) {
-      toast.error('Please enter a valid CVC');
-      return;
-    }
-
+  const handleStartTrial = async () => {
     if (!agreedToTerms) {
       toast.error('Please agree to the terms and conditions');
-      return;
-    }
-
-    if (!cardName.trim()) {
-      toast.error('Please enter the cardholder name');
       return;
     }
 
@@ -139,24 +114,20 @@ export default function UserCheckout() {
           userId,
           planCode,
           billingCycle,
-          cardNumber: cardDigits,
-          cardName,
-          expMonth: parseInt(expMonth),
-          expYear: parseInt('20' + expYear),
-          cvc,
+          isTrial: true, // No card required for trial
         }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        toast.success('Subscription created successfully!');
+        toast.success('Your 14-day trial has started!');
         navigate('/user/dashboard');
       } else {
-        toast.error(result.error || 'Payment failed. Please try again.');
+        toast.error(result.error || 'Failed to start trial. Please try again.');
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error('Trial activation error:', error);
       toast.error('An error occurred. Please try again.');
     } finally {
       setProcessing(false);
@@ -185,7 +156,7 @@ export default function UserCheckout() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-24 pb-20 px-4">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           <Button
             variant="ghost"
             onClick={() => navigate('/user/pricing')}
@@ -195,190 +166,135 @@ export default function UserCheckout() {
             Back to Plans
           </Button>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Order Summary */}
-            <div className="order-2 lg:order-1">
-              <Card className="p-6 bg-card border">
-                <h2 className="text-xl font-bold text-foreground mb-6">Order Summary</h2>
-                
-                <div className="space-y-4 pb-4 border-b border-border">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-foreground">{plan.plan_name} Plan</h3>
-                      <p className="text-sm text-muted-foreground">{plan.description}</p>
-                    </div>
-                    <Badge variant="outline" className="capitalize">
-                      {billingCycle}
-                    </Badge>
-                  </div>
-                  
-                  <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-500" />
-                      <span>{plan.monthly_verifications} verifications/month</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-500" />
-                      <span>14-day free trial</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-500" />
-                      <span>Cancel anytime</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span className="text-foreground">${price}.00</span>
-                  </div>
-                  {billingCycle === 'yearly' && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-green-600">Annual discount</span>
-                      <span className="text-green-600">-${(plan.price_monthly * 12 - plan.price_yearly).toFixed(0)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Trial period</span>
-                    <span className="text-foreground">14 days free</span>
-                  </div>
-                  <div className="border-t border-border pt-3 mt-3">
-                    <div className="flex justify-between">
-                      <span className="font-semibold text-foreground">Due today</span>
-                      <span className="font-bold text-xl text-foreground">$0.00</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      After trial: ${price}.00/{billingCycle === 'yearly' ? 'year' : 'month'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                  <div className="flex items-start gap-3">
-                    <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Secure Payment</p>
-                      <p className="text-xs text-muted-foreground">
-                        Your payment information is encrypted and secure. We never store your full card details.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+          <Card className="p-8 bg-card border">
+            {/* Trial Badge */}
+            <div className="flex justify-center mb-6">
+              <Badge className="bg-green-500/10 text-green-600 border-green-500/20 px-4 py-2 text-sm">
+                <Sparkles className="h-4 w-4 mr-2" />
+                No Credit Card Required
+              </Badge>
             </div>
 
-            {/* Payment Form */}
-            <div className="order-1 lg:order-2">
-              <Card className="p-6 bg-card border">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <CreditCard className="h-5 w-5 text-primary" />
+            <h1 className="text-3xl font-bold text-foreground text-center mb-2">
+              Start Your 14-Day Free Trial
+            </h1>
+            <p className="text-muted-foreground text-center mb-8">
+              Try {plan.plan_name} with full access. No payment needed today.
+            </p>
+
+            {/* Plan Summary */}
+            <div className="bg-muted/50 rounded-xl p-6 mb-6">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-foreground">{plan.plan_name} Plan</h3>
+                  <p className="text-sm text-muted-foreground">{plan.description}</p>
+                </div>
+                <Badge variant="outline" className="capitalize">
+                  {billingCycle}
+                </Badge>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <Check className="h-4 w-4 text-green-600" />
                   </div>
+                  <span className="text-foreground">{plan.monthly_verifications} verifications per month</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <Check className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="text-foreground">Full feature access during trial</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <Check className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="text-foreground">Cancel anytime, no questions asked</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Trial Timeline */}
+            <div className="bg-primary/5 rounded-xl p-6 mb-6 border border-primary/20">
+              <div className="flex items-center gap-3 mb-4">
+                <Clock className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold text-foreground">How Your Trial Works</h3>
+              </div>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
                   <div>
-                    <h2 className="text-xl font-bold text-foreground">Payment Details</h2>
-                    <p className="text-sm text-muted-foreground">Enter your card information</p>
+                    <p className="font-medium text-foreground">Today - Start Free</p>
+                    <p className="text-muted-foreground">Instant access to all features. No card required.</p>
                   </div>
                 </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cardName">Cardholder Name</Label>
-                    <Input
-                      id="cardName"
-                      placeholder="John Doe"
-                      value={cardName}
-                      onChange={(e) => setCardName(e.target.value)}
-                      required
-                    />
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
+                  <div>
+                    <p className="font-medium text-foreground">Day 12 - Reminder</p>
+                    <p className="text-muted-foreground">We'll email you before your trial ends.</p>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="cardNumber">Card Number</Label>
-                    <div className="relative">
-                      <Input
-                        id="cardNumber"
-                        placeholder="1234 5678 9012 3456"
-                        value={cardNumber}
-                        onChange={handleCardNumberChange}
-                        className="pr-12"
-                        required
-                      />
-                      <CreditCard className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
+                  <div>
+                    <p className="font-medium text-foreground">Day 14 - Add Payment</p>
+                    <p className="text-muted-foreground">Add your card to continue at ${price}/{billingCycle === 'yearly' ? 'year' : 'month'}.</p>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="expiry">Expiry Date</Label>
-                      <Input
-                        id="expiry"
-                        placeholder="MM/YY"
-                        value={expiry}
-                        onChange={handleExpiryChange}
-                        maxLength={5}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="cvc">CVC</Label>
-                      <div className="relative">
-                        <Input
-                          id="cvc"
-                          placeholder="123"
-                          value={cvc}
-                          onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                          maxLength={4}
-                          required
-                        />
-                        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 pt-2">
-                    <input
-                      type="checkbox"
-                      id="terms"
-                      checked={agreedToTerms}
-                      onChange={(e) => setAgreedToTerms(e.target.checked)}
-                      className="mt-1 h-4 w-4 rounded border-gray-300"
-                    />
-                    <label htmlFor="terms" className="text-sm text-muted-foreground">
-                      I agree to the{' '}
-                      <a href="/terms" className="text-primary hover:underline">Terms of Service</a>
-                      {' '}and{' '}
-                      <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
-                      I understand that my subscription will begin after the 14-day trial and I will be charged ${price}.00/{billingCycle === 'yearly' ? 'year' : 'month'}.
-                    </label>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full h-12 text-lg"
-                    disabled={processing}
-                  >
-                    {processing ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="h-4 w-4 mr-2" />
-                        Start 14-Day Free Trial
-                      </>
-                    )}
-                  </Button>
-
-                  <p className="text-xs text-center text-muted-foreground">
-                    Your card will not be charged during the trial period.
-                    You can cancel anytime before the trial ends.
-                  </p>
-                </form>
-              </Card>
+                </div>
+              </div>
             </div>
-          </div>
+
+            {/* Terms */}
+            <div className="flex items-start gap-3 mb-6">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-gray-300"
+              />
+              <label htmlFor="terms" className="text-sm text-muted-foreground">
+                I agree to the{' '}
+                <a href="/terms" className="text-primary hover:underline">Terms of Service</a>
+                {' '}and{' '}
+                <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
+              </label>
+            </div>
+
+            {/* CTA */}
+            <Button
+              onClick={handleStartTrial}
+              className="w-full h-14 text-lg"
+              disabled={processing || !agreedToTerms}
+            >
+              {processing ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  Starting Trial...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Start 14-Day Free Trial
+                </>
+              )}
+            </Button>
+
+            <p className="text-xs text-center text-muted-foreground mt-4">
+              No credit card required. Add payment details only when your trial ends.
+            </p>
+
+            {/* Trust Badge */}
+            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <ShieldCheck className="h-4 w-4 text-green-600" />
+                <span>Trusted by 10,000+ creators worldwide</span>
+              </div>
+            </div>
+          </Card>
         </div>
       </main>
       <Footer />
