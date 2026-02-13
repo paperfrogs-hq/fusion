@@ -326,6 +326,17 @@ export function isTrialExpired(org: Organization | null): boolean {
   return trialEnd <= new Date();
 }
 
+// Check if organization needs to purchase a subscription (no active billing)
+export function needsSubscription(org: Organization | null): boolean {
+  if (!org) return false;
+  // If billing_status is active, they have a subscription
+  if (org.billing_status === 'active') return false;
+  // If they're on trial, they don't need to pay yet (unless expired)
+  if (org.billing_status === 'trial') return false;
+  // Any other status (pending, inactive, canceled) means they need to subscribe
+  return true;
+}
+
 export function getTrialDaysRemaining(org: Organization | null): number {
   if (!org?.trial_ends_at) return 0;
   

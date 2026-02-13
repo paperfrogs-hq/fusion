@@ -30,6 +30,7 @@ import OrgSwitcher from './OrgSwitcher';
 import EnvironmentSwitcher from './EnvironmentSwitcher';
 import NotificationsDropdown from './NotificationsDropdown';
 import TrialExpiredModal from './TrialExpiredModal';
+import SubscriptionRequiredModal from './SubscriptionRequiredModal';
 import { 
   validateSession, 
   getCurrentUser, 
@@ -37,6 +38,7 @@ import {
   logout,
   isOnTrial,
   isTrialExpired,
+  needsSubscription,
   getTrialDaysRemaining,
   getQuotaUsagePercent
 } from '../../lib/client-auth';
@@ -81,9 +83,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const trialDays = getTrialDaysRemaining(org);
   const onTrial = isOnTrial(org);
   const trialExpired = isTrialExpired(org);
+  const subscriptionRequired = needsSubscription(org);
 
-  // Allow billing page even when trial expired
-  const isBillingPage = location.pathname === '/client/billing';
+  // Allow billing/checkout pages even when blocked
+  const isBillingPage = location.pathname === '/client/billing' || 
+                        location.pathname === '/client/checkout' ||
+                        location.pathname.includes('/pricing');
 
   if (!user || !org) {
     return (
@@ -95,9 +100,15 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   return (
     <div className="min-h-screen bg-neutral-950">
-      {/* Trial Expired Modal - blocks access until upgrade */}
+      {/* Trial Expired Modal - blocks access until upgrade (for trial users) */}
       <TrialExpiredModal 
         open={trialExpired && !isBillingPage} 
+        organizationName={org.name} 
+      />
+
+      {/* Subscription Required Modal - blocks access until purchase (for enterprise/non-trial users) */}
+      <SubscriptionRequiredModal 
+        open={subscriptionRequired && !trialExpired && !isBillingPage} 
         organizationName={org.name} 
       />
 

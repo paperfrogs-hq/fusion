@@ -74,7 +74,22 @@ export default function ClientLogin() {
         navigate('/client/select-org');
       } else if (data.organizations.length === 1) {
         localStorage.setItem('fusion_current_org', JSON.stringify(data.organizations[0]));
-        navigate('/client/dashboard');
+        localStorage.setItem('fusion_org_id', data.organizations[0].id);
+        localStorage.setItem('fusion_org_name', data.organizations[0].name);
+        
+        // Check if there's a pending plan to subscribe to
+        const pendingPlan = localStorage.getItem('fusion_client_pending_plan');
+        const pendingBilling = localStorage.getItem('fusion_client_pending_billing') || 'monthly';
+        
+        if (pendingPlan) {
+          // Clear pending plan
+          localStorage.removeItem('fusion_client_pending_plan');
+          localStorage.removeItem('fusion_client_pending_billing');
+          // Redirect to checkout
+          navigate(`/client/checkout?plan=${pendingPlan}&billing=${pendingBilling}`);
+        } else {
+          navigate('/client/dashboard');
+        }
       } else {
         throw new Error('No organization access');
       }

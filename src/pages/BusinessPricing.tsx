@@ -91,7 +91,16 @@ export default function BusinessPricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   const handleGetStarted = (planCode: string) => {
-    window.location.href = `/client/signup?plan=${planCode}`;
+    // Check if client is already logged in
+    const orgId = localStorage.getItem('fusion_org_id');
+    
+    if (orgId) {
+      // Client is logged in, go to checkout
+      window.location.href = `/client/checkout?plan=${planCode}&billing=${billingCycle}`;
+    } else {
+      // Client is not logged in, go to signup
+      window.location.href = `/client/signup?plan=${planCode}&billing=${billingCycle}`;
+    }
   };
 
   return (

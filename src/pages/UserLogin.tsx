@@ -53,8 +53,20 @@ export default function UserLogin() {
       localStorage.setItem('fusion_user_email', data.email);
       localStorage.setItem('fusion_user_name', data.fullName || '');
 
-      // Redirect to dashboard
-      navigate('/user/dashboard');
+      // Check if there's a pending plan to subscribe to
+      const pendingPlan = localStorage.getItem('fusion_pending_plan');
+      const pendingBilling = localStorage.getItem('fusion_pending_billing') || 'monthly';
+      
+      if (pendingPlan) {
+        // Clear pending plan
+        localStorage.removeItem('fusion_pending_plan');
+        localStorage.removeItem('fusion_pending_billing');
+        // Redirect to checkout
+        navigate(`/user/checkout?plan=${pendingPlan}&billing=${pendingBilling}`);
+      } else {
+        // Redirect to dashboard
+        navigate('/user/dashboard');
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to sign in. Please check your credentials.');
     } finally {

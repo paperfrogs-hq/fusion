@@ -29,7 +29,7 @@ export default function ClientSelectOrg() {
     if (orgs.length === 1) {
       // Only one org, auto-select and redirect
       setCurrentOrganization(orgs[0]);
-      navigate('/client/dashboard');
+      redirectAfterOrgSelect();
       return;
     }
     
@@ -37,9 +37,23 @@ export default function ClientSelectOrg() {
     setLoading(false);
   }, [navigate]);
 
+  const redirectAfterOrgSelect = () => {
+    // Check for pending plan purchase
+    const pendingPlan = localStorage.getItem('fusion_client_pending_plan');
+    const pendingBilling = localStorage.getItem('fusion_client_pending_billing') || 'monthly';
+
+    if (pendingPlan) {
+      localStorage.removeItem('fusion_client_pending_plan');
+      localStorage.removeItem('fusion_client_pending_billing');
+      navigate(`/client/checkout?plan=${pendingPlan}&billing=${pendingBilling}`);
+    } else {
+      navigate('/client/dashboard');
+    }
+  };
+
   const handleSelectOrg = (org: Organization) => {
     setCurrentOrganization(org);
-    navigate('/client/dashboard');
+    redirectAfterOrgSelect();
   };
 
   const getPlanBadgeColor = (plan: string) => {

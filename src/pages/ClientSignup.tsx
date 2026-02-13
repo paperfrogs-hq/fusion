@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ import { Loader2, Building2, Clock, Eye, EyeOff } from 'lucide-react';
 
 export default function ClientSignup() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -23,6 +24,16 @@ export default function ClientSignup() {
     confirmPassword: '',
     acceptedTerms: false
   });
+
+  // Store plan if passed via URL for redirect after login
+  useEffect(() => {
+    const plan = searchParams.get('plan');
+    const billing = searchParams.get('billing');
+    if (plan) {
+      localStorage.setItem('fusion_client_pending_plan', plan);
+      localStorage.setItem('fusion_client_pending_billing', billing || 'monthly');
+    }
+  }, [searchParams]);
 
   const handleChange = (field: string, value: string | boolean) => {
     setFormData({ ...formData, [field]: value });

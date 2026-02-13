@@ -50,6 +50,7 @@ const OrgPage = lazy(() => import("./pages/OrgPage"));
 const SecuritySettings = lazy(() => import("./pages/SecuritySettings"));
 const AcceptInvite = lazy(() => import("./pages/AcceptInvite"));
 const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
+const ClientCheckout = lazy(() => import("./pages/ClientCheckout"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -118,6 +119,7 @@ const App = () => (
               <Route path="/client/select-org" element={<ClientSelectOrg />} />
               <Route path="/client/create-organization" element={<CreateOrganization />} />
               <Route path="/client/accept-invite" element={<AcceptInvite />} />
+              <Route path="/client/checkout" element={<ClientCheckout />} />
               <Route path="/client/pricing" element={<BusinessPricing />} />
               <Route path="/client/dashboard" element={<ClientDashboard />} />
               <Route path="/client/verify" element={<VerifyAudio />} />

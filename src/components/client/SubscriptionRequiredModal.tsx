@@ -1,8 +1,8 @@
-// Trial Expired Modal
-// Shows when 14-day trial has ended, blocks access until upgrade
+// Subscription Required Modal
+// Shows when enterprise/business organization needs to purchase a subscription
 
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, CreditCard, Clock, Sparkles } from 'lucide-react';
+import { CreditCard, Building2, Check, Lock } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -13,15 +13,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-interface TrialExpiredModalProps {
+interface SubscriptionRequiredModalProps {
   open: boolean;
   organizationName?: string;
 }
 
-export default function TrialExpiredModal({ open, organizationName }: TrialExpiredModalProps) {
+export default function SubscriptionRequiredModal({ open, organizationName }: SubscriptionRequiredModalProps) {
   const navigate = useNavigate();
 
-  const handleUpgrade = () => {
+  const handleSubscribe = () => {
     navigate('/enterprise/pricing');
   };
 
@@ -33,27 +33,27 @@ export default function TrialExpiredModal({ open, organizationName }: TrialExpir
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center">
-            <AlertTriangle className="w-8 h-8 text-orange-500" />
+          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <Building2 className="w-8 h-8 text-primary" />
           </div>
           <DialogTitle className="text-xl text-white text-center">
-            Your Trial Has Ended
+            Subscription Required
           </DialogTitle>
           <DialogDescription className="text-neutral-400 text-center">
             {organizationName ? (
-              <>Your 14-day trial for <span className="text-white font-medium">{organizationName}</span> has expired.</>
+              <>To access the dashboard for <span className="text-white font-medium">{organizationName}</span>, please subscribe to a plan.</>
             ) : (
-              <>Your 14-day trial has expired.</>
+              <>Please subscribe to a plan to access your dashboard.</>
             )}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Benefits reminder */}
+          {/* Plan features */}
           <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700">
             <h4 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" />
-              Upgrade to continue with:
+              <Check className="w-4 h-4 text-green-500" />
+              Enterprise plans include:
             </h4>
             <ul className="space-y-2 text-sm text-neutral-300">
               <li className="flex items-center gap-2">
@@ -62,11 +62,11 @@ export default function TrialExpiredModal({ open, organizationName }: TrialExpir
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                Unlimited audio verifications
+                Advanced analytics dashboard
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                Advanced analytics & reports
+                Team management & collaboration
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -75,23 +75,23 @@ export default function TrialExpiredModal({ open, organizationName }: TrialExpir
             </ul>
           </div>
 
-          {/* Trial status */}
+          {/* Pricing badge */}
           <div className="flex items-center justify-center gap-2 text-sm text-neutral-400">
-            <Clock className="w-4 h-4" />
-            <span>Trial period: 14 days</span>
-            <Badge variant="outline" className="text-orange-400 border-orange-400/30">
-              Expired
+            <Lock className="w-4 h-4" />
+            <span>Plans starting at</span>
+            <Badge className="bg-primary/20 text-primary border-primary/30">
+              $99/month
             </Badge>
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
-          <Button onClick={handleUpgrade} className="w-full bg-primary hover:bg-primary/90">
+          <Button onClick={handleSubscribe} className="w-full bg-primary hover:bg-primary/90">
             <CreditCard className="w-4 h-4 mr-2" />
-            Subscribe Now
+            View Plans & Subscribe
           </Button>
           <p className="text-xs text-neutral-500 text-center">
-            Choose a plan that fits your needs. Start using immediately.
+            Enterprise plans are charged immediately. No trial period.
           </p>
         </div>
       </DialogContent>
