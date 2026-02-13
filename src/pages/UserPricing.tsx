@@ -62,27 +62,6 @@ const plans: Plan[] = [
     ],
     is_popular: true,
     icon: <Zap className="h-6 w-6" />
-  },
-  {
-    id: '3',
-    plan_code: 'user_enterprise',
-    plan_name: 'Enterprise',
-    description: 'For high-volume professionals and studios',
-    price_monthly: 79,
-    price_yearly: 790,
-    monthly_verifications: 2000,
-    features: [
-      'Everything in Professional',
-      'Unlimited Verifications',
-      'Dedicated Support',
-      'Custom Integrations',
-      'White-label Certificates',
-      'Advanced Analytics',
-      'SLA Guarantee',
-      'Custom Watermarking'
-    ],
-    is_popular: false,
-    icon: <Crown className="h-6 w-6" />
   }
 ];
 
@@ -137,7 +116,7 @@ export default function UserPricing() {
           </div>
 
           {/* Plans Grid */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {plans.map((plan) => {
               const price = billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
               const monthlyPrice = billingCycle === 'yearly' && plan.price_yearly > 0 

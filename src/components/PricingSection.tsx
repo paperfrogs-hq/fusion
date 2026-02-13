@@ -34,18 +34,6 @@ const PricingSection = () => {
       icon: <Zap className="h-5 w-5" />,
       cta: 'Start 14-Day Trial',
       link: '/user/signup?plan=professional'
-    },
-    {
-      name: 'Enterprise',
-      description: 'For high-volume professionals',
-      price: 79,
-      yearlyPrice: 790,
-      verifications: 2000,
-      features: ['Everything in Pro', 'Dedicated Support', 'Custom Integrations', 'White-label', 'SLA Guarantee'],
-      popular: false,
-      icon: <Crown className="h-5 w-5" />,
-      cta: 'Start 14-Day Trial',
-      link: '/user/signup?plan=enterprise'
     }
   ];
 
@@ -153,7 +141,7 @@ const PricingSection = () => {
         </motion.div>
 
         {/* Plans Grid */}
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className={`grid gap-6 max-w-5xl mx-auto ${plans.length === 2 ? 'md:grid-cols-2 max-w-3xl' : 'md:grid-cols-3'}`}>
           {plans.map((plan, index) => {
             const displayPrice = billingCycle === 'yearly' && plan.yearlyPrice > 0
               ? Math.round(plan.yearlyPrice / 12)
