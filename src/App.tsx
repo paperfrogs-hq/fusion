@@ -110,8 +110,9 @@ const App = () => (
               {/* Organization Public Page */}
               <Route path="/org/:slug" element={<OrgPage />} />
               
-              {/* Business Pricing */}
+              {/* Business/Enterprise Pricing */}
               <Route path="/business/pricing" element={<BusinessPricing />} />
+              <Route path="/enterprise/pricing" element={<BusinessPricing />} />
               
               {/* Client Portal Routes */}
               <Route path="/client/login" element={<ClientLogin />} />
