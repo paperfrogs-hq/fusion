@@ -69,7 +69,17 @@ export default function UserPricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   const handleGetStarted = (planCode: string) => {
-    window.location.href = `/user/signup?plan=${planCode}`;
+    // Check if user is already logged in
+    const token = localStorage.getItem('fusion_user_token');
+    const userId = localStorage.getItem('fusion_user_id');
+    
+    if (token && userId) {
+      // User is logged in, go to checkout
+      window.location.href = `/user/checkout?plan=${planCode}&billing=${billingCycle}`;
+    } else {
+      // User is not logged in, go to signup
+      window.location.href = `/user/signup?plan=${planCode}&billing=${billingCycle}`;
+    }
   };
 
   return (

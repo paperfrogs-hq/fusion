@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { CreditCard, Calendar, AlertCircle, CheckCircle2, XCircle, Loader2, TrendingUp } from 'lucide-react';
+import { CreditCard, Calendar, AlertCircle, CheckCircle2, XCircle, Loader2, TrendingUp, Pencil } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { toast } from 'sonner';
+import UserPaymentMethodModal from '../components/user/UserPaymentMethodModal';
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,7 @@ export default function UserSubscription() {
   const [plan, setPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
@@ -274,21 +276,40 @@ export default function UserSubscription() {
           </div>
 
           {subscription.card_last4 ? (
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded flex items-center justify-center">
-                <CreditCard className="h-5 w-5 text-white" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded flex items-center justify-center">
+                  <CreditCard className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground capitalize">
+                    {subscription.card_brand} ending in {subscription.card_last4}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Expires {subscription.card_exp_month}/{subscription.card_exp_year}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-foreground capitalize">
-                  {subscription.card_brand} ending in {subscription.card_last4}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Expires {subscription.card_exp_month}/{subscription.card_exp_year}
-                </p>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPaymentModal(true)}
+              >
+                <Pencil className="h-4 w-4 mr-2" />
+                Update
+              </Button>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No payment method on file</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">No payment method on file</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPaymentModal(true)}
+              >
+                Add Card
+              </Button>
+            </div>
           )}
         </Card>
       </div>
@@ -325,6 +346,16 @@ export default function UserSubscription() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Payment Method Modal */}
+      <UserPaymentMethodModal
+        open={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onSuccess={() => {
+          setShowPaymentModal(false);
+          loadSubscription();
+        }}
+      />
     </div>
   );
 }

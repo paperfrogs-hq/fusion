@@ -19,6 +19,8 @@ import VerifyEmail from "./pages/VerifyEmail";
 import ComingSoon from "./pages/ComingSoon";
 import BusinessPricing from "./pages/BusinessPricing";
 import UserPricing from "./pages/UserPricing";
+import UserCheckout from "./pages/UserCheckout";
+import UserSubscription from "./pages/UserSubscription";
 import ErrorBoundary from "./components/client/ErrorBoundary";
 
 // Lazy load client portal pages
@@ -89,7 +91,8 @@ const App = () => (
               <Route path="/user/login" element={<UserLogin />} />
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/user/pricing" element={<UserPricing />} />
-              <Route path="/user/subscription" element={<ComingSoon />} />
+              <Route path="/user/checkout" element={<UserCheckout />} />
+              <Route path="/user/subscription" element={<UserSubscription />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               
               {/* Forgot Password & Reset Password Routes */}
