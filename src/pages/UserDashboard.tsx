@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
 import AudioUpload from '@/components/user/AudioUpload';
 import AudioVerification from '@/components/user/AudioVerification';
+import UserTrialExpiredModal from '@/components/user/UserTrialExpiredModal';
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export default function UserDashboard() {
   const [storageUsed, setStorageUsed] = useState(0);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [uploadingPicture, setUploadingPicture] = useState(false);
+  const [trialExpired, setTrialExpired] = useState(false);
   const [currentPlan] = useState({
     name: 'Trial',
     verifications_limit: 100,
@@ -51,7 +53,25 @@ export default function UserDashboard() {
     loadAudioFiles(userId);
     loadVerificationHistory(userId);
     loadUserData(userId);
+    checkTrialStatus(userId);
   }, [navigate]);
+
+  const checkTrialStatus = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from('user_subscriptions')
+        .select('trial_end, status')
+        .eq('user_id', userId)
+        .single();
+
+      if (data?.trial_end && data.status === 'trialing') {
+        const trialEnd = new Date(data.trial_end);
+        setTrialExpired(trialEnd <= new Date());
+      }
+    } catch (error) {
+      console.error('Failed to check trial status:', error);
+    }
+  };
 
   const loadUserData = async (userId: string) => {
     try {
@@ -759,6 +779,8 @@ export default function UserDashboard() {
           <p>&copy; 2026 Fusion. All rights reserved.</p>
         </div>
       </footer>
+
+      <UserTrialExpiredModal open={trialExpired} userName={user?.full_name || user?.name} />
     </div>
   );
 }

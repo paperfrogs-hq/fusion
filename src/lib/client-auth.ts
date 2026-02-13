@@ -315,6 +315,17 @@ export function isOnTrial(org: Organization | null): boolean {
   return trialEnd > new Date();
 }
 
+export function isTrialExpired(org: Organization | null): boolean {
+  if (!org) return false;
+  // Only check for trial accounts
+  if (org.billing_status !== 'trial' && org.plan_type !== 'trial') return false;
+  // If no trial_ends_at set, not expired
+  if (!org.trial_ends_at) return false;
+  
+  const trialEnd = new Date(org.trial_ends_at);
+  return trialEnd <= new Date();
+}
+
 export function getTrialDaysRemaining(org: Organization | null): number {
   if (!org?.trial_ends_at) return 0;
   

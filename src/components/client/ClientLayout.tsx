@@ -29,12 +29,14 @@ import {
 import OrgSwitcher from './OrgSwitcher';
 import EnvironmentSwitcher from './EnvironmentSwitcher';
 import NotificationsDropdown from './NotificationsDropdown';
+import TrialExpiredModal from './TrialExpiredModal';
 import { 
   validateSession, 
   getCurrentUser, 
   getCurrentOrganization,
   logout,
   isOnTrial,
+  isTrialExpired,
   getTrialDaysRemaining,
   getQuotaUsagePercent
 } from '../../lib/client-auth';
@@ -78,6 +80,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const quotaPercent = getQuotaUsagePercent(org);
   const trialDays = getTrialDaysRemaining(org);
   const onTrial = isOnTrial(org);
+  const trialExpired = isTrialExpired(org);
+
+  // Allow billing page even when trial expired
+  const isBillingPage = location.pathname === '/client/billing';
 
   if (!user || !org) {
     return (
@@ -89,6 +95,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   return (
     <div className="min-h-screen bg-neutral-950">
+      {/* Trial Expired Modal - blocks access until upgrade */}
+      <TrialExpiredModal 
+        open={trialExpired && !isBillingPage} 
+        organizationName={org.name} 
+      />
+
       {/* Sidebar */}
       <div className="fixed inset-y-0 left-0 w-64 bg-neutral-900 border-r border-neutral-800">
         <div className="flex flex-col h-full">
