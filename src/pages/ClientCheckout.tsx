@@ -9,6 +9,7 @@ import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { getCurrentOrganization, setCurrentOrganization } from '../lib/client-auth';
 
 interface Plan {
   plan_code: string;
@@ -167,6 +168,16 @@ export default function ClientCheckout() {
       const result = await response.json();
 
       if (response.ok) {
+        // Update org in localStorage with active billing status
+        const currentOrg = getCurrentOrganization();
+        if (currentOrg) {
+          setCurrentOrganization({
+            ...currentOrg,
+            billing_status: 'active',
+            plan_type: planCode,
+          });
+        }
+        
         toast.success('Subscription activated successfully!');
         navigate('/client/dashboard');
       } else {

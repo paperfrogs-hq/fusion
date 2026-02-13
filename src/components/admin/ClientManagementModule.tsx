@@ -313,8 +313,17 @@ const ClientManagementModule = () => {
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {org.account_status.replace(/_/g, " ")}
                         </Badge>
-                        <Badge variant="outline" className="bg-neutral-700/50 text-neutral-300 border-neutral-600">
-                          {org.plan_type || "trial"}
+                        <Badge 
+                          variant="outline" 
+                          className={`${
+                            org.billing_status === 'active' 
+                              ? 'bg-green-900/30 text-green-300 border-green-600' 
+                              : org.billing_status === 'trial' 
+                                ? 'bg-blue-900/30 text-blue-300 border-blue-600'
+                                : 'bg-neutral-700/50 text-neutral-300 border-neutral-600'
+                          }`}
+                        >
+                          {org.billing_status === 'active' ? `Paid: ${org.plan_type || 'Pro'}` : org.billing_status === 'trial' ? 'Trial' : org.plan_type || 'No Plan'}
                         </Badge>
                       </div>
                     </div>

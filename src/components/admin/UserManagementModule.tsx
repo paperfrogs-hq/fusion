@@ -9,6 +9,14 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase-client";
 import { logAdminAction } from "@/lib/admin-auth";
 
+interface UserSubscription {
+  id: string;
+  status: string;
+  billing_cycle: string;
+  trial_end?: string;
+  plan_id?: string;
+}
+
 interface User {
   id: string;
   email: string;
@@ -19,6 +27,8 @@ interface User {
   created_at: string;
   last_login_at?: string;
   api_key?: string;
+  subscription?: UserSubscription;
+  plan_name?: string;
 }
 
 const UserManagementModule = () => {
@@ -45,13 +55,35 @@ const UserManagementModule = () => {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      // Fetch users
+      const { data: usersData, error: usersError } = await supabase
         .from("users")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setUsers(data || []);
+      if (usersError) throw usersError;
+
+      // Fetch subscriptions for all users
+      const { data: subscriptions } = await supabase
+        .from("user_subscriptions")
+        .select("user_id, status, billing_cycle, trial_end");
+
+      // Map subscriptions to users
+      const usersWithSubs = (usersData || []).map(user => {
+        const sub = subscriptions?.find(s => s.user_id === user.id);
+        return {
+          ...user,
+          subscription: sub ? {
+            id: sub.user_id,
+            status: sub.status,
+            billing_cycle: sub.billing_cycle,
+            trial_end: sub.trial_end,
+          } : undefined,
+          plan_name: sub?.status === 'active' ? 'Paid' : sub?.status === 'trialing' ? 'Trial' : 'None',
+        };
+      });
+
+      setUsers(usersWithSubs);
     } catch (error) {
       console.error("Error fetching users:", error);
       toast({
@@ -389,6 +421,9 @@ const UserManagementModule = () => {
                   Type
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Subscription
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -402,7 +437,7 @@ const UserManagementModule = () => {
             <tbody className="divide-y divide-border">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                     No users found
                   </td>
                 </tr>
@@ -422,6 +457,30 @@ const UserManagementModule = () => {
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 capitalize">
                         {user.user_type}
                       </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {user.subscription ? (
+                        <div>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            user.subscription.status === 'active' 
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
+                              : user.subscription.status === 'trialing' 
+                                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' 
+                                : 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300'
+                          }`}>
+                            {user.subscription.status === 'active' ? 'Paid' : user.subscription.status === 'trialing' ? 'Trial' : user.subscription.status}
+                          </span>
+                          {user.subscription.status === 'trialing' && user.subscription.trial_end && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              Ends: {new Date(user.subscription.trial_end).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-900/30 text-gray-500">
+                          No Plan
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(user.account_status)}`}>

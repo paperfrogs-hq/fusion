@@ -31,6 +31,8 @@ export default function UserDashboard() {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [uploadingPicture, setUploadingPicture] = useState(false);
   const [trialExpired, setTrialExpired] = useState(false);
+  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string>('trialing');
   const [currentPlan] = useState({
     name: 'Trial',
     verifications_limit: 100,
@@ -64,9 +66,27 @@ export default function UserDashboard() {
         .eq('user_id', userId)
         .single();
 
-      if (data?.trial_end && data.status === 'trialing') {
-        const trialEnd = new Date(data.trial_end);
-        setTrialExpired(trialEnd <= new Date());
+      if (data) {
+        setSubscriptionStatus(data.status || 'none');
+        
+        if (data.status === 'active') {
+          // User has paid subscription
+          setTrialExpired(false);
+          setTrialDaysLeft(null);
+        } else if (data?.trial_end && data.status === 'trialing') {
+          const trialEnd = new Date(data.trial_end);
+          const now = new Date();
+          const timeDiff = trialEnd.getTime() - now.getTime();
+          const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+          
+          if (daysLeft <= 0) {
+            setTrialExpired(true);
+            setTrialDaysLeft(0);
+          } else {
+            setTrialExpired(false);
+            setTrialDaysLeft(daysLeft);
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to check trial status:', error);
@@ -540,8 +560,11 @@ export default function UserDashboard() {
                       Manage your subscription and usage
                     </CardDescription>
                   </div>
-                  <Badge variant={currentPlan.name === 'Trial' ? 'secondary' : 'default'} className="text-sm">
-                    {currentPlan.name}
+                  <Badge 
+                    variant={subscriptionStatus === 'active' ? 'default' : 'secondary'} 
+                    className={`text-sm ${subscriptionStatus === 'trialing' && trialDaysLeft !== null && trialDaysLeft <= 3 ? 'bg-orange-500/10 text-orange-600 border-orange-500/20' : ''}`}
+                  >
+                    {subscriptionStatus === 'active' ? 'Active' : subscriptionStatus === 'trialing' ? `Trial (${trialDaysLeft ?? 14} days left)` : 'Trial'}
                   </Badge>
                 </div>
               </CardHeader>
@@ -574,13 +597,47 @@ export default function UserDashboard() {
                     <p className="text-xs text-muted-foreground">Verifications/month</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-foreground">{currentPlan.price === 0 ? 'Trial' : `$${currentPlan.price}`}</p>
-                    <p className="text-xs text-muted-foreground">{currentPlan.price > 0 ? '/month' : '14 Days'}</p>
+                    {subscriptionStatus === 'active' ? (
+                      <>
+                        <p className="text-2xl font-bold text-foreground">${currentPlan.price}</p>
+                        <p className="text-xs text-muted-foreground">/month</p>
+                      </>
+                    ) : trialDaysLeft !== null ? (
+                      <>
+                        <p className={`text-2xl font-bold ${trialDaysLeft <= 3 ? 'text-orange-500' : 'text-foreground'}`}>
+                          {trialDaysLeft} {trialDaysLeft === 1 ? 'day' : 'days'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">left in trial</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-2xl font-bold text-foreground">Trial</p>
+                        <p className="text-xs text-muted-foreground">14 Days</p>
+                      </>
+                    )}
                   </div>
                 </div>
 
+                {/* Trial Warning Banner */}
+                {subscriptionStatus === 'trialing' && trialDaysLeft !== null && trialDaysLeft <= 3 && trialDaysLeft > 0 && (
+                  <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 flex items-center gap-3">
+                    <Clock className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-orange-600">
+                        Your trial ends in {trialDaysLeft} {trialDaysLeft === 1 ? 'day' : 'days'}
+                      </p>
+                      <p className="text-xs text-orange-500/80">
+                        Add payment details to continue using Fusion after your trial.
+                      </p>
+                    </div>
+                    <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-600 hover:bg-orange-500/10" onClick={() => navigate('/user/pricing')}>
+                      Upgrade Now
+                    </Button>
+                  </div>
+                )}
+
                 {/* Upgrade CTA */}
-                {currentPlan.name === 'Trial' && (
+                {subscriptionStatus === 'trialing' && (
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
                       <Crown className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
@@ -601,7 +658,7 @@ export default function UserDashboard() {
                   </div>
                 )}
 
-                {currentPlan.name !== 'Trial' && (
+                {subscriptionStatus === 'active' && (
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => navigate('/user/pricing')}>
                       Change Plan
