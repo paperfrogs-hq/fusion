@@ -148,7 +148,7 @@ export default function UserLogin() {
                 to="/client/login" 
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
-                Business Portal →
+                Enterprise Portal →
               </Link>
             </div>
           </form>

@@ -91,7 +91,7 @@ const HeroSection = () => {
               className="w-full sm:w-auto" 
               onClick={() => navigate('/client/signup')}
             >
-              For Businesses
+              For Enterprise
             </Button>
           </motion.div>
 

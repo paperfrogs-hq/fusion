@@ -18,7 +18,7 @@ const PricingSection = () => {
       yearlyPrice: 90,
       verifications: 100,
       features: ['Audio Fingerprinting', 'Advanced Verification', 'Audio Library', 'Certificates', 'Email Support'],
-      popular: true,
+      popular: false,
       icon: <User className="h-5 w-5" />,
       cta: 'Start 14-Day Trial',
       link: '/user/signup?plan=creator'
@@ -30,10 +30,22 @@ const PricingSection = () => {
       yearlyPrice: 290,
       verifications: 500,
       features: ['Unlimited Library', 'Priority Support', 'Bulk Verification', 'API Access', 'Tamper Alerts'],
-      popular: false,
+      popular: true,
       icon: <Zap className="h-5 w-5" />,
       cta: 'Start 14-Day Trial',
       link: '/user/signup?plan=professional'
+    },
+    {
+      name: 'Enterprise',
+      description: 'For high-volume professionals',
+      price: 79,
+      yearlyPrice: 790,
+      verifications: 2000,
+      features: ['Everything in Pro', 'Dedicated Support', 'Custom Integrations', 'White-label', 'SLA Guarantee'],
+      popular: false,
+      icon: <Crown className="h-5 w-5" />,
+      cta: 'Start 14-Day Trial',
+      link: '/user/signup?plan=enterprise'
     }
   ];
 
@@ -115,7 +127,7 @@ const PricingSection = () => {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              For Businesses
+              For Enterprise
             </button>
           </div>
 
@@ -220,7 +232,7 @@ const PricingSection = () => {
             variant="ghost"
             onClick={() => window.location.href = selectedTab === 'individual' ? '/user/pricing' : '/business/pricing'}
           >
-            View All {selectedTab === 'individual' ? 'Individual' : 'Business'} Plans
+            View All {selectedTab === 'individual' ? 'Individual' : 'Enterprise'} Plans
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </motion.div>

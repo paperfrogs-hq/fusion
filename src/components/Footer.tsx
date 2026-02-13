@@ -11,7 +11,7 @@ const Footer = () => {
 
   const links = [
     { label: "Individual Pricing", path: "/user/pricing" },
-    { label: "Business Pricing", path: "/business/pricing" },
+    { label: "Enterprise Pricing", path: "/business/pricing" },
     { label: "Whitepaper", path: "/whitepaper" },
     { label: "Contact", path: "/contact" },
     { label: "Privacy", path: "/privacy" },

@@ -138,7 +138,7 @@ const Header = () => {
                 className="text-xs sm:text-sm px-2 sm:px-4"
                 onClick={() => navigate('/client/login')}
               >
-                Business
+                Enterprise
               </Button>
             </motion.div>
           </motion.div>
@@ -196,7 +196,7 @@ const Header = () => {
                       navigate('/client/login');
                     }}
                   >
-                    Business Login
+                    Enterprise Login
                   </Button>
                 </div>
               </nav>

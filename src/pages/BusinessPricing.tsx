@@ -102,7 +102,7 @@ export default function BusinessPricing() {
           {/* Header */}
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
-              For Businesses
+              For Enterprise
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Enterprise-Grade Audio Verification

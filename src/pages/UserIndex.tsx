@@ -159,7 +159,7 @@ export default function UserIndex() {
             className="text-center mt-20 pt-12 border-t border-border"
           >
             <p className="text-muted-foreground mb-4">
-              Looking for business solutions?
+              Looking for enterprise solutions?
             </p>
             <Link to="/client/login">
               <Button variant="outline" size="lg">

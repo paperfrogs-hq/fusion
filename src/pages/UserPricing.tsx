@@ -37,11 +37,11 @@ const plans: Plan[] = [
       'Email Support',
       'Export Reports'
     ],
-    is_popular: true,
+    is_popular: false,
     icon: <User className="h-6 w-6" />
   },
   {
-    id: '3',
+    id: '2',
     plan_code: 'user_professional',
     plan_name: 'Professional',
     description: 'For professionals requiring extensive verification',
@@ -59,6 +59,27 @@ const plans: Plan[] = [
       'Bulk Verification',
       'API Access',
       'Tamper Detection Alerts'
+    ],
+    is_popular: true,
+    icon: <Zap className="h-6 w-6" />
+  },
+  {
+    id: '3',
+    plan_code: 'user_enterprise',
+    plan_name: 'Enterprise',
+    description: 'For high-volume professionals and studios',
+    price_monthly: 79,
+    price_yearly: 790,
+    monthly_verifications: 2000,
+    features: [
+      'Everything in Professional',
+      'Unlimited Verifications',
+      'Dedicated Support',
+      'Custom Integrations',
+      'White-label Certificates',
+      'Advanced Analytics',
+      'SLA Guarantee',
+      'Custom Watermarking'
     ],
     is_popular: false,
     icon: <Crown className="h-6 w-6" />
