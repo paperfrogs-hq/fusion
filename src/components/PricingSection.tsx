@@ -93,10 +93,10 @@ const PricingSection = () => {
             Choose the plan that fits your usage. All plans include a 14-day trial.
           </p>
 
-          <div className="mt-8 inline-flex items-center gap-1 rounded-full border border-border bg-secondary/90 p-1 shadow-[0_0_0_1px_rgba(182,255,0,0.08)]">
+          <div className="mx-auto mt-8 grid w-full max-w-md grid-cols-2 items-center gap-1 rounded-full border border-border bg-secondary/90 p-1 shadow-[0_0_0_1px_rgba(182,255,0,0.08)]">
             <button
               onClick={() => setSelectedTab('individual')}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
+              className={`rounded-full px-3 py-2 text-xs font-medium transition-all sm:px-5 sm:text-sm ${
                 selectedTab === 'individual'
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground'
@@ -106,7 +106,7 @@ const PricingSection = () => {
             </button>
             <button
               onClick={() => setSelectedTab('business')}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
+              className={`rounded-full px-3 py-2 text-xs font-medium transition-all sm:px-5 sm:text-sm ${
                 selectedTab === 'business'
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground'
@@ -116,7 +116,7 @@ const PricingSection = () => {
             </button>
           </div>
 
-          <div className="mt-6 flex items-center justify-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <span className={`text-sm ${billingCycle === 'monthly' ? 'text-foreground' : 'text-muted-foreground'}`}>
               Monthly
             </span>

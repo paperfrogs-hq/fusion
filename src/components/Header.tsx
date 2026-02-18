@@ -1,29 +1,39 @@
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Building2, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Container } from "@/components/ui/container";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const navItems = ["How It Works", "Solutions", "Features", "Pricing"];
+  const navItems: Array<{ label: string; sectionId?: string; path?: string }> = [
+    { label: "How It Works", sectionId: "how-it-works" },
+    { label: "Solutions", sectionId: "solutions" },
+    { label: "Features", sectionId: "features" },
+    { label: "Pricing", path: "/pricing" },
+  ];
 
   useEffect(() => {
-    const sections = ["how-it-works", "solutions", "features", "pricing"];
+    const sections = navItems
+      .map((item) => item.sectionId)
+      .filter((sectionId): sectionId is string => Boolean(sectionId));
 
     const handleScroll = () => {
       let currentSection = "";
 
-      for (const sectionId of sections) {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 180) {
-            currentSection = sectionId;
+      if (location.pathname === "/") {
+        for (const sectionId of sections) {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            const rect = element.getBoundingClientRect();
+            if (rect.top <= 180) {
+              currentSection = sectionId;
+            }
           }
         }
       }
@@ -36,11 +46,26 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [location.pathname]);
 
-  const handleNavClick = (sectionId: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleNavClick =
+    ({ sectionId, path }: { sectionId?: string; path?: string }) =>
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setMobileMenuOpen(false);
+
+    if (path) {
+      navigate(path);
+      return;
+    }
+
+    if (!sectionId) return;
+
+    if (location.pathname !== "/") {
+      navigate(`/#${sectionId}`);
+      return;
+    }
+
     const element = document.getElementById(sectionId);
     if (element) {
       const headerOffset = 104;
@@ -53,8 +78,7 @@ const Header = () => {
     }
   };
 
-  const getLinkClass = (sectionId: string) => {
-    const isActive = activeSection === sectionId;
+  const getLinkClass = (isActive: boolean) => {
     return `relative px-3 py-2 text-sm font-medium transition-colors ${
       isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
     }`;
@@ -85,16 +109,16 @@ const Header = () => {
 
           <nav className="hidden items-center gap-2 md:flex">
             {navItems.map((item) => {
-              const sectionId = item.toLowerCase().replace(/\s+/g, "-");
-              const isActive = activeSection === sectionId;
+              const sectionId = item.sectionId ?? "";
+              const isActive = item.path ? location.pathname === item.path : activeSection === sectionId;
               return (
                 <a
-                  key={item}
-                  href={`#${sectionId}`}
-                  onClick={handleNavClick(sectionId)}
-                  className={`group ${getLinkClass(sectionId)}`}
+                  key={item.label}
+                  href={item.path ?? `#${sectionId}`}
+                  onClick={handleNavClick(item)}
+                  className={`group ${getLinkClass(isActive)}`}
                 >
-                  {item}
+                  {item.label}
                   <span
                     className={`absolute inset-x-3 bottom-1 h-px bg-primary transition-transform duration-200 group-hover:scale-x-100 ${
                       isActive ? "scale-x-100" : "scale-x-0"
@@ -106,8 +130,16 @@ const Header = () => {
           </nav>
 
           <div className="hidden items-center gap-2 md:flex">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/user/login")}>Creators</Button>
-            <Button variant="hero" size="sm" onClick={() => navigate("/client/login")}>Enterprise</Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/user/login")}>User</Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 border-primary/70 bg-primary/10 text-primary hover:border-[#C8FF2F] hover:bg-primary/15 hover:text-[#C8FF2F]"
+              onClick={() => navigate("/client/login")}
+            >
+              <Building2 className="h-3.5 w-3.5" />
+              Enterprise
+            </Button>
           </div>
 
           <button
@@ -131,20 +163,20 @@ const Header = () => {
               <div className="rounded-xl border border-border bg-card/95 p-4 backdrop-blur-xl">
                 <nav className="flex flex-col gap-1">
                   {navItems.map((item) => {
-                    const sectionId = item.toLowerCase().replace(/\s+/g, "-");
-                    const isActive = activeSection === sectionId;
+                    const sectionId = item.sectionId ?? "";
+                    const isActive = item.path ? location.pathname === item.path : activeSection === sectionId;
                     return (
                       <a
-                        key={item}
-                        href={`#${sectionId}`}
-                        onClick={handleNavClick(sectionId)}
+                        key={item.label}
+                        href={item.path ?? `#${sectionId}`}
+                        onClick={handleNavClick(item)}
                         className={`rounded-md px-3 py-2 text-sm ${
                           isActive
                             ? "bg-primary/15 text-primary"
                             : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                         }`}
                       >
-                        {item}
+                        {item.label}
                       </a>
                     );
                   })}
@@ -158,16 +190,18 @@ const Header = () => {
                       navigate("/user/login");
                     }}
                   >
-                    Creators
+                    User
                   </Button>
                   <Button
-                    variant="hero"
+                    variant="outline"
                     size="sm"
+                    className="gap-1.5 border-primary/70 bg-primary/10 text-primary hover:border-[#C8FF2F] hover:bg-primary/15 hover:text-[#C8FF2F]"
                     onClick={() => {
                       setMobileMenuOpen(false);
                       navigate("/client/login");
                     }}
                   >
+                    <Building2 className="h-3.5 w-3.5" />
                     Enterprise
                   </Button>
                 </div>

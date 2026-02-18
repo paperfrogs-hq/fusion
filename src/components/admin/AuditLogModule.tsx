@@ -110,7 +110,7 @@ const AuditLogModule = () => {
       </div>
 
       <Tabs defaultValue="recent" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="recent" className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
             Recent

@@ -72,17 +72,19 @@ export default function EnvironmentSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="h-9 gap-2"
+          className="h-9 gap-2 px-2.5 sm:px-3"
         >
           {currentEnv.is_production ? (
             <>
               <div className="h-2 w-2 rounded-full bg-green-500"></div>
-              <span className="font-medium">Production</span>
+              <span className="font-medium sm:hidden">Live</span>
+              <span className="hidden font-medium sm:inline">Production</span>
             </>
           ) : (
             <>
               <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
-              <span className="font-medium">Sandbox</span>
+              <span className="font-medium sm:hidden">Test</span>
+              <span className="hidden font-medium sm:inline">Sandbox</span>
             </>
           )}
         </Button>

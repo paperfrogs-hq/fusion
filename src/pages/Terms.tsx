@@ -1,143 +1,201 @@
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import SectionBadge from "@/components/SectionBadge";
+import { AlertTriangle, ArrowLeft, Gavel, Mail, Scale } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import SectionBadge from "@/components/SectionBadge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Panel } from "@/components/ui/panel";
+
+const contents = [
+  { id: "agreement", label: "Agreement to Terms" },
+  { id: "license", label: "Use License" },
+  { id: "disclaimer", label: "Disclaimer" },
+  { id: "limitations", label: "Limitations of Liability" },
+  { id: "accuracy", label: "Accuracy of Materials" },
+  { id: "links", label: "External Links" },
+  { id: "updates", label: "Policy Updates" },
+  { id: "law", label: "Governing Law" },
+  { id: "contact", label: "Contact Information" },
+];
 
 const Terms = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header with back button */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-border/50"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <ArrowLeft className="w-5 h-5 text-primary" />
-            <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Back to Home
-            </span>
-          </button>
-          <h1 className="text-xl font-bold text-foreground">Terms of Service</h1>
-          <div className="w-20" />
-        </div>
-      </motion.div>
+    <div className="relative min-h-screen bg-background">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-animated-grid opacity-20" />
+        <div className="absolute -left-24 top-24 h-[340px] w-[340px] rounded-full bg-primary/10 blur-[130px]" />
+        <div className="absolute -right-20 bottom-20 h-[320px] w-[320px] rounded-full bg-accent/10 blur-[130px]" />
+      </div>
 
-      {/* Content */}
-      <div className="pt-24 pb-20">
-        <div className="container mx-auto px-6 max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-16"
-          >
-            {/* Title Section */}
-            <div className="space-y-6">
+      <Header />
+
+      <main className="relative z-10 px-4 pb-20 pt-32 sm:px-6 sm:pt-36 lg:px-8">
+        <div className="mx-auto grid w-full max-w-[1320px] gap-8 xl:grid-cols-[250px_1fr]">
+          <aside className="hidden xl:block">
+            <div className="sticky top-24 rounded-2xl border border-border bg-card/80 p-4 backdrop-blur-md">
+              <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Contents</p>
+              <nav className="mt-3 space-y-1.5">
+                {contents.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    className="block rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary/80 hover:text-foreground"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          </aside>
+
+          <div className="space-y-8">
+            <motion.section
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.36 }}
+              className="surface-panel p-7 sm:p-9"
+            >
+              <button
+                onClick={() => navigate("/")}
+                className="mb-4 flex w-fit items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Home
+              </button>
               <SectionBadge>Legal</SectionBadge>
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+              <h1 className="mt-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Terms of Service
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                Effective Date: January 1, 2025
+              <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                These terms govern access to and use of Fusion websites, applications, and related services.
               </p>
-            </div>
-
-            {/* Terms of Service Content */}
-            <div className="space-y-8 text-lg text-muted-foreground leading-relaxed">
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">1. Agreement to Terms</h2>
-                <p>
-                  These Terms of Service ("Terms") constitute a legal agreement between you and Paperfrogs HQ and Paperfrogs Labs (collectively, "Company," "we," "us," "our"). By accessing and using this website and services, you agree to be bound by these Terms. If you do not agree to abide by the above, please do not use this service.
-                </p>
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <Badge>Effective: January 1, 2025</Badge>
+                <Badge variant="secondary">Paperfrogs HQ + Paperfrogs Labs</Badge>
               </div>
+            </motion.section>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">2. Use License</h2>
-                <p>
-                  Permission is granted to temporarily download one copy of the materials (information or software) on Fusion for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
-                </p>
-                <ul className="space-y-2 ml-4">
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Modifying or copying the materials</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Using the materials for any commercial purpose or for any public display</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Attempting to decompile or reverse engineer any software contained on the Site</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Removing any copyright or other proprietary notations from the materials</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Transferring the materials to another person or "mirroring" the materials on any other server</span>
-                  </li>
-                </ul>
+            <Panel id="agreement" className="p-7 sm:p-8">
+              <div className="flex items-center gap-2">
+                <Scale className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">1. Agreement to Terms</h2>
               </div>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                By accessing or using Fusion, you agree to these Terms of Service. If you do not agree with these
+                terms, do not use the service.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">3. Disclaimer</h2>
-                <p>
-                  The materials on Fusion are provided on an 'as is' basis. The Company makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
-                </p>
+            <Panel id="license" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">2. Use License</h2>
+              <p className="mt-4 text-muted-foreground">
+                Subject to these terms, we grant a limited, non-exclusive, non-transferable license to use Fusion for
+                lawful purposes. You may not:
+              </p>
+              <div className="mt-5 space-y-3">
+                {[
+                  "Copy, modify, or reproduce materials except as expressly permitted.",
+                  "Use materials for unauthorized commercial redistribution.",
+                  "Reverse engineer or attempt to extract source logic from protected components.",
+                  "Remove proprietary notices, attributions, or legal markings.",
+                  "Mirror or republish service materials on external systems without authorization.",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                    <p className="text-muted-foreground">{item}</p>
+                  </div>
+                ))}
               </div>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">4. Limitations</h2>
-                <p>
-                  In no event shall the Company or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Fusion, even if Company or authorized representative has been notified orally or in writing of the possibility of such damage.
-                </p>
+            <Panel id="disclaimer" className="p-7 sm:p-8">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">3. Disclaimer</h2>
               </div>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                Fusion materials and services are provided "as is" and "as available" without warranties of any kind,
+                whether express or implied, including merchantability, fitness for a particular purpose, or
+                non-infringement.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">5. Accuracy of Materials</h2>
-                <p>
-                  The materials appearing on Fusion could include technical, typographical, or photographic errors. The Company does not warrant that any of the materials on its website are accurate, complete, or current. The Company may make changes to the materials contained on its website at any time without notice.
-                </p>
-              </div>
+            <Panel id="limitations" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">4. Limitations of Liability</h2>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                To the maximum extent permitted by law, the Company and its suppliers are not liable for indirect,
+                incidental, special, consequential, or punitive damages, or for loss of data, revenue, profits, or
+                business interruption arising from use of or inability to use Fusion.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">6. Links</h2>
-                <p>
-                  The Company has not reviewed all of the sites linked to its website and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by the Company of the site. Use of any such linked website is at the user's own risk.
-                </p>
-              </div>
+            <Panel id="accuracy" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">5. Accuracy of Materials</h2>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                Fusion content may contain technical or typographical errors. We may update, modify, or remove content
+                at any time without prior notice, and do not guarantee that all materials are always complete, current,
+                or error-free.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">7. Modifications</h2>
-                <p>
-                  The Company may revise these Terms of Service for its website at any time without notice. By using this website, you are agreeing to be bound by the then current version of these Terms of Service.
-                </p>
-              </div>
+            <Panel id="links" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">6. External Links</h2>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                Fusion may link to third-party sites or services. We are not responsible for their content, security,
+                or policies. Accessing third-party resources is at your own risk.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">8. Governing Law</h2>
-                <p>
-                  These terms and conditions are governed by and construed in accordance with the laws of the jurisdiction where Paperfrogs HQ is located, and you irrevocably submit to the exclusive jurisdiction of the courts in that location.
-                </p>
-              </div>
+            <Panel id="updates" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">7. Modifications to Terms</h2>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                We may revise these Terms of Service from time to time. Continued use of Fusion after updates are
+                posted constitutes acceptance of the revised terms.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">9. Contact Information</h2>
-                <p>
-                  If you have any questions about these Terms of Service, please contact us at: <strong>hello@paperfrogs.dev</strong>
-                </p>
+            <Panel id="law" className="p-7 sm:p-8">
+              <div className="flex items-center gap-2">
+                <Gavel className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">8. Governing Law</h2>
               </div>
-            </div>
-          </motion.div>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                These terms are governed by the laws of the jurisdiction in which Paperfrogs HQ operates, without
+                regard to conflict-of-law principles. You agree to submit to the courts of that jurisdiction.
+              </p>
+            </Panel>
+
+            <Panel id="contact" className="p-7 text-center sm:p-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/70 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-muted-foreground">
+                <Mail className="h-3.5 w-3.5 text-primary" />
+                Legal Contact
+              </div>
+              <h2 className="mt-4 text-2xl font-semibold text-foreground sm:text-3xl">Questions About These Terms?</h2>
+              <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+                Contact our team for legal or policy clarifications.
+              </p>
+              <a
+                href="mailto:fusion@paperfrogs.dev"
+                className="mt-5 inline-block text-xl font-semibold text-primary transition-colors hover:text-[#C8FF2F] sm:text-2xl"
+              >
+                fusion@paperfrogs.dev
+              </a>
+              <div className="mt-7">
+                <Button variant="hero-outline" size="lg" onClick={() => navigate("/")}>
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Home
+                </Button>
+              </div>
+            </Panel>
+          </div>
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };

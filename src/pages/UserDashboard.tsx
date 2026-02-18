@@ -334,7 +334,7 @@ export default function UserDashboard() {
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8">
         <Tabs defaultValue="upload" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
             <TabsTrigger value="upload">
               <Upload className="w-4 h-4 mr-2" />
               Upload Audio

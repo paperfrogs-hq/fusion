@@ -1,9 +1,16 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, Mail, MapPin, Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import SectionBadge from "@/components/SectionBadge";
+import { ArrowLeft, Building2, Clock3, Globe, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SectionBadge from "@/components/SectionBadge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Container } from "@/components/ui/container";
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -69,185 +76,219 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header with back button */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-border/50"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <ArrowLeft className="w-5 h-5 text-primary" />
-            <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Back to Home
-            </span>
-          </button>
-          <h1 className="text-xl font-bold text-foreground">Contact Us</h1>
-          <div className="w-20" />
-        </div>
-      </motion.div>
+    <div className="relative min-h-screen bg-background">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-animated-grid opacity-20" />
+        <div className="absolute -left-16 top-24 h-[320px] w-[320px] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute -right-16 bottom-24 h-[300px] w-[300px] rounded-full bg-accent/10 blur-[120px]" />
+      </div>
 
-      {/* Content */}
-      <div className="pt-24 pb-20">
-        <div className="container mx-auto px-6 max-w-3xl">
+      <Header />
+
+      <main className="relative z-10 pb-20 pt-32 sm:pt-36">
+        <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-16"
+            transition={{ duration: 0.4 }}
+            className="space-y-10 sm:space-y-12"
           >
-            {/* Title Section */}
-            <div className="space-y-6">
-              <SectionBadge>Get in Touch</SectionBadge>
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+            <div className="space-y-5">
+              <button
+                onClick={() => navigate("/")}
+                className="flex w-fit items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Home
+              </button>
+
+              <SectionBadge>Contact</SectionBadge>
+              <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl">
                 Contact Fusion Support
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                Have a question or feedback? We'd love to hear from you. Reach out to the Fusion team.
+              <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Have a question or feedback? Reach out to the Fusion team and we will follow up as quickly as possible.
               </p>
             </div>
 
-            {/* Contact Info */}
-            <div className="grid md:grid-cols-2 gap-8">
-              <motion.div
-                className="space-y-4 bg-card/50 p-6 rounded-lg border border-border/50"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="flex items-start gap-4">
-                  <Mail className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">Email</h3>
-                    <a href="mailto:hello@paperfrogs.dev" className="text-muted-foreground hover:text-primary transition-colors">
-                      fusion@paperfrogs.dev
-                    </a>
+            <div className="grid gap-6 lg:grid-cols-12">
+              <div className="space-y-6 lg:col-span-5">
+                <Card className="surface-panel p-6 sm:p-7">
+                  <h2 className="text-xl font-semibold text-foreground">Direct Channels</h2>
+                  <div className="mt-5 space-y-5">
+                    <div className="flex items-start gap-3.5">
+                      <div className="mt-0.5 rounded-lg border border-border bg-secondary p-2.5 text-primary">
+                        <Mail className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Email</p>
+                        <a
+                          href="mailto:fusion@paperfrogs.dev"
+                          className="mt-1 block text-sm text-foreground transition-colors hover:text-primary sm:text-base"
+                        >
+                          fusion@paperfrogs.dev
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3.5">
+                      <div className="mt-0.5 rounded-lg border border-border bg-secondary p-2.5 text-primary">
+                        <Globe className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Website</p>
+                        <a
+                          href="https://fusion.paperfrogs.dev"
+                          className="mt-1 block text-sm text-foreground transition-colors hover:text-primary sm:text-base"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          fusion.paperfrogs.dev
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
+                </Card>
 
-              <motion.div
-                className="space-y-4 bg-card/50 p-6 rounded-lg border border-border/50"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="flex items-start gap-4">
-                  <Globe className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">Website</h3>
-                    <a href="https://fusion.paperfrogs.dev" className="text-muted-foreground hover:text-primary transition-colors">
-                      fusion.paperfrogs.dev
-                    </a>
+                <Card className="surface-panel p-6 sm:p-7">
+                  <h3 className="text-lg font-semibold text-foreground">Support Profile</h3>
+                  <div className="mt-5 space-y-4">
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <Clock3 className="h-4 w-4 text-primary" />
+                      <span className="text-sm sm:text-base">Typical response within 24 hours</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <Building2 className="h-4 w-4 text-primary" />
+                      <span className="text-sm sm:text-base">Handled by Paperfrogs Labs team</span>
+                    </div>
+                    <Badge className="w-fit">Audio-Provenance Support</Badge>
                   </div>
+                </Card>
+              </div>
+
+              <Card className="surface-panel lg:col-span-7">
+                <div className="border-b border-border/80 p-6 sm:p-8">
+                  <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">Send us a Message</h2>
+                  <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                    All fields are required.
+                  </p>
                 </div>
-              </motion.div>
+
+                <div className="p-6 sm:p-8">
+                  {submitStatus && (
+                    <motion.div
+                      className={`mb-5 rounded-xl border px-4 py-3 text-sm ${
+                        submitStatus.type === "success"
+                          ? "border-primary/40 bg-primary/10 text-primary"
+                          : "border-destructive/40 bg-destructive/10 text-red-300"
+                      }`}
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {submitStatus.message}
+                    </motion.div>
+                  )}
+
+                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="name"
+                        className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                      >
+                        Full Name
+                      </label>
+                      <Input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Your name"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="email"
+                        className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                      >
+                        Email Address
+                      </label>
+                      <Input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="your@email.com"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="subject"
+                        className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                      >
+                        Subject
+                      </label>
+                      <Input
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="What's this about?"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="message"
+                        className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                      >
+                        Message
+                      </label>
+                      <Textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        required
+                        rows={6}
+                        className="resize-none"
+                        placeholder="Your message..."
+                      />
+                    </div>
+
+                    <Button type="submit" variant="hero" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
+                      {isSubmitting ? "Sending..." : "Send Message"}
+                    </Button>
+                  </form>
+                </div>
+              </Card>
             </div>
 
-            {/* Contact Form */}
-            <div className="space-y-6 bg-card/50 p-8 rounded-lg border border-border/50">
-              <h2 className="text-3xl font-bold text-foreground">Send us a Message</h2>
-
-              {submitStatus && (
-                <motion.div
-                  className={`p-4 rounded-lg ${submitStatus.type === "success"
-                      ? "bg-green-500/10 border border-green-500/50 text-green-600"
-                      : "bg-red-500/10 border border-red-500/50 text-red-600"
-                    }`}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                >
-                  {submitStatus.message}
-                </motion.div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-2 rounded-lg bg-background border border-border/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    placeholder="Your name"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-2 rounded-lg bg-background border border-border/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    placeholder="your@email.com"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-2 rounded-lg bg-background border border-border/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    placeholder="What's this about?"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                    rows={6}
-                    className="w-full px-4 py-2 rounded-lg bg-background border border-border/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all resize-none"
-                    placeholder="Your message..."
-                  />
-                </div>
-
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button type="submit" variant="hero" size="lg" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? "Sending..." : "Send Message"}
-                  </Button>
-                </motion.div>
-              </form>
-            </div>
-
-            {/* Additional Info */}
-            <div className="space-y-6 bg-card/50 p-8 rounded-lg border border-border/50">
-              <h2 className="text-3xl font-bold text-foreground">About Paperfrogs</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Paperfrogs HQ and Paperfrogs Labs are dedicated to building innovative solutions for audio provenance and verification in the AI era. Fusion is our flagship product, designed to embed cryptographically verifiable proof of audio origin at creation time.
+            <Card className="surface-panel p-6 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">About Paperfrogs</h2>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                Paperfrogs HQ and Paperfrogs Labs are dedicated to building innovative solutions for audio provenance
+                and verification in the AI era. Fusion is our flagship product, designed to embed cryptographically
+                verifiable proof of audio origin at creation time.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
-                We're passionate about creating trust infrastructure that works across platforms and ecosystems. Whether you have questions about Fusion, want to collaborate, or just want to chat, we'd love to hear from you.
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                We are focused on building trust infrastructure across platforms and ecosystems. Whether you have
+                questions about Fusion, want to collaborate, or need implementation support, we would love to hear
+                from you.
               </p>
-            </div>
+            </Card>
           </motion.div>
-        </div>
-      </div>
+        </Container>
+      </main>
+
+      <Footer />
     </div>
   );
 };

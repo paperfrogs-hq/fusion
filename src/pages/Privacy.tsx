@@ -1,170 +1,218 @@
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import SectionBadge from "@/components/SectionBadge";
+import { ArrowLeft, Database, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import SectionBadge from "@/components/SectionBadge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Panel } from "@/components/ui/panel";
+
+const contents = [
+  { id: "overview", label: "Overview" },
+  { id: "collect", label: "Information We Collect" },
+  { id: "use", label: "How We Use Information" },
+  { id: "storage", label: "Storage and Security" },
+  { id: "providers", label: "Third-Party Services" },
+  { id: "rights", label: "Your Rights" },
+  { id: "retention", label: "Data Retention" },
+  { id: "contact", label: "Contact" },
+];
 
 const Privacy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header with back button */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-border/50"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <ArrowLeft className="w-5 h-5 text-primary" />
-            <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Back to Home
-            </span>
-          </button>
-          <h1 className="text-xl font-bold text-foreground">Privacy Policy</h1>
-          <div className="w-20" />
-        </div>
-      </motion.div>
+    <div className="relative min-h-screen bg-background">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-animated-grid opacity-20" />
+        <div className="absolute -left-24 top-24 h-[340px] w-[340px] rounded-full bg-primary/10 blur-[130px]" />
+        <div className="absolute -right-20 bottom-20 h-[320px] w-[320px] rounded-full bg-accent/10 blur-[130px]" />
+      </div>
 
-      {/* Content */}
-      <div className="pt-24 pb-20">
-        <div className="container mx-auto px-6 max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-16"
-          >
-            {/* Title Section */}
-            <div className="space-y-6">
+      <Header />
+
+      <main className="relative z-10 px-4 pb-20 pt-32 sm:px-6 sm:pt-36 lg:px-8">
+        <div className="mx-auto grid w-full max-w-[1320px] gap-8 xl:grid-cols-[250px_1fr]">
+          <aside className="hidden xl:block">
+            <div className="sticky top-24 rounded-2xl border border-border bg-card/80 p-4 backdrop-blur-md">
+              <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Contents</p>
+              <nav className="mt-3 space-y-1.5">
+                {contents.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    className="block rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary/80 hover:text-foreground"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          </aside>
+
+          <div className="space-y-8">
+            <motion.section
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.36 }}
+              className="surface-panel p-7 sm:p-9"
+            >
+              <button
+                onClick={() => navigate("/")}
+                className="mb-4 flex w-fit items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Home
+              </button>
               <SectionBadge>Legal</SectionBadge>
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+              <h1 className="mt-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Privacy Policy
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                Effective Date: January 1, 2025
+              <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                This policy explains what information Fusion collects, why we collect it, and the controls available to
+                you.
               </p>
-            </div>
-
-            {/* Privacy Policy Content */}
-            <div className="space-y-8 text-lg text-muted-foreground leading-relaxed">
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">1. Introduction</h2>
-                <p>
-                  Paperfrogs HQ and Paperfrogs Labs (collectively, "we," "us," "our," or "Company") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website, including all related sites, applications, and services that link to this Privacy Policy (collectively, the "Site").
-                </p>
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <Badge>Effective: January 1, 2025</Badge>
+                <Badge variant="secondary">Paperfrogs HQ + Paperfrogs Labs</Badge>
               </div>
+            </motion.section>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">2. Information We Collect</h2>
-                <p>
-                  We may collect information about you in a variety of ways. The information we may collect on the Site includes:
-                </p>
-                <ul className="space-y-2 ml-4">
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span><strong>Personal Data:</strong> Email address when you sign up for our waitlist</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span><strong>Automatically Collected Data:</strong> Analytics data through our analytics platform (Umami)</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span><strong>Device Information:</strong> IP address, browser type, and pages visited</span>
-                  </li>
-                </ul>
+            <Panel id="overview" className="p-7 sm:p-8">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">1. Overview</h2>
               </div>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                Paperfrogs HQ and Paperfrogs Labs (collectively, "we," "us," "our," or "Company") are committed to
+                protecting your privacy. This Privacy Policy applies to the Fusion website, products, and related
+                services that link to this policy.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">3. Use of Your Information</h2>
-                <p>
-                  We use the information we collect to:
-                </p>
-                <ul className="space-y-2 ml-4">
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Send you updates about Fusion and product announcements</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Improve our Site and services</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Monitor and analyze trends, usage, and activities</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Prevent fraudulent activity and maintain security</span>
-                  </li>
-                </ul>
+            <Panel id="collect" className="p-7 sm:p-8">
+              <div className="flex items-center gap-2">
+                <Database className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">2. Information We Collect</h2>
               </div>
+              <div className="mt-5 space-y-3">
+                {[
+                  "Personal data: contact details such as your email when you join waitlists, request support, or submit forms.",
+                  "Usage and analytics data: product and page interactions used to improve performance and reliability.",
+                  "Device and technical data: IP address, browser type, operating environment, and basic request metadata.",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                    <p className="text-muted-foreground">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">4. Data Storage and Security</h2>
-                <p>
-                  Your data is stored securely in our database (Supabase) and email service (Resend). We implement industry-standard security measures to protect your personal information. However, no method of transmission over the internet is 100% secure.
-                </p>
+            <Panel id="use" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">3. How We Use Information</h2>
+              <div className="mt-5 space-y-3">
+                {[
+                  "Provide and operate Fusion services, including onboarding and support.",
+                  "Send service updates, platform notices, and product communications.",
+                  "Improve reliability, security posture, and user experience.",
+                  "Detect abuse, fraud, unauthorized access, and operational risk.",
+                ].map((item) => (
+                  <div key={item} className="rounded-lg border border-border bg-secondary/60 px-4 py-3 text-sm text-muted-foreground sm:text-base">
+                    {item}
+                  </div>
+                ))}
               </div>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">5. Third-Party Services</h2>
-                <p>
-                  We use third-party services to manage our operations, including:
-                </p>
-                <ul className="space-y-2 ml-4">
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span><strong>Supabase:</strong> Database hosting</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span><strong>Resend:</strong> Email delivery</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span><strong>Umami:</strong> Privacy-focused analytics</span>
-                  </li>
-                </ul>
-                <p>
-                  These service providers are contractually obligated to use your information only as necessary to provide services to us.
-                </p>
+            <Panel id="storage" className="p-7 sm:p-8">
+              <div className="flex items-center gap-2">
+                <LockKeyhole className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">4. Data Storage and Security</h2>
               </div>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                We store data using managed infrastructure providers and apply technical and organizational safeguards
+                designed to protect confidentiality and integrity. No internet transmission or storage system is
+                guaranteed to be fully secure, but we continuously improve our controls.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">6. Your Rights</h2>
-                <p>
-                  You have the right to:
-                </p>
-                <ul className="space-y-2 ml-4">
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Access the personal data we hold about you</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Request deletion of your personal data</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-primary">•</span>
-                    <span>Opt-out of marketing communications</span>
-                  </li>
-                </ul>
+            <Panel id="providers" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">5. Third-Party Services</h2>
+              <p className="mt-4 text-muted-foreground">
+                Fusion uses trusted service providers to operate key systems:
+              </p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-xl border border-border bg-secondary/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Supabase</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Database and storage infrastructure.</p>
+                </div>
+                <div className="rounded-xl border border-border bg-secondary/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Resend</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Transactional email delivery.</p>
+                </div>
+                <div className="rounded-xl border border-border bg-secondary/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Umami</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Privacy-focused analytics and insights.</p>
+                </div>
               </div>
+              <p className="mt-4 text-sm text-muted-foreground">
+                These providers are expected to process data only for service delivery and operational purposes.
+              </p>
+            </Panel>
 
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-foreground">7. Contact Us</h2>
-                <p>
-                  If you have questions about this Privacy Policy, please contact us at: <strong>hello@paperfrogs.dev</strong>
-                </p>
+            <Panel id="rights" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">6. Your Rights and Choices</h2>
+              <div className="mt-5 space-y-3">
+                {[
+                  "Request access to personal information we hold about you.",
+                  "Request correction or deletion of personal information, where applicable.",
+                  "Opt out of marketing communications at any time.",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                    <p className="text-muted-foreground">{item}</p>
+                  </div>
+                ))}
               </div>
-            </div>
-          </motion.div>
+            </Panel>
+
+            <Panel id="retention" className="p-7 sm:p-8">
+              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">7. Data Retention and Changes</h2>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                We retain personal information only as long as needed for legitimate business, legal, and security
+                purposes. We may update this policy from time to time and will publish updated versions on this page.
+              </p>
+            </Panel>
+
+            <Panel id="contact" className="p-7 text-center sm:p-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/70 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-muted-foreground">
+                <Mail className="h-3.5 w-3.5 text-primary" />
+                Privacy Contact
+              </div>
+              <h2 className="mt-4 text-2xl font-semibold text-foreground sm:text-3xl">Questions About Privacy?</h2>
+              <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+                For privacy requests or policy questions, contact our team directly.
+              </p>
+              <a
+                href="mailto:fusion@paperfrogs.dev"
+                className="mt-5 inline-block text-xl font-semibold text-primary transition-colors hover:text-[#C8FF2F] sm:text-2xl"
+              >
+                fusion@paperfrogs.dev
+              </a>
+              <div className="mt-7">
+                <Button variant="hero-outline" size="lg" onClick={() => navigate("/")}>
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Home
+                </Button>
+              </div>
+            </Panel>
+          </div>
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };

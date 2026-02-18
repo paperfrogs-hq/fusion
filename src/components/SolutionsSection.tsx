@@ -62,7 +62,7 @@ const solutions = [
 ];
 
 const SolutionsSection = () => {
-  const [expandedSolution, setExpandedSolution] = useState<string | null>(solutions[0].title);
+  const [expandedSolution, setExpandedSolution] = useState<string | null>(null);
 
   return (
     <Section id="solutions">

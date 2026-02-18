@@ -90,7 +90,7 @@ const AudioProvenanceModule = () => {
       </div>
       
       <Tabs defaultValue="registry" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="registry">
             <FileAudio className="w-4 h-4 mr-2" />
             Registry

@@ -100,6 +100,13 @@
     overflow-x: hidden;
   }
 
+  img,
+  video,
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+
   h1,
   h2,
   h3,

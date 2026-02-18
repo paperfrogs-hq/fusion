@@ -62,7 +62,7 @@ const WaitlistSection = () => {
       </div>
 
       <motion.div
-        className="container relative z-10 mx-auto"
+        className="relative z-10 mx-auto w-full max-w-5xl"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}

@@ -147,7 +147,7 @@ const KeyManagementModule = () => {
       </div>
 
       <Tabs defaultValue="keys" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="keys" className="flex items-center gap-2">
             <Key className="w-4 h-4" />
             Keys

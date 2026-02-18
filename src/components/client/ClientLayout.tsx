@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -12,7 +12,9 @@ import {
   AlertCircle,
   LogOut,
   User,
-  Shield
+  Shield,
+  Menu,
+  X
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
@@ -60,6 +62,7 @@ const navigation = [
 export default function ClientLayout({ children }: ClientLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const user = getCurrentUser();
   const org = getCurrentOrganization();
 
@@ -75,6 +78,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   };
 
   const isActive = (href: string) => location.pathname === href;
+  const closeMobileNav = () => setMobileNavOpen(false);
 
   const quotaPercent = getQuotaUsagePercent(org);
   const trialDays = getTrialDaysRemaining(org);
@@ -108,7 +112,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
         organizationName={org.name}
       />
 
-      <div className="fixed inset-y-0 left-0 z-40 w-64 border-r border-border bg-card/90 backdrop-blur-xl">
+      <div className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-border bg-card/90 backdrop-blur-xl lg:block">
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center border-b border-border px-5">
             <img
@@ -175,9 +179,120 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
         </div>
       </div>
 
-      <div className="pl-64">
-        <div className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/82 px-6 backdrop-blur-xl">
-          <EnvironmentSwitcher />
+      {mobileNavOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            aria-label="Close mobile menu overlay"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={closeMobileNav}
+          />
+          <aside className="relative flex h-full w-[86%] max-w-[330px] flex-col border-r border-border bg-card/95 backdrop-blur-xl">
+            <div className="flex h-16 items-center justify-between border-b border-border px-4">
+              <img
+                src="/Logo-01-transparent.png"
+                alt="Fusion"
+                className="fusion-logo-lockup h-12 w-[180px]"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeMobileNav}
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <div className="border-b border-border">
+              <OrgSwitcher />
+            </div>
+
+            <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.href);
+
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={closeMobileNav}
+                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200 ${
+                      active
+                        ? 'bg-primary text-primary-foreground shadow-[0_0_24px_-10px_rgba(182,255,0,0.85)]'
+                        : 'text-muted-foreground hover:bg-secondary/85 hover:text-foreground'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5 flex-shrink-0" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="space-y-3 border-t border-border px-3 py-3">
+              {quotaPercent >= 80 && (
+                <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-400" />
+                    <div className="text-xs">
+                      <div className="font-medium text-amber-300">Quota Warning</div>
+                      <div className="mt-0.5 text-amber-200">{quotaPercent}% of monthly quota used</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {onTrial && (
+                <div className="rounded-xl border border-primary/35 bg-primary/10 p-3">
+                  <div className="text-xs">
+                    <div className="font-medium text-primary">Trial Active</div>
+                    <div className="mt-0.5 text-muted-foreground">{trialDays} days remaining</div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2 h-7 w-full text-xs"
+                      onClick={() => {
+                        closeMobileNav();
+                        navigate('/client/settings/billing');
+                      }}
+                    >
+                      Upgrade Plan
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  closeMobileNav();
+                  handleLogout();
+                }}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      <div className="lg:pl-64">
+        <div className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/82 px-4 backdrop-blur-xl sm:px-6">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <EnvironmentSwitcher />
+          </div>
 
           <div className="flex items-center gap-3">
             <NotificationsDropdown />
@@ -196,7 +311,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                       <User className="h-4 w-4 text-muted-foreground" />
                     </div>
                   )}
-                  <span className="text-sm font-medium">{user.full_name}</span>
+                  <span className="hidden text-sm font-medium sm:inline">{user.full_name}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 border-border bg-card">
@@ -222,7 +337,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           </div>
         </div>
 
-        <main className="p-6">
+        <main className="p-4 sm:p-6">
           <div className="mx-auto w-full max-w-[1320px]">{children}</div>
         </main>
       </div>

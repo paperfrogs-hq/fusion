@@ -189,7 +189,7 @@ const SecurityMonitoringModule = () => {
       </div>
 
       <Tabs defaultValue="events" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="events" className="flex items-center gap-2">
             <Activity className="w-4 h-4" />
             Events
