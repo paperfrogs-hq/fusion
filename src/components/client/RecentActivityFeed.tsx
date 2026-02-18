@@ -85,7 +85,7 @@ export default function RecentActivityFeed({ organizationId, environmentId }: Re
 
   if (loading) {
     return (
-      <Card className="p-6 bg-neutral-900 border-neutral-800">
+      <Card className="p-6">
         <div className="flex items-center justify-center h-48">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -94,11 +94,11 @@ export default function RecentActivityFeed({ organizationId, environmentId }: Re
   }
 
   return (
-    <Card className="p-6 bg-neutral-900 border-neutral-800">
+    <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-neutral-500" />
-          <h3 className="text-lg font-semibold text-white">Recent Verifications</h3>
+          <Shield className="h-5 w-5 text-primary" />
+          <h3 className="text-lg font-semibold text-foreground">Recent Verifications</h3>
         </div>
         <Button 
           variant="ghost" 
@@ -111,9 +111,9 @@ export default function RecentActivityFeed({ organizationId, environmentId }: Re
 
       {activities.length === 0 ? (
         <div className="text-center py-12">
-          <Shield className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
-          <p className="text-neutral-400 mb-2">No verification activity yet</p>
-          <p className="text-sm text-neutral-500">
+          <Shield className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
+          <p className="mb-2 text-muted-foreground">No verification activity yet</p>
+          <p className="text-sm text-muted-foreground">
             Start verifying audio files using your API keys
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function RecentActivityFeed({ organizationId, environmentId }: Re
           {activities.map((activity) => (
             <div 
               key={activity.id}
-              className="flex items-start gap-4 p-4 border border-neutral-700 rounded-lg hover:bg-neutral-800/50 transition-colors"
+              className="flex items-start gap-4 rounded-xl border border-border p-4 transition-colors hover:bg-secondary/60"
             >
               <div className="flex-shrink-0 mt-0.5">
                 {getActivityIcon(activity.type, activity.result)}
@@ -131,11 +131,11 @@ export default function RecentActivityFeed({ organizationId, environmentId }: Re
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-3 mb-1">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-white truncate">
+                    <p className="truncate font-medium text-foreground">
                       {activity.file_name}
                     </p>
                     {activity.api_key_name && (
-                      <p className="text-xs text-neutral-500 mt-0.5">
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         via {activity.api_key_name}
                       </p>
                     )}
@@ -143,7 +143,7 @@ export default function RecentActivityFeed({ organizationId, environmentId }: Re
                   {getResultBadge(activity.result)}
                 </div>
                 
-                <div className="flex items-center gap-3 text-xs text-neutral-500">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {formatTimeAgo(activity.created_at)}

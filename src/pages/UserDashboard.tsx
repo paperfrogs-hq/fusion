@@ -304,7 +304,7 @@ export default function UserDashboard() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* User Info Banner */}
-      <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 border-b">
+      <div className="border-b border-border bg-secondary/70">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -459,9 +459,9 @@ export default function UserDashboard() {
                       className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors"
                     >
                       {uploadingPicture ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
                       ) : (
-                        <Camera className="w-4 h-4 text-white" />
+                        <Camera className="h-4 w-4 text-primary-foreground" />
                       )}
                     </label>
                     <input
@@ -562,7 +562,7 @@ export default function UserDashboard() {
                   </div>
                   <Badge 
                     variant={subscriptionStatus === 'active' ? 'default' : 'secondary'} 
-                    className={`text-sm ${subscriptionStatus === 'trialing' && trialDaysLeft !== null && trialDaysLeft <= 3 ? 'bg-orange-500/10 text-orange-600 border-orange-500/20' : ''}`}
+                    className={`text-sm ${subscriptionStatus === 'trialing' && trialDaysLeft !== null && trialDaysLeft <= 3 ? 'border-orange-500/20 bg-orange-500/10 text-orange-300' : ''}`}
                   >
                     {subscriptionStatus === 'active' ? 'Active' : subscriptionStatus === 'trialing' ? `Trial (${trialDaysLeft ?? 14} days left)` : 'Trial'}
                   </Badge>
@@ -623,14 +623,14 @@ export default function UserDashboard() {
                   <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 flex items-center gap-3">
                     <Clock className="w-5 h-5 text-orange-500 flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-orange-600">
+                      <p className="text-sm font-medium text-orange-300">
                         Your trial ends in {trialDaysLeft} {trialDaysLeft === 1 ? 'day' : 'days'}
                       </p>
-                      <p className="text-xs text-orange-500/80">
+                      <p className="text-xs text-orange-200/90">
                         Add payment details to continue using Fusion after your trial.
                       </p>
                     </div>
-                    <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-600 hover:bg-orange-500/10" onClick={() => navigate('/user/pricing')}>
+                    <Button size="sm" variant="outline" className="border-orange-500/40 text-orange-300 hover:bg-orange-500/10" onClick={() => navigate('/user/pricing')}>
                       Upgrade Now
                     </Button>
                   </div>
@@ -831,7 +831,7 @@ export default function UserDashboard() {
         </DialogContent>
       </Dialog>
 
-      <footer className="bg-muted/50 border-t py-6 mt-auto">
+      <footer className="mt-auto border-t border-border bg-secondary/60 py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           <p>&copy; 2026 Fusion. All rights reserved.</p>
         </div>

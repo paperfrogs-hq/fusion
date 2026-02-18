@@ -39,14 +39,14 @@ response = requests.post(
 )`;
 
   return (
-    <Card className="p-6 border-blue-500/30 bg-gradient-to-br from-blue-950/50 to-neutral-900">
+    <Card className="border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-6">
       <div className="flex items-start gap-4 mb-6">
-        <div className="p-3 bg-blue-500/20 rounded-lg">
-          <Rocket className="h-6 w-6 text-blue-400" />
+        <div className="rounded-lg border border-primary/30 bg-primary/15 p-3">
+          <Rocket className="h-6 w-6 text-primary" />
         </div>
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-white mb-2">Get Started with Fusion API</h3>
-          <p className="text-neutral-400">
+          <h3 className="mb-2 text-xl font-bold text-foreground">Get Started with Fusion API</h3>
+          <p className="text-muted-foreground">
             Follow these steps to start verifying audio authenticity in minutes
           </p>
         </div>
@@ -56,16 +56,16 @@ response = requests.post(
         {/* Step 1 */}
         <div className="flex gap-4">
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">
               1
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+            <h4 className="mb-2 flex items-center gap-2 font-semibold text-foreground">
               <Key className="h-4 w-4" />
               Create an API Key
             </h4>
-            <p className="text-sm text-neutral-400 mb-3">
+            <p className="mb-3 text-sm text-muted-foreground">
               Generate your first API key to authenticate requests. Keys can have specific scopes and rate limits.
             </p>
             <Button 
@@ -80,30 +80,30 @@ response = requests.post(
         {/* Step 2 */}
         <div className="flex gap-4">
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">
               2
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+            <h4 className="mb-2 flex items-center gap-2 font-semibold text-foreground">
               <Code className="h-4 w-4" />
               Make Your First Request
             </h4>
-            <p className="text-sm text-neutral-400 mb-3">
+            <p className="mb-3 text-sm text-muted-foreground">
               Use your API key to verify audio files. Here are examples in different languages:
             </p>
 
             {/* Code Examples */}
             <div className="space-y-3">
               {/* cURL */}
-              <div className="bg-neutral-900 rounded-lg p-4 relative">
+              <div className="relative rounded-lg border border-border bg-secondary/60 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" className="text-xs bg-neutral-800 text-neutral-300 border-neutral-700">
+                  <Badge variant="outline" className="border-border bg-secondary text-muted-foreground text-xs">
                     cURL
                   </Badge>
                   <button
                     onClick={() => handleCopy(curlExample, 'curl')}
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {copied === 'curl' ? (
                       <Check className="h-4 w-4" />
@@ -112,20 +112,20 @@ response = requests.post(
                     )}
                   </button>
                 </div>
-                <pre className="text-xs text-green-400 overflow-x-auto">
+                <pre className="overflow-x-auto text-xs text-primary">
                   <code>{curlExample}</code>
                 </pre>
               </div>
 
               {/* Node.js */}
-              <div className="bg-neutral-900 rounded-lg p-4 relative">
+              <div className="relative rounded-lg border border-border bg-secondary/60 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" className="text-xs bg-neutral-800 text-neutral-300 border-neutral-700">
+                  <Badge variant="outline" className="border-border bg-secondary text-muted-foreground text-xs">
                     Node.js
                   </Badge>
                   <button
                     onClick={() => handleCopy(nodeExample, 'node')}
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {copied === 'node' ? (
                       <Check className="h-4 w-4" />
@@ -134,20 +134,20 @@ response = requests.post(
                     )}
                   </button>
                 </div>
-                <pre className="text-xs text-green-400 overflow-x-auto">
+                <pre className="overflow-x-auto text-xs text-primary">
                   <code>{nodeExample}</code>
                 </pre>
               </div>
 
               {/* Python */}
-              <div className="bg-neutral-900 rounded-lg p-4 relative">
+              <div className="relative rounded-lg border border-border bg-secondary/60 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" className="text-xs bg-neutral-800 text-neutral-300 border-neutral-700">
+                  <Badge variant="outline" className="border-border bg-secondary text-muted-foreground text-xs">
                     Python
                   </Badge>
                   <button
                     onClick={() => handleCopy(pythonExample, 'python')}
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {copied === 'python' ? (
                       <Check className="h-4 w-4" />
@@ -156,7 +156,7 @@ response = requests.post(
                     )}
                   </button>
                 </div>
-                <pre className="text-xs text-green-400 overflow-x-auto">
+                <pre className="overflow-x-auto text-xs text-primary">
                   <code>{pythonExample}</code>
                 </pre>
               </div>
@@ -167,16 +167,16 @@ response = requests.post(
         {/* Step 3 */}
         <div className="flex gap-4">
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">
               3
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+            <h4 className="mb-2 flex items-center gap-2 font-semibold text-foreground">
               <CheckCircle2 className="h-4 w-4" />
               Monitor & Analyze
             </h4>
-            <p className="text-sm text-neutral-400 mb-3">
+            <p className="mb-3 text-sm text-muted-foreground">
               Track verification activity, analyze results, and configure webhooks for real-time notifications.
             </p>
             <div className="flex gap-2">
@@ -200,14 +200,14 @@ response = requests.post(
       </div>
 
       {/* Documentation Link */}
-      <div className="mt-6 pt-6 border-t border-blue-500/30">
-        <p className="text-sm text-neutral-400">
+      <div className="mt-6 border-t border-primary/25 pt-6">
+        <p className="text-sm text-muted-foreground">
           Need more help? Check out our{' '}
-          <a href="/docs" className="text-blue-400 hover:underline font-medium">
+          <a href="/docs" className="font-medium text-primary hover:underline">
             API documentation
           </a>
           {' '}or{' '}
-          <a href="/support" className="text-blue-400 hover:underline font-medium">
+          <a href="/support" className="font-medium text-primary hover:underline">
             contact support
           </a>
           .

@@ -3,9 +3,9 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, Loader2, Lock, Mail, User, Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -93,29 +93,32 @@ export default function UserSignup() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="relative min-h-screen bg-background">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 bg-mesh opacity-80" />
+          <div className="absolute inset-0 bg-animated-grid opacity-15" />
+          <div className="absolute left-[14%] top-24 h-72 w-72 rounded-full bg-primary/10 blur-[120px]" />
+        </div>
         <Header />
-        <main className="pt-32 pb-20">
-          <div className="container mx-auto px-4 flex items-center justify-center">
-            <Card className="w-full max-w-md border-green-500/20">
-              <CardHeader className="text-center">
-                <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <CardTitle className="text-2xl">Check Your Email! 📧</CardTitle>
-                <CardDescription>
-                  We've sent a verification link to your email address. Please check your inbox and click the link to activate your account.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
+        <main className="relative z-10 pb-20 pt-28 sm:pt-32">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <section className="surface-panel noise mx-auto max-w-xl p-8 text-center sm:p-10">
+              <CheckCircle2 className="mx-auto h-16 w-16 text-primary" />
+              <h1 className="mt-6 text-3xl font-semibold text-foreground">Check Your Email</h1>
+              <p className="mt-3 text-sm text-muted-foreground">
+                We've sent a verification link to your email address. Please check your inbox and click the link to activate your account.
+              </p>
+              <div className="mt-6 rounded-xl border border-border/80 bg-secondary/60 px-4 py-3">
                 <p className="text-sm text-muted-foreground">
                   Didn't receive the email? Check your spam folder or contact support.
                 </p>
-                <Link to="/user/login">
-                  <Button variant="outline" className="w-full">
-                    Back to Login
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+              </div>
+              <Link to="/user/login" className="mt-6 block">
+                <Button variant="outline" className="h-11 w-full">
+                  Back to Login
+                </Button>
+              </Link>
+            </section>
           </div>
         </main>
         <Footer />
@@ -124,125 +127,178 @@ export default function UserSignup() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-mesh opacity-80" />
+        <div className="absolute inset-0 bg-animated-grid opacity-15" />
+        <div className="absolute left-[14%] top-24 h-72 w-72 rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute bottom-0 right-[10%] h-96 w-96 rounded-full bg-accent/10 blur-[130px]" />
+      </div>
       <Header />
-      <main className="pt-32 pb-20">
-        <div className="container mx-auto px-4 flex items-center justify-center">
-          <Card className="w-full max-w-md">
-            <CardHeader className="text-center">
-              <div className="flex items-center justify-center mb-4">
+      <main className="relative z-10 pb-20 pt-28 sm:pt-32">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <section className="surface-panel noise relative hidden overflow-hidden p-10 lg:block">
+              <div className="relative z-10">
+                <Badge className="mb-5">Create Account</Badge>
                 <img 
-                  src="/Fusion_Icon-No-BG-01.png" 
+                  src="/Logo-01-transparent.png" 
                   alt="Fusion Logo" 
-                  className="w-20 h-20 object-contain"
+                  className="fusion-logo-lockup h-auto w-[150px]"
                 />
+                <h1 className="mt-7 text-4xl font-semibold leading-tight text-foreground xl:text-5xl">
+                  Start secure audio
+                  <span className="gradient-text block">verification now</span>
+                </h1>
+                <p className="mt-4 max-w-lg text-base text-muted-foreground">
+                  Create your user account to access provenance workflows, cryptographic verification, and reporting.
+                </p>
+
+                <div className="mt-8 space-y-3">
+                  <div className="rounded-xl border border-border/80 bg-secondary/55 px-4 py-3">
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Setup</p>
+                    <p className="mt-1 text-sm font-medium text-foreground">Account creation takes under 2 minutes</p>
+                  </div>
+                  <div className="rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+                    <p className="text-sm font-medium text-foreground">Supports creators, artists, platforms, and developers</p>
+                  </div>
+                </div>
               </div>
-              <CardTitle className="text-3xl font-bold">Join Fusion</CardTitle>
-              <CardDescription>
-                Create your account to start protecting your audio
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+            </section>
+
+            <section className="surface-panel noise relative overflow-hidden p-6 sm:p-8">
+              <div className="relative z-10">
+                <div className="mb-8">
+                  <img 
+                    src="/Logo-01-transparent.png" 
+                    alt="Fusion Logo" 
+                    className="fusion-logo-lockup h-auto w-[150px]"
+                  />
+                  <p className="mt-5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">User Signup</p>
+                  <h2 className="mt-2 text-3xl font-semibold text-foreground">Join Fusion</h2>
+                  <p className="mt-3 text-sm text-muted-foreground">Create your account to start protecting your audio.</p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
                 {error && (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name *</Label>
-                  <Input
-                    id="fullName"
-                    name="fullName"
-                    type="text"
-                    required
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName" className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Full Name *</Label>
+                    <div className="relative">
+                      <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="fullName"
+                        name="fullName"
+                        type="text"
+                        required
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        placeholder="John Doe"
+                        className="h-12 border-border/80 bg-secondary/70 pl-10"
+                      />
+                    </div>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="you@example.com"
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Email *</Label>
+                    <div className="relative">
+                      <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="you@example.com"
+                        className="h-12 border-border/80 bg-secondary/70 pl-10"
+                      />
+                    </div>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="userType">Account Type *</Label>
-                  <select
-                    id="userType"
-                    name="userType"
-                    value={formData.userType}
-                    onChange={handleChange}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                  <div className="space-y-2">
+                    <Label htmlFor="userType" className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Account Type *</Label>
+                    <div className="relative">
+                      <Users className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <select
+                        id="userType"
+                        name="userType"
+                        value={formData.userType}
+                        onChange={handleChange}
+                        className="h-12 w-full rounded-xl border border-border/80 bg-secondary/70 px-10 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/75"
+                      >
+                        <option value="creator">Creator</option>
+                        <option value="artist">Artist</option>
+                        <option value="platform">Platform</option>
+                        <option value="developer">Developer</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Password *</Label>
+                    <div className="relative">
+                      <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        required
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="Minimum 8 characters"
+                        className="h-12 border-border/80 bg-secondary/70 pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Confirm Password *</Label>
+                    <div className="relative">
+                      <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        required
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        placeholder="Re-enter password"
+                        className="h-12 border-border/80 bg-secondary/70 pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    variant="hero"
+                    className="h-12 w-full"
                   >
-                    <option value="creator">Creator</option>
-                    <option value="artist">Artist</option>
-                    <option value="platform">Platform</option>
-                    <option value="developer">Developer</option>
-                  </select>
-                </div>
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Account...
+                      </>
+                    ) : (
+                      'Create Account'
+                    )}
+                  </Button>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password *</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Minimum 8 characters"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    required
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Re-enter password"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  variant="hero"
-                  className="w-full"
-                >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Account...
-                </>
-              ) : (
-                'Create Account'
-              )}
-            </Button>
-
-                <div className="text-center text-sm text-muted-foreground">
-                  Already have an account?{' '}
-                  <Link to="/user/login" className="text-primary hover:underline font-medium">
-                    Sign in
-                  </Link>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+                  <div className="text-center text-sm text-muted-foreground">
+                    Already have an account?{' '}
+                    <Link to="/user/login" className="text-primary hover:underline font-medium">
+                      Sign in
+                    </Link>
+                  </div>
+                </form>
+              </div>
+            </section>
+          </div>
         </div>
       </main>
       <Footer />

@@ -1,130 +1,140 @@
 import { Button } from "@/components/ui/button";
-import SectionBadge from "./SectionBadge";
-import { ArrowRight, Shield, Zap, Globe, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { Activity, ArrowRight, CheckCircle2, Database, FileBadge2, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import SectionBadge from "./SectionBadge";
+import { Section } from "@/components/ui/section";
+import { Panel } from "@/components/ui/panel";
+import { Reveal } from "@/components/ui/reveal";
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
-  const handleJoinWaitlist = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const waitlistSection = document.getElementById("waitlist-section");
-    if (waitlistSection) {
-      waitlistSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const handleReadWhitepaper = () => {
-    navigate("/whitepaper");
-  };
+  const badges = [
+    { icon: ShieldCheck, label: "Cryptographic Integrity" },
+    { icon: Activity, label: "Tamper Detection" },
+    { icon: Database, label: "Audit-Ready Logs" },
+  ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 sm:pt-24 md:pt-20 px-4 sm:px-6 overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-48 sm:w-64 md:w-96 lg:w-[500px] h-48 sm:h-64 md:h-96 lg:h-[500px] bg-primary/20 rounded-full blur-[80px] sm:blur-[100px] animate-blob" />
-        <div className="absolute top-1/3 right-1/4 w-40 sm:w-56 md:w-80 lg:w-[400px] h-40 sm:h-56 md:h-80 lg:h-[400px] bg-accent/20 rounded-full blur-[80px] sm:blur-[100px] animate-blob animation-delay-2000" />
-        <div className="absolute bottom-1/4 left-1/3 w-44 sm:w-64 md:w-96 lg:w-[450px] h-44 sm:h-64 md:h-96 lg:h-[450px] bg-glow-tertiary/15 rounded-full blur-[80px] sm:blur-[100px] animate-blob animation-delay-4000" />
-      </div>
+    <Section className="overflow-hidden pb-20 pt-36 sm:pb-24 md:pt-40" containerClassName="relative z-10">
+      <div className="pointer-events-none absolute inset-0 bg-radial-gradient" />
+      <div className="pointer-events-none absolute inset-0 bg-animated-grid opacity-40" />
+      <div className="pointer-events-none absolute -left-20 top-24 h-72 w-72 rounded-full bg-primary/20 blur-[110px] animate-drift" />
+      <div className="pointer-events-none absolute -right-14 bottom-20 h-72 w-72 rounded-full bg-accent/15 blur-[120px] animate-drift" />
 
-      <div 
-        className="absolute inset-0 opacity-[0.02] pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
-          backgroundSize: 'clamp(40px, 10vw, 60px) clamp(40px, 10vw, 60px)',
-        }}
-      />
-      
-      <div className="container mx-auto px-4 sm:px-6 relative z-10 w-full">
-        <div className="max-w-5xl mx-auto text-center">
+      <div className="grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="max-w-4xl"
+        >
+          <SectionBadge>Cryptographic Audio Provenance</SectionBadge>
+
+          <div className="mt-6 space-y-4">
+            <h1 className="text-balance text-5xl font-extrabold leading-[0.95] tracking-[-0.03em] text-foreground sm:text-6xl md:text-7xl xl:text-8xl">
+              Fusion.
+              <span className="block gradient-text">The Trust Layer for Audio in the AI Era</span>
+            </h1>
+            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Cryptographic audio provenance by Fusion. Embed immutable source proof, detect
+              tampering instantly, and run verification workflows at infrastructure scale.
+            </p>
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground sm:text-sm">
+              Secure • Fast • Verifiable
+            </p>
+          </div>
+
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ delay: 0.2, duration: 0.35 }}
+            className="mt-8 flex flex-wrap items-center gap-3"
           >
-            <SectionBadge>
-              <Sparkles className="w-3.5 h-3.5" />
-              Cryptographic Audio Provenance
-            </SectionBadge>
-          </motion.div>
-
-          <motion.h1 
-            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.05] mb-6 sm:mb-8 tracking-tight"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <span className="text-foreground/60">The Trust Layer for</span>
-            <br />
-            <span className="gradient-text">Audio</span>
-            <span className="text-foreground/60"> in the AI Era</span>
-          </motion.h1>
-
-          <motion.p 
-            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            Embed immutable proof of audio origin at creation time. 
-            Verify authenticity anywhere, instantly.
-          </motion.p>
-
-          <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-20 pointer-events-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-          >
-            <Button 
-              variant="hero" 
-              size="lg" 
-              className="group w-full sm:w-auto text-sm sm:text-base" 
-              onClick={() => navigate('/user/signup')}
-            >
+            <Button variant="hero" size="lg" onClick={() => navigate("/user/signup")}>
               Get Started as Creator
-              <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="hero-outline" 
-              size="lg" 
-              className="w-full sm:w-auto" 
-              onClick={() => navigate('/client/signup')}
-            >
+            <Button variant="hero-outline" size="lg" onClick={() => navigate("/client/signup")}>
               For Enterprise
             </Button>
           </motion.div>
 
-          <motion.div 
-            className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-3 sm:gap-6 lg:gap-10"
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.9 }}
+            transition={{ delay: 0.34, duration: 0.4 }}
+            className="mt-9 flex flex-wrap gap-3"
           >
-            {[
-              { icon: Shield, label: "Cryptographically Secure" },
-              { icon: Zap, label: "Instant Verification" },
-              { icon: Globe, label: "Platform-Scale Ready" },
-            ].map((item, index) => (
-              <motion.div 
+            {badges.map((item) => (
+              <div
                 key={item.label}
-                className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full glass text-xs sm:text-sm"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 1 + index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
+                className="flex items-center gap-2 rounded-full border border-border bg-secondary/80 px-4 py-2 text-xs text-muted-foreground sm:text-sm"
               >
-                <item.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
-                <span className="text-foreground/80 hidden sm:inline">{item.label}</span>
-                <span className="text-foreground/80 sm:hidden">{item.label.split(' ')[0]}</span>
-              </motion.div>
+                <item.icon className="h-4 w-4 text-primary" />
+                <span>{item.label}</span>
+              </div>
             ))}
           </motion.div>
-        </div>
-      </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-20 sm:h-40 bg-gradient-to-t from-background via-background/80 to-transparent" />
-    </section>
+        </motion.div>
+
+        <Reveal className="relative" delay={0.08} y={24}>
+          <Panel className="noise p-6 sm:p-7">
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img src="/Logo-01-transparent.png" alt="Fusion logo" className="fusion-logo-lockup h-auto w-[150px]" />
+              </div>
+              <div className="rounded-full border border-primary/35 bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-primary">
+                Verification Snapshot
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-primary/35 bg-primary/10 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.16em] text-primary">Result</p>
+                  <p className="mt-1 flex items-center gap-2 text-base font-semibold text-foreground">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    Verified Authentic
+                  </p>
+                </div>
+                <span className="rounded-full border border-primary/40 bg-background/50 px-3 py-1 text-xs font-semibold text-primary">
+                  98.7%
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-border bg-secondary/65 p-3">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Processing Time</p>
+                <p className="mt-1 text-sm font-semibold text-foreground">&lt; 300ms</p>
+              </div>
+              <div className="rounded-xl border border-border bg-secondary/65 p-3">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Source Trust</p>
+                <p className="mt-1 text-sm font-semibold text-foreground">Attested</p>
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-2">
+              {[
+                { label: "Fingerprint", value: "a7d9...4f31" },
+                { label: "Provenance ID", value: "fsn-2c91...aa2f" },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between rounded-xl border border-border bg-secondary/65 px-3 py-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <FileBadge2 className="h-3.5 w-3.5 text-primary" />
+                    {item.label}
+                  </div>
+                  <span className="font-mono text-xs text-foreground">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </Reveal>
+      </div>
+    </Section>
   );
 };
 

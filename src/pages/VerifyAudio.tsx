@@ -256,6 +256,16 @@ export default function VerifyAudio() {
     await verifyFile(item);
   };
 
+  const copyText = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success('Copied to clipboard');
+    } catch (error) {
+      console.error('Copy failed:', error);
+      toast.error('Failed to copy');
+    }
+  };
+
   const getResultIcon = (result: string) => {
     switch (result) {
       case 'authentic':
@@ -293,15 +303,16 @@ export default function VerifyAudio() {
 
   return (
     <ClientLayout>
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <Card className="p-5 sm:p-6">
+          <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+            <h1 className="flex items-center gap-3 text-3xl font-bold text-foreground">
               <Shield className="h-8 w-8 text-primary" />
               Verify Audio
             </h1>
-            <p className="text-neutral-400 mt-1">
+            <p className="mt-1 text-muted-foreground">
               Upload audio files to verify authenticity and detect tampering
             </p>
           </div>
@@ -310,7 +321,7 @@ export default function VerifyAudio() {
               <Button 
                 variant="outline" 
                 onClick={clearQueue}
-                className="border-neutral-700 hover:bg-neutral-800"
+                className="hover:bg-secondary"
               >
                 Clear All
               </Button>
@@ -332,14 +343,15 @@ export default function VerifyAudio() {
               </Button>
             </div>
           )}
-        </div>
+          </div>
+        </Card>
 
         {/* Upload Zone */}
         <Card
-          className={`p-8 border-2 border-dashed transition-all cursor-pointer ${
+          className={`cursor-pointer border-2 border-dashed p-8 transition-all duration-300 ${
             isDragging 
               ? 'border-primary bg-primary/10' 
-              : 'border-neutral-700 bg-neutral-900 hover:border-neutral-600'
+              : 'border-border bg-card hover:border-primary/45'
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -355,18 +367,18 @@ export default function VerifyAudio() {
             onChange={handleFileSelect}
           />
           <div className="text-center">
-            <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
-              isDragging ? 'bg-primary/20' : 'bg-neutral-800'
+            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${
+              isDragging ? 'bg-primary/20' : 'bg-secondary'
             }`}>
-              <Upload className={`h-8 w-8 ${isDragging ? 'text-primary' : 'text-neutral-400'}`} />
+              <Upload className={`h-8 w-8 ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className="mb-2 text-lg font-semibold text-foreground">
               {isDragging ? 'Drop files here' : 'Drop audio files or click to upload'}
             </h3>
-            <p className="text-sm text-neutral-400 mb-4">
+            <p className="mb-4 text-sm text-muted-foreground">
               Supports MP3, WAV, M4A, AAC, OGG, FLAC, WMA (max 100MB per file)
             </p>
-            <Button variant="outline" className="border-neutral-700 hover:bg-neutral-800">
+            <Button variant="outline">
               <FileAudio className="h-4 w-4 mr-2" />
               Select Files
             </Button>
@@ -377,23 +389,23 @@ export default function VerifyAudio() {
         {queue.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-foreground">
                 Verification Queue ({queue.length})
               </h2>
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-muted-foreground">
                 {completedCount} completed, {queuedCount} pending
               </p>
             </div>
 
             <div className="space-y-3">
               {queue.map((item) => (
-                <Card key={item.id} className="p-4 bg-neutral-900 border-neutral-800">
+                <Card key={item.id} className="p-4 sm:p-5">
                   <div className="flex items-center gap-4">
                     {/* File Icon */}
                     <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                       item.status === 'completed' ? 'bg-green-500/20' :
                       item.status === 'error' ? 'bg-red-500/20' :
-                      'bg-neutral-800'
+                      'bg-secondary'
                     }`}>
                       {item.status === 'completed' && item.result ? (
                         getResultIcon(item.result.result)
@@ -402,17 +414,17 @@ export default function VerifyAudio() {
                       ) : item.status === 'uploading' || item.status === 'verifying' ? (
                         <Loader2 className="h-5 w-5 text-primary animate-spin" />
                       ) : (
-                        <Music className="h-5 w-5 text-neutral-400" />
+                        <Music className="h-5 w-5 text-muted-foreground" />
                       )}
                     </div>
 
                     {/* File Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-white truncate">{item.file.name}</p>
+                        <p className="truncate font-medium text-foreground">{item.file.name}</p>
                         {item.result && getResultBadge(item.result.result)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-neutral-400 mt-1">
+                      <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
                         <span>{formatFileSize(item.file.size)}</span>
                         {item.result && (
                           <>
@@ -441,7 +453,7 @@ export default function VerifyAudio() {
                       {(item.status === 'uploading' || item.status === 'verifying') && (
                         <div className="mt-2">
                           <Progress value={item.progress} className="h-1" />
-                          <p className="text-xs text-neutral-500 mt-1">
+                          <p className="mt-1 text-xs text-muted-foreground">
                             {item.status === 'uploading' ? 'Uploading...' : 'Verifying...'}
                           </p>
                         </div>
@@ -467,7 +479,7 @@ export default function VerifyAudio() {
                           variant="ghost" 
                           size="sm"
                           onClick={() => retryFile(item.id)}
-                          className="text-neutral-400 hover:text-white"
+                          className="text-muted-foreground hover:text-foreground"
                         >
                           <RefreshCw className="h-4 w-4" />
                         </Button>
@@ -477,7 +489,7 @@ export default function VerifyAudio() {
                           variant="ghost" 
                           size="sm"
                           onClick={() => removeFromQueue(item.id)}
-                          className="text-neutral-400 hover:text-red-400"
+                          className="text-muted-foreground hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -487,10 +499,20 @@ export default function VerifyAudio() {
 
                   {/* Hash for completed verifications */}
                   {item.result && (
-                    <div className="mt-3 pt-3 border-t border-neutral-800">
-                      <div className="flex items-center gap-2 text-xs text-neutral-500">
-                        <Hash className="h-3 w-3" />
-                        <span className="font-mono">{item.result.hash}</span>
+                    <div className="mt-3 border-t border-border pt-3">
+                      <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <Hash className="h-3 w-3" />
+                          <span className="truncate font-mono">{item.result.hash}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyText(item.result?.hash || '')}
+                          className="h-7 px-2 text-xs"
+                        >
+                          Copy
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -502,15 +524,15 @@ export default function VerifyAudio() {
 
         {/* Empty State */}
         {queue.length === 0 && (
-          <Card className="p-12 bg-neutral-900 border-neutral-800 text-center">
-            <div className="mx-auto w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center mb-4">
-              <FileAudio className="h-8 w-8 text-neutral-400" />
+          <Card className="p-12 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
+              <FileAudio className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">No files in queue</h3>
-            <p className="text-neutral-400 mb-4">
+            <h3 className="mb-2 text-lg font-semibold text-foreground">No files in queue</h3>
+            <p className="mb-4 text-muted-foreground">
               Upload audio files to verify their authenticity and detect potential tampering.
             </p>
-            <div className="flex items-center justify-center gap-4 text-sm text-neutral-500">
+            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <CheckCircle2 className="h-4 w-4 text-green-500" /> Authentic
               </span>

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function ForgotPassword() {
@@ -48,7 +49,8 @@ export default function ForgotPassword() {
   if (success) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <main className="flex-1 flex items-center justify-center p-4">
+        <Header />
+        <main className="flex-1 flex items-center justify-center p-4 pt-28 sm:pt-32">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center mb-4">
@@ -85,14 +87,15 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-1 flex items-center justify-center p-4">
+      <Header />
+      <main className="flex-1 flex items-center justify-center p-4 pt-28 sm:pt-32">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">
               <img 
-                src="/Fusion_Icon-No-BG-01.png" 
+                src="/Logo-01-transparent.png" 
                 alt="Fusion Logo" 
-                className="w-16 h-16 object-contain"
+                className="fusion-logo-lockup h-20 w-[240px]"
               />
             </div>
             <CardTitle className="text-2xl font-bold">Forgot Password?</CardTitle>

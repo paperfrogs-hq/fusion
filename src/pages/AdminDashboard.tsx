@@ -6,11 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, Key, FileAudio, Users, AlertTriangle, BarChart3, 
-  Settings, LogOut, Menu, X, Database, Lock, Activity, FileText, Music, Building2
+  LogOut, Menu, X, Database, Lock, Activity, FileText, Music, Building2, ChevronRight
 } from "lucide-react";
 import { getSession, clearSession, hasPermission } from "@/lib/admin-auth";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import type { AdminUser } from "@/types/admin";
+import type { LucideIcon } from "lucide-react";
 
 // Import dashboard modules
 import AuditLogModule from "@/components/admin/AuditLogModule";
@@ -48,7 +51,7 @@ type Module =
 interface NavigationItem {
   id: Module;
   label: string;
-  icon: any;
+  icon: LucideIcon;
   permission?: string;
 }
 
@@ -94,6 +97,66 @@ const AdminDashboard = () => {
     item => !item.permission || hasPermission(item.permission) || hasPermission("*")
   );
 
+  const activeModuleItem = visibleNavItems.find((item) => item.id === activeModule);
+  const moduleDescriptions: Record<Module, string> = {
+    overview: "Platform health, events, and system-wide status.",
+    "audit-log": "Immutable timeline of administrative actions and operations.",
+    "key-management": "Manage cryptographic keys, lifecycle, and policy controls.",
+    "audio-provenance": "Track provenance records and verification artifacts.",
+    "user-audio": "Inspect and govern uploaded audio assets from users.",
+    users: "Manage user accounts, roles, and account actions.",
+    clients: "Control client organizations and access posture.",
+    "business-approvals": "Review pending business approvals and decisions.",
+    incidents: "Monitor and investigate active incident records.",
+    security: "Security posture, alerts, and continuous monitoring.",
+    analytics: "Telemetry, usage analytics, and trend visibility.",
+    "verification-policy": "Configure trust and verification policy behavior.",
+    compliance: "Compliance and standards reporting visibility.",
+    "system-control": "Infrastructure-level controls and operational tools.",
+    waitlist: "Track inbound waitlist entries and qualification flow.",
+  };
+
+  const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
+    <nav className={cn("space-y-1", mobile ? "p-4" : "p-4 md:p-5")}>
+      {visibleNavItems.map((item) => {
+        const Icon = item.icon;
+        const isActive = activeModule === item.id;
+        return (
+          <button
+            key={item.id}
+            onClick={() => {
+              setActiveModule(item.id);
+              if (mobile) {
+                setMobileMenuOpen(false);
+              }
+            }}
+            className={cn(
+              "group w-full rounded-xl border px-3.5 py-3 text-left transition-all duration-200",
+              "flex items-center gap-3",
+              isActive
+                ? "border-primary/45 bg-primary/15 text-foreground shadow-[0_0_24px_-16px_rgba(182,255,0,0.85)]"
+                : "border-transparent text-muted-foreground hover:border-border/80 hover:bg-secondary/75 hover:text-foreground"
+            )}
+          >
+            <Icon
+              className={cn(
+                "h-[18px] w-[18px] transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+              )}
+            />
+            <span className="text-sm font-medium">{item.label}</span>
+            <ChevronRight
+              className={cn(
+                "ml-auto h-4 w-4 transition-transform",
+                isActive ? "translate-x-0 text-primary" : "-translate-x-1 text-muted-foreground/60"
+              )}
+            />
+          </button>
+        );
+      })}
+    </nav>
+  );
+
   const renderModule = () => {
     switch (activeModule) {
       case "overview":
@@ -134,149 +197,166 @@ const AdminDashboard = () => {
   if (!admin) return null;
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex lg:flex-col w-64 bg-card border-r border-border">
-        <div className="p-6 border-b border-border">
-          <div className="flex items-center gap-3">
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-mesh opacity-70" />
+        <div className="absolute inset-0 bg-animated-grid opacity-15" />
+        <div className="absolute left-[-120px] top-[16%] h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute bottom-[-160px] right-[-40px] h-96 w-96 rounded-full bg-accent/10 blur-[140px]" />
+      </div>
+
+      <div className="relative z-10 flex min-h-screen">
+        {/* Sidebar - Desktop */}
+        <aside className="hidden lg:flex lg:w-[300px] xl:w-[320px] lg:flex-col border-r border-border/80 bg-card/70 backdrop-blur-xl">
+          <div className="border-b border-border/75 px-6 py-6">
             <img 
-              src="/Fusion_Icon-No-BG-01.png" 
+              src="/Logo-01-transparent.png" 
               alt="Fusion Logo" 
-              className="w-14 h-14 object-contain"
+              className="fusion-logo-lockup h-auto w-[150px]"
             />
-            <div>
-              <h1 className="font-display text-xl font-bold gradient-text">Fusion</h1>
-              <p className="text-xs text-muted-foreground">Control Plane</p>
+            <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Admin Control Plane</p>
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <NavLinks />
+          </div>
+
+          <div className="border-t border-border/75 p-5">
+            <div className="rounded-2xl border border-border/80 bg-secondary/65 px-4 py-3.5">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Signed in as</p>
+              <p className="mt-1.5 truncate text-sm font-medium text-foreground">{admin.email}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{admin.role?.name || "User"}</p>
             </div>
-          </div>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-          {visibleNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeModule === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveModule(item.id)}
-                className={`
-                  w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
-                  ${isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  }
-                `}
-              >
-                <Icon className="w-5 h-5" />
-                {item.label}
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-border">
-          <div className="px-4 py-3 bg-accent rounded-lg mb-3">
-            <p className="text-xs text-muted-foreground">Logged in as</p>
-            <p className="text-sm font-medium truncate">{admin.email}</p>
-            <p className="text-xs text-muted-foreground mt-1">{admin.role?.name || "User"}</p>
-          </div>
-          <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="w-full"
-            size="sm"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
-        </div>
-      </aside>
-
-      {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-2">
-            <svg className="w-8 h-8" viewBox="0 0 400 400" fill="none">
-              <defs>
-                <linearGradient id="fusionGradientMobile" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" />
-                  <stop offset="100%" stopColor="hsl(var(--accent))" />
-                </linearGradient>
-              </defs>
-              <path d="M200 80 L280 160 L240 160 L240 240 L280 240 L200 320 L120 240 L160 240 L160 160 L120 160 Z" 
-                    fill="url(#fusionGradientMobile)"/>
-            </svg>
-            <h1 className="font-display text-lg font-bold gradient-text">Fusion</h1>
-          </div>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="absolute top-full left-0 right-0 bg-card border-b border-border shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto"
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="mt-3 h-10 w-full"
+              size="sm"
             >
-              <nav className="p-4 space-y-1">
-                {visibleNavItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeModule === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => {
-                        setActiveModule(item.id);
-                        setMobileMenuOpen(false);
-                      }}
-                      className={`
-                        w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
-                        ${isActive 
-                          ? "bg-primary text-primary-foreground" 
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        }
-                      `}
-                    >
-                      <Icon className="w-5 h-5" />
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </nav>
-              <div className="p-4 border-t border-border">
-                <div className="px-4 py-3 bg-accent rounded-lg mb-3">
-                  <p className="text-xs text-muted-foreground">Logged in as</p>
-                  <p className="text-sm font-medium truncate">{admin.email}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{admin.role?.name || "User"}</p>
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="sticky top-0 z-40 border-b border-border/80 bg-background/78 backdrop-blur-xl">
+            <div className="mx-auto flex w-full max-w-[1500px] items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border/85 bg-secondary/60 text-foreground transition-colors hover:bg-secondary lg:hidden"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Admin Workspace</p>
+                <h1 className="truncate text-lg font-semibold text-foreground sm:text-xl">
+                  {activeModuleItem?.label || "Overview"}
+                </h1>
+              </div>
+
+              <div className="hidden items-center gap-2 sm:flex">
+                <Badge className="hidden md:inline-flex">{admin.role?.name || "User"}</Badge>
+                <div className="hidden text-right md:block">
+                  <p className="text-sm font-medium text-foreground">{admin.email}</p>
+                  <p className="text-xs text-muted-foreground">Secure session active</p>
                 </div>
                 <Button
                   onClick={handleLogout}
                   variant="outline"
-                  className="w-full"
+                  className="h-10"
                   size="sm"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
+                  <LogOut className="mr-2 h-4 w-4" />
                   Logout
                 </Button>
               </div>
+            </div>
+          </header>
+
+          <main className="flex-1 overflow-y-auto">
+            <div className="mx-auto w-full max-w-[1500px] px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+              <div className="mb-5 rounded-2xl border border-border/80 bg-secondary/45 px-4 py-3 sm:px-5">
+                <p className="text-sm text-muted-foreground">
+                  {moduleDescriptions[activeModule]}
+                </p>
+              </div>
+              <section className="surface-panel p-3 sm:p-4 lg:p-6">
+                {renderModule()}
+              </section>
+            </div>
+          </main>
+        </div>
+
+        {/* Mobile Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              className="fixed inset-0 z-50 lg:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <button
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu overlay"
+              />
+              <motion.aside
+                initial={{ x: -24, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -24, opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="relative flex h-full w-[86%] max-w-[340px] flex-col border-r border-border bg-card"
+              >
+                <div className="border-b border-border px-4 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <img 
+                        src="/Logo-01-transparent.png" 
+                        alt="Fusion Logo" 
+                        className="fusion-logo-lockup h-auto w-[150px]"
+                      />
+                      <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Admin Control Plane</p>
+                    </div>
+                    <button
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-secondary/60 text-foreground"
+                      onClick={() => setMobileMenuOpen(false)}
+                      aria-label="Close menu"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="min-h-0 flex-1 overflow-y-auto">
+                  <NavLinks mobile />
+                </div>
+
+                <div className="border-t border-border p-4">
+                  <div className="rounded-xl border border-border/80 bg-secondary/60 px-3.5 py-3">
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Signed in as</p>
+                    <p className="mt-1 truncate text-sm font-medium text-foreground">{admin.email}</p>
+                    <p className="text-xs text-muted-foreground">{admin.role?.name || "User"}</p>
+                  </div>
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    className="mt-3 h-10 w-full"
+                    size="sm"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
+              </motion.aside>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto lg:mt-0 mt-16">
-        <div className="max-w-7xl mx-auto p-6 lg:p-8">
-          {renderModule()}
-        </div>
-      </main>
     </div>
   );
 };

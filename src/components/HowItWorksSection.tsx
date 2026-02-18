@@ -1,118 +1,73 @@
-import SectionBadge from "./SectionBadge";
-import { FileKey, Search, CheckCircle, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-const steps = [{
-  number: "01",
-  icon: FileKey,
-  title: "Embed",
-  description: "Cryptographic proof is embedded at creation time—origin, timestamp, and creator identity sealed into the audio file.",
-  gradient: "from-primary to-accent"
-}, {
-  number: "02",
-  icon: Search,
-  title: "Verify",
-  description: "Any platform can verify anywhere, anytime. No central authority needed—proof is portable and decentralized.",
-  gradient: "from-accent to-glow-tertiary"
-}, {
-  number: "03",
-  icon: CheckCircle,
-  title: "Trust",
-  description: "Confidence scores and audit logs enable compliance, moderation, and platform-wide authenticity standards.",
-  gradient: "from-glow-tertiary to-primary"
-}];
-const containerVariants = {
-  hidden: {
-    opacity: 0
+import { CheckCircle, FileKey, Search } from "lucide-react";
+import SectionBadge from "./SectionBadge";
+import { Section } from "@/components/ui/section";
+import { Panel } from "@/components/ui/panel";
+import { Reveal } from "@/components/ui/reveal";
+
+const steps = [
+  {
+    number: "01",
+    icon: FileKey,
+    title: "Embed",
+    description:
+      "Cryptographic proof is embedded at creation time: origin, timestamp, and creator identity sealed into the audio payload.",
   },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2
-    }
-  }
-};
-const itemVariants = {
-  hidden: {
-    opacity: 0,
-    y: 40
+  {
+    number: "02",
+    icon: Search,
+    title: "Verify",
+    description:
+      "Any platform can verify authenticity anywhere, anytime. No central authority handshake is required for basic trust checks.",
   },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.4, 0, 0.2, 1] as const
-    }
-  }
-};
+  {
+    number: "03",
+    icon: CheckCircle,
+    title: "Trust",
+    description:
+      "Confidence scoring and audit logs support moderation workflows, compliance evidence, and long-lived provenance records.",
+  },
+];
+
 const HowItWorksSection = () => {
-  return <section id="how-it-works" className="py-16 sm:py-24 md:py-32 relative">
-      <div className="absolute inset-0 bg-mesh" />
-      
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <motion.div className="text-center mb-20" initial={{
-        opacity: 0,
-        y: 30
-      }} whileInView={{
-        opacity: 1,
-        y: 0
-      }} viewport={{
-        once: true
-      }} transition={{
-        duration: 0.6
-      }}>
-          <SectionBadge>Process</SectionBadge>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold mt-6 mb-6">
-            <span className="text-foreground/60">How</span>{" "}
-            <span className="gradient-text">Fusion</span>{" "}
-            <span className="text-foreground/60">Works</span>
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            Three simple steps to cryptographic audio provenance
-          </p>
-        </motion.div>
+  return (
+    <Section id="how-it-works">
+      <div className="pointer-events-none absolute inset-0 bg-mesh opacity-70" />
 
-        <motion.div className="grid md:grid-cols-3 gap-6 lg:gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{
-        once: true,
-        margin: "-100px"
-      }}>
-          {steps.map((step, index) => <motion.div key={step.number} variants={itemVariants} className="group relative">
-              <div className="relative h-full p-8 lg:p-10 rounded-3xl glass hover:bg-card/80 transition-all duration-500 overflow-hidden">
-                <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
-                
-                <motion.div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/80 border border-border mb-8" whileHover={{
-              scale: 1.05
-            }}>
-                  <span className="text-sm font-mono font-semibold gradient-text">{step.number}</span>
-                </motion.div>
+      <motion.div
+        className="mx-auto mb-14 max-w-3xl text-center"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.45 }}
+      >
+        <SectionBadge>Process</SectionBadge>
+        <h2 className="mt-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+          How <span className="gradient-text">Fusion</span> Works
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
+          A three-stage verification path designed for low-latency pipelines and provable audio integrity.
+        </p>
+      </motion.div>
 
-                <motion.div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.gradient} p-[1px] mb-8`} whileHover={{
-              scale: 1.1,
-              rotate: 5
-            }} transition={{
-              type: "spring",
-              stiffness: 300
-            }}>
-                  <div className="w-full h-full rounded-2xl bg-card flex items-center justify-center">
-                    <step.icon className="w-7 h-7 text-primary" />
-                  </div>
-                </motion.div>
-
-                <h3 className="font-display text-2xl font-bold mb-4 text-foreground">
-                  {step.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {step.description}
-                </p>
-
-
-                {index < steps.length - 1 && <div className="hidden md:flex absolute top-1/2 -right-4 lg:-right-5 z-20">
-                    
-                  </div>}
+      <div className="grid gap-5 md:grid-cols-3">
+        {steps.map((step, index) => (
+          <Reveal key={step.number} delay={index * 0.08} y={24} className="group h-full">
+            <Panel className="h-full p-7 sm:p-8">
+              <div className="mb-6 flex items-center justify-between">
+                <span className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  {step.number}
+                </span>
+                <step.icon className="h-5 w-5 text-primary" />
               </div>
-            </motion.div>)}
-        </motion.div>
+              <h3 className="text-2xl font-semibold text-foreground">{step.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">{step.description}</p>
+            </Panel>
+          </Reveal>
+        ))}
       </div>
-    </section>
+    </Section>
+  );
 };
+
 export default HowItWorksSection;

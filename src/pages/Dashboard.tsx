@@ -97,8 +97,8 @@ export default function Dashboard() {
       <ClientLayout>
         <div className="max-w-4xl mx-auto text-center py-12">
           <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">No Environment Selected</h2>
-          <p className="text-neutral-400">Please select an environment to view dashboard.</p>
+          <h2 className="mb-2 text-2xl font-bold text-foreground">No Environment Selected</h2>
+          <p className="text-muted-foreground">Please select an environment to view dashboard.</p>
         </div>
       </ClientLayout>
     );
@@ -106,11 +106,11 @@ export default function Dashboard() {
 
   return (
     <ClientLayout>
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-          <p className="text-neutral-400 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="mt-1 text-muted-foreground">
             Overview of {env.display_name} environment
           </p>
         </div>
@@ -147,11 +147,11 @@ export default function Dashboard() {
         </div>
 
         {/* Quota Usage */}
-        <Card className="p-6 bg-neutral-900 border-neutral-800">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-white">Monthly Quota Usage</h3>
-              <p className="text-sm text-neutral-400">
+              <h3 className="text-lg font-semibold text-foreground">Monthly Quota Usage</h3>
+              <p className="text-sm text-muted-foreground">
                 {stats?.quota_used || 0} of {stats?.quota_limit || 0} verifications used
               </p>
             </div>
@@ -167,7 +167,7 @@ export default function Dashboard() {
           </div>
           <Progress value={quotaPercent} className="h-3" />
           <div className="flex justify-between items-center mt-3 text-sm">
-            <span className="text-neutral-400">
+            <span className="text-muted-foreground">
               {(stats?.quota_limit || 0) - (stats?.quota_used || 0)} remaining
             </span>
             {quotaPercent >= 80 && (
@@ -213,12 +213,12 @@ export default function Dashboard() {
             )}
 
             {/* Quick Actions */}
-            <Card className="p-4 bg-neutral-900 border-neutral-800">
-              <h3 className="font-semibold text-white mb-3">Quick Actions</h3>
+            <Card className="p-4">
+              <h3 className="mb-3 font-semibold text-foreground">Quick Actions</h3>
               <div className="space-y-2">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                  className="w-full justify-start border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
                   onClick={() => window.location.href = '/client/api-keys'}
                 >
                   <Key className="h-4 w-4 mr-2" />
@@ -226,7 +226,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                  className="w-full justify-start border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
                   onClick={() => window.location.href = '/client/webhooks'}
                 >
                   <Activity className="h-4 w-4 mr-2" />
@@ -234,7 +234,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                  className="w-full justify-start border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
                   onClick={() => window.location.href = '/client/analytics'}
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
@@ -244,21 +244,21 @@ export default function Dashboard() {
             </Card>
 
             {/* Team Activity */}
-            <Card className="p-4 bg-neutral-900 border-neutral-800">
-              <h3 className="font-semibold text-white mb-3">Team</h3>
+            <Card className="p-4">
+              <h3 className="mb-3 font-semibold text-foreground">Team</h3>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-neutral-400" />
-                  <span className="text-sm text-neutral-400">Active members</span>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Active members</span>
                 </div>
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-foreground">
                   1
                 </span>
               </div>
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="w-full border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                className="w-full border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
                 onClick={() => window.location.href = '/client/team'}
               >
                 Manage Team
@@ -274,15 +274,15 @@ export default function Dashboard() {
 
         {/* Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="p-4 bg-neutral-900 border-neutral-800">
+          <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-medium text-neutral-400 mb-1">Webhooks</h4>
-                <p className="text-2xl font-bold text-white">
-                  {stats?.active_webhooks || 0} <span className="text-base font-normal text-neutral-500">/ {stats?.total_webhooks || 0}</span>
+                <h4 className="mb-1 text-sm font-medium text-muted-foreground">Webhooks</h4>
+                <p className="text-2xl font-bold text-foreground">
+                  {stats?.active_webhooks || 0} <span className="text-base font-normal text-muted-foreground">/ {stats?.total_webhooks || 0}</span>
                 </p>
               </div>
-              <Activity className="h-8 w-8 text-neutral-600" />
+              <Activity className="h-8 w-8 text-muted-foreground" />
             </div>
             <Button 
               variant="link" 
@@ -293,13 +293,13 @@ export default function Dashboard() {
             </Button>
           </Card>
 
-          <Card className="p-4 bg-neutral-900 border-neutral-800">
+          <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-medium text-neutral-400 mb-1">System Status</h4>
+                <h4 className="mb-1 text-sm font-medium text-muted-foreground">System Status</h4>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-white">All Systems Operational</span>
+                  <span className="text-sm font-medium text-foreground">All Systems Operational</span>
                 </div>
               </div>
               <CheckCircle2 className="h-8 w-8 text-green-500" />

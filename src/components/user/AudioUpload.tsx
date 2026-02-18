@@ -214,13 +214,13 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
   };
 
   return (
-    <Card className="border-purple-500/20 bg-slate-800/50">
+    <Card className="border-border bg-card">
       <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-foreground">
           <Upload className="w-5 h-5" />
           Upload & Protect Audio
         </CardTitle>
-        <CardDescription className="text-gray-300">
+        <CardDescription>
           Upload your audio file and embed cryptographic provenance
         </CardDescription>
       </CardHeader>
@@ -228,7 +228,7 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
         {success && (
           <Alert className="border-green-500/50 bg-green-500/10">
             <CheckCircle2 className="h-4 w-4 text-green-500" />
-            <AlertDescription className="text-green-400">
+            <AlertDescription className="text-green-300">
               Audio uploaded and protected successfully! Provenance watermark embedded.
             </AlertDescription>
           </Alert>
@@ -244,18 +244,18 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
         {/* File Dropzone */}
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
+          className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all ${
             isDragActive
-              ? 'border-purple-500 bg-purple-500/10'
-              : 'border-white/20 hover:border-purple-500/50 bg-slate-700/30'
+              ? 'border-primary/70 bg-primary/10'
+              : 'border-border bg-secondary/50 hover:border-primary/45'
           }`}
         >
           <input {...getInputProps()} />
           {file ? (
             <div className="space-y-2">
-              <Music className="w-12 h-12 mx-auto text-purple-400" />
-              <p className="text-white font-medium">{file.name}</p>
-              <p className="text-sm text-gray-400">
+              <Music className="mx-auto h-12 w-12 text-primary" />
+              <p className="font-medium text-foreground">{file.name}</p>
+              <p className="text-sm text-muted-foreground">
                 {formatBytes(file.size)} • {file.type}
               </p>
               <Button
@@ -272,13 +272,13 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
             </div>
           ) : (
             <div className="space-y-2">
-              <Upload className="w-12 h-12 mx-auto text-gray-400" />
-              <p className="text-white">
+              <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+              <p className="text-foreground">
                 {isDragActive
                   ? 'Drop your audio file here'
                   : 'Drag & drop your audio file here, or click to browse'}
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Supports MP3, WAV, FLAC, M4A, AAC, OGG (max 100MB)
               </p>
             </div>
@@ -287,39 +287,37 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
 
         {/* Metadata Form */}
         {file && (
-          <div className="space-y-4 border border-white/10 rounded-lg p-4 bg-slate-700/30">
-            <h3 className="text-white font-medium">Audio Metadata</h3>
+          <div className="space-y-4 rounded-xl border border-border bg-secondary/70 p-5">
+            <h3 className="font-medium text-foreground">Audio Metadata</h3>
             
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-white">Title *</Label>
+              <Label htmlFor="title">Title *</Label>
               <Input
                 id="title"
                 value={metadata.title}
                 onChange={(e) => handleMetadataChange('title', e.target.value)}
-                className="bg-slate-800 border-slate-600 text-white"
                 placeholder="Enter audio title"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="artist" className="text-white">Artist / Creator</Label>
+              <Label htmlFor="artist">Artist / Creator</Label>
               <Input
                 id="artist"
                 value={metadata.artist}
                 onChange={(e) => handleMetadataChange('artist', e.target.value)}
-                className="bg-slate-800 border-slate-600 text-white"
                 placeholder="Enter artist name"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="origin" className="text-white">Origin *</Label>
+              <Label htmlFor="origin">Origin *</Label>
               <select
                 id="origin"
                 value={metadata.origin}
                 onChange={(e) => handleMetadataChange('origin', e.target.value)}
-                className="w-full h-10 px-3 rounded-md bg-slate-800 border border-slate-600 text-white"
+                className="h-11 w-full rounded-lg border border-input bg-secondary/80 px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-1 focus-visible:ring-offset-background"
               >
                 <option value="human">Human Created</option>
                 <option value="ai">AI Generated</option>
@@ -329,24 +327,22 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
 
             {(metadata.origin === 'ai' || metadata.origin === 'hybrid') && (
               <div className="space-y-2">
-                <Label htmlFor="modelUsed" className="text-white">AI Model Used</Label>
+                <Label htmlFor="modelUsed">AI Model Used</Label>
                 <Input
                   id="modelUsed"
                   value={metadata.modelUsed}
                   onChange={(e) => handleMetadataChange('modelUsed', e.target.value)}
-                  className="bg-slate-800 border-slate-600 text-white"
                   placeholder="e.g., Suno AI, MusicGen, etc."
                 />
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-white">Description</Label>
+              <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 value={metadata.description}
                 onChange={(e) => handleMetadataChange('description', e.target.value)}
-                className="bg-slate-800 border-slate-600 text-white"
                 placeholder="Add any additional details..."
                 rows={3}
               />
@@ -358,8 +354,8 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
         {uploading && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-300">Uploading and embedding watermark...</span>
-              <span className="text-purple-400">{uploadProgress}%</span>
+              <span className="text-muted-foreground">Uploading and embedding watermark...</span>
+              <span className="text-primary">{uploadProgress}%</span>
             </div>
             <Progress value={uploadProgress} className="h-2" />
           </div>
@@ -370,7 +366,7 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
           <Button
             onClick={handleUpload}
             disabled={uploading || !metadata.title}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+            className="w-full"
             size="lg"
           >
             {uploading ? (

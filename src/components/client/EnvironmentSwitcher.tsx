@@ -63,7 +63,7 @@ export default function EnvironmentSwitcher() {
 
   if (loading || !currentEnv) {
     return (
-      <div className="h-9 w-32 bg-neutral-800 animate-pulse rounded-md"></div>
+      <div className="h-9 w-32 animate-pulse rounded-md bg-secondary"></div>
     );
   }
 
@@ -114,7 +114,7 @@ export default function EnvironmentSwitcher() {
                 )}
               </div>
               {env.description && (
-                <p className="text-xs text-neutral-500 line-clamp-2">
+                <p className="line-clamp-2 text-xs text-muted-foreground">
                   {env.description}
                 </p>
               )}
@@ -123,7 +123,7 @@ export default function EnvironmentSwitcher() {
         ))}
         
         {environments.length === 0 && (
-          <div className="p-3 text-center text-sm text-neutral-500">
+          <div className="p-3 text-center text-sm text-muted-foreground">
             No environments available
           </div>
         )}

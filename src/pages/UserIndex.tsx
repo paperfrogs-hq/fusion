@@ -27,13 +27,13 @@ export default function UserIndex() {
               className="inline-block mb-6"
             >
               <img 
-                src="/Fusion_Icon-No-BG-01.png" 
+                src="/Logo-01-transparent.png" 
                 alt="Fusion Logo" 
-                className="h-24 w-auto mx-auto"
+                className="fusion-logo-lockup mx-auto h-20 w-[240px]"
               />
             </motion.div>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+            <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground md:text-6xl">
               Verify Your Audio
             </h1>
             
@@ -50,7 +50,7 @@ export default function UserIndex() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-2 hover:border-primary/50">
+                <Card className="group border-border transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_0_26px_-14px_rgba(182,255,0,0.75)]">
                   <CardHeader>
                     <CardTitle className="text-2xl flex items-center gap-2">
                       <Lock className="w-6 h-6 text-primary" />
@@ -83,7 +83,7 @@ export default function UserIndex() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
-                <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-2 border-primary/30 hover:border-primary bg-gradient-to-br from-background to-primary/5">
+                <Card className="group border border-primary/30 bg-gradient-to-br from-card to-primary/5 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_0_30px_-14px_rgba(182,255,0,0.85)]">
                   <CardHeader>
                     <CardTitle className="text-2xl flex items-center gap-2">
                       <Zap className="w-6 h-6 text-primary" />

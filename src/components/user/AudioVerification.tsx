@@ -109,13 +109,13 @@ export default function AudioVerification() {
   };
 
   return (
-    <Card className="border-purple-500/20 bg-slate-800/50">
+    <Card className="border-border bg-card">
       <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-foreground">
           <Shield className="w-5 h-5" />
           Verify Audio Provenance
         </CardTitle>
-        <CardDescription className="text-gray-300">
+        <CardDescription>
           Upload an audio file to verify its origin and authenticity
         </CardDescription>
       </CardHeader>
@@ -130,18 +130,18 @@ export default function AudioVerification() {
         {/* File Dropzone */}
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
+          className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all ${
             isDragActive
-              ? 'border-purple-500 bg-purple-500/10'
-              : 'border-white/20 hover:border-purple-500/50 bg-slate-700/30'
+              ? 'border-primary/70 bg-primary/10'
+              : 'border-border bg-secondary/50 hover:border-primary/45'
           }`}
         >
           <input {...getInputProps()} />
           {file ? (
             <div className="space-y-2">
-              <Music className="w-12 h-12 mx-auto text-purple-400" />
-              <p className="text-white font-medium">{file.name}</p>
-              <p className="text-sm text-gray-400">
+              <Music className="mx-auto h-12 w-12 text-primary" />
+              <p className="font-medium text-foreground">{file.name}</p>
+              <p className="text-sm text-muted-foreground">
                 {formatBytes(file.size)} • {file.type}
               </p>
               <Button
@@ -159,13 +159,13 @@ export default function AudioVerification() {
             </div>
           ) : (
             <div className="space-y-2">
-              <Upload className="w-12 h-12 mx-auto text-gray-400" />
-              <p className="text-white">
+              <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+              <p className="text-foreground">
                 {isDragActive
                   ? 'Drop your audio file here'
                   : 'Drag & drop an audio file to verify, or click to browse'}
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Supports MP3, WAV, FLAC, M4A, AAC, OGG (max 100MB)
               </p>
             </div>
@@ -177,7 +177,7 @@ export default function AudioVerification() {
           <Button
             onClick={handleVerify}
             disabled={verifying}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+            className="w-full"
             size="lg"
           >
             {verifying ? (
@@ -196,21 +196,21 @@ export default function AudioVerification() {
 
         {/* Verification Result */}
         {result && (
-          <div className="border border-white/10 rounded-lg p-6 bg-slate-700/30 space-y-6">
+          <div className="space-y-6 rounded-xl border border-border bg-secondary/70 p-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white">Verification Results</h3>
+              <h3 className="text-xl font-bold text-foreground">Verification Results</h3>
               {getVerificationIcon(result.confidence)}
             </div>
 
             {/* Confidence Score */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-gray-300">Confidence Score</span>
+                <span className="text-muted-foreground">Confidence Score</span>
                 <span className={`text-2xl font-bold ${getVerificationColor(result.confidence)}`}>
                   {(result.confidence * 100).toFixed(1)}%
                 </span>
               </div>
-              <div className="w-full bg-slate-900/50 rounded-full h-3">
+              <div className="h-3 w-full rounded-full border border-border bg-background/70">
                 <div
                   className={`h-full rounded-full transition-all ${
                     result.confidence >= 0.9
@@ -227,7 +227,7 @@ export default function AudioVerification() {
             {/* Verification Status */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <p className="text-sm text-gray-400">Status</p>
+                <p className="text-sm text-muted-foreground">Status</p>
                 <Badge
                   variant={result.verified ? 'default' : 'destructive'}
                   className="text-sm"
@@ -236,7 +236,7 @@ export default function AudioVerification() {
                 </Badge>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-gray-400">Watermark</p>
+                <p className="text-sm text-muted-foreground">Watermark</p>
                 <Badge
                   variant={result.watermarkFound ? 'default' : 'secondary'}
                   className="text-sm"
@@ -248,34 +248,34 @@ export default function AudioVerification() {
 
             {/* Audio Metadata */}
             {result.metadata && (
-              <div className="space-y-3 pt-4 border-t border-white/10">
-                <h4 className="text-white font-medium">Audio Information</h4>
+              <div className="space-y-3 border-t border-border pt-4">
+                <h4 className="font-medium text-foreground">Audio Information</h4>
                 
                 {result.metadata.title && (
                   <div className="flex items-start gap-2">
-                    <Music className="w-4 h-4 text-gray-400 mt-0.5" />
+                    <Music className="mt-0.5 h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-xs text-gray-400">Title</p>
-                      <p className="text-white">{result.metadata.title}</p>
+                      <p className="text-xs text-muted-foreground">Title</p>
+                      <p className="text-foreground">{result.metadata.title}</p>
                     </div>
                   </div>
                 )}
 
                 {result.metadata.artist && (
                   <div className="flex items-start gap-2">
-                    <User className="w-4 h-4 text-gray-400 mt-0.5" />
+                    <User className="mt-0.5 h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-xs text-gray-400">Artist</p>
-                      <p className="text-white">{result.metadata.artist}</p>
+                      <p className="text-xs text-muted-foreground">Artist</p>
+                      <p className="text-foreground">{result.metadata.artist}</p>
                     </div>
                   </div>
                 )}
 
                 {result.metadata.origin && (
                   <div className="flex items-start gap-2">
-                    <Shield className="w-4 h-4 text-gray-400 mt-0.5" />
+                    <Shield className="mt-0.5 h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-xs text-gray-400">Origin</p>
+                      <p className="text-xs text-muted-foreground">Origin</p>
                       <Badge variant="outline" className="mt-1">
                         {result.metadata.origin === 'human' ? 'Human Created' : 
                          result.metadata.origin === 'ai' ? 'AI Generated' : 
@@ -287,10 +287,10 @@ export default function AudioVerification() {
 
                 {result.metadata.uploadedAt && (
                   <div className="flex items-start gap-2">
-                    <Calendar className="w-4 h-4 text-gray-400 mt-0.5" />
+                    <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-xs text-gray-400">Uploaded</p>
-                      <p className="text-white">
+                      <p className="text-xs text-muted-foreground">Uploaded</p>
+                      <p className="text-foreground">
                         {new Date(result.metadata.uploadedAt).toLocaleString()}
                       </p>
                     </div>

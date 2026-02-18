@@ -31,7 +31,7 @@ export default function OrgSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="w-full justify-between px-3 h-14 hover:bg-neutral-800"
+          className="h-14 w-full justify-between px-3 hover:bg-secondary/85"
         >
           <div className="flex items-center gap-3 min-w-0">
             {currentOrg.logo_url ? (
@@ -41,22 +41,22 @@ export default function OrgSwitcher() {
                 className="h-8 w-8 rounded object-cover flex-shrink-0"
               />
             ) : (
-              <div className="h-8 w-8 rounded bg-neutral-800 flex items-center justify-center flex-shrink-0">
-                <Building2 className="h-5 w-5 text-neutral-400" />
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-secondary">
+                <Building2 className="h-5 w-5 text-muted-foreground" />
               </div>
             )}
             <div className="text-left min-w-0 flex-1">
-              <div className="font-semibold text-sm truncate text-white">{currentOrg.name}</div>
-              <div className="text-xs text-neutral-500 truncate">
+              <div className="truncate text-sm font-semibold text-foreground">{currentOrg.name}</div>
+              <div className="truncate text-xs text-muted-foreground">
                 {currentOrg.plan_type} plan
               </div>
             </div>
           </div>
-          <ChevronDown className="h-4 w-4 text-neutral-500 flex-shrink-0 ml-2" />
+          <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-72 bg-neutral-900 border-neutral-800">
-        <DropdownMenuLabel className="text-xs text-neutral-500 uppercase">
+      <DropdownMenuContent align="start" className="w-72 border-border bg-card/95">
+        <DropdownMenuLabel className="text-xs uppercase text-muted-foreground">
           Your Organizations
         </DropdownMenuLabel>
         
@@ -64,7 +64,7 @@ export default function OrgSwitcher() {
           <DropdownMenuItem
             key={org.id}
             onClick={() => handleSwitchOrg(org.id)}
-            className="flex items-center gap-3 p-3 cursor-pointer hover:bg-neutral-800"
+            className="flex cursor-pointer items-center gap-3 p-3 hover:bg-secondary/80"
           >
             {org.logo_url ? (
               <img
@@ -73,13 +73,13 @@ export default function OrgSwitcher() {
                 className="h-8 w-8 rounded object-cover flex-shrink-0"
               />
             ) : (
-              <div className="h-8 w-8 rounded bg-neutral-800 flex items-center justify-center flex-shrink-0">
-                <Building2 className="h-5 w-5 text-neutral-400" />
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-secondary">
+                <Building2 className="h-5 w-5 text-muted-foreground" />
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="font-medium text-sm truncate text-white">{org.name}</div>
-              <div className="text-xs text-neutral-500 capitalize truncate">
+              <div className="truncate text-sm font-medium text-foreground">{org.name}</div>
+              <div className="truncate text-xs capitalize text-muted-foreground">
                 {org.role || 'member'} · {org.plan_type}
               </div>
             </div>

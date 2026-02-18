@@ -1,16 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Container } from "@/components/ui/container";
 
 const Header = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const navItems = ["How It Works", "Solutions", "Features", "Pricing"];
 
   useEffect(() => {
-    const sections = ["how-it-works", "solutions", "features"];
+    const sections = ["how-it-works", "solutions", "features", "pricing"];
 
     const handleScroll = () => {
       let currentSection = "";
@@ -19,191 +22,160 @@ const Header = () => {
         const element = document.getElementById(sectionId);
         if (element) {
           const rect = element.getBoundingClientRect();
-          if (rect.top <= 200) {
+          if (rect.top <= 180) {
             currentSection = sectionId;
           }
         }
       }
 
       setActiveSection(currentSection);
+      setIsScrolled(window.scrollY > 16);
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleJoinClick = () => {
-    setMobileMenuOpen(false);
-    window.location.href = '/user';
-  };
 
   const handleNavClick = (sectionId: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setMobileMenuOpen(false);
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerOffset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      const headerOffset = 104;
+      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - headerOffset;
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   };
 
   const getLinkClass = (sectionId: string) => {
     const isActive = activeSection === sectionId;
-    return `px-4 py-2 text-sm relative transition-colors ${
+    return `relative px-3 py-2 text-sm font-medium transition-colors ${
       isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
     }`;
   };
 
   return (
     <motion.header
-      className="fixed top-0 left-0 right-0 z-50"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="fixed inset-x-0 top-0 z-50"
+      initial={{ y: -24, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      <div className="mx-2 sm:mx-4 mt-2 sm:mt-4">
-        <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 md:h-24 lg:h-28 flex items-center justify-between rounded-xl sm:rounded-2xl backdrop-blur-md bg-background/80 border border-border/50">
-          <motion.a 
-            href="/" 
-            className="flex items-center gap-2 sm:gap-3"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          >
-            <motion.img
-              src="/Fusion_Icon-No-BG-01.png"
-              alt="Fusion Logo"
-              className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      <Container className="pt-4">
+        <div
+          className={`flex h-16 items-center justify-between rounded-2xl border px-4 transition-all duration-300 sm:h-[72px] sm:px-6 ${
+            isScrolled
+              ? "border-border bg-background/72 shadow-[0_20px_40px_-28px_rgba(0,0,0,0.95)] backdrop-blur-xl"
+              : "border-transparent bg-transparent"
+          }`}
+        >
+          <a href="/" className="flex items-center">
+            <img
+              src="/Logo-01-transparent.png"
+              alt="Fusion"
+              className="fusion-logo-lockup h-auto w-[150px] shrink-0"
             />
-          </motion.a>
+          </a>
 
-          <nav className="hidden md:flex items-center gap-1">
-            {["How It Works", "Solutions", "Features"].map((item) => {
+          <nav className="hidden items-center gap-2 md:flex">
+            {navItems.map((item) => {
               const sectionId = item.toLowerCase().replace(/\s+/g, "-");
               const isActive = activeSection === sectionId;
               return (
-                <motion.a
+                <a
                   key={item}
                   href={`#${sectionId}`}
                   onClick={handleNavClick(sectionId)}
-                  className={getLinkClass(sectionId)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className={`group ${getLinkClass(sectionId)}`}
                 >
                   {item}
-                  <motion.div
-                    className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: isActive ? 1 : 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    style={{ originX: 0 }}
+                  <span
+                    className={`absolute inset-x-3 bottom-1 h-px bg-primary transition-transform duration-200 group-hover:scale-x-100 ${
+                      isActive ? "scale-x-100" : "scale-x-0"
+                    }`}
                   />
-                </motion.a>
+                </a>
               );
             })}
           </nav>
 
-          {/* Mobile Menu Button */}
+          <div className="hidden items-center gap-2 md:flex">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/user/login")}>Creators</Button>
+            <Button variant="hero" size="sm" onClick={() => navigate("/client/login")}>Enterprise</Button>
+          </div>
+
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground md:hidden"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-
-          <motion.div className="hidden md:flex items-center gap-3">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs sm:text-sm px-2 sm:px-4"
-                onClick={() => navigate('/user/login')}
-              >
-                Creators
-              </Button>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button 
-                variant="hero" 
-                size="sm" 
-                className="text-xs sm:text-sm px-2 sm:px-4"
-                onClick={() => navigate('/client/login')}
-              >
-                Enterprise
-              </Button>
-            </motion.div>
-          </motion.div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden mx-2 sm:mx-4 mt-2 overflow-hidden"
-          >
-            <div className="container mx-auto px-4 py-4 rounded-xl backdrop-blur-md bg-background/95 border border-border/50">
-              <nav className="flex flex-col gap-2">
-                {["How It Works", "Solutions", "Features"].map((item) => {
-                  const sectionId = item.toLowerCase().replace(/\s+/g, "-");
-                  const isActive = activeSection === sectionId;
-                  return (
-                    <a
-                      key={item}
-                      href={`#${sectionId}`}
-                      onClick={handleNavClick(sectionId)}
-                      className={`px-4 py-3 text-sm rounded-lg transition-colors ${
-                        isActive 
-                          ? "bg-primary/10 text-primary font-medium" 
-                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                      }`}
-                    >
-                      {item}
-                    </a>
-                  );
-                })}
-                <div className="flex flex-col gap-2 mt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full" 
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.22 }}
+              className="mt-2 md:hidden"
+            >
+              <div className="rounded-xl border border-border bg-card/95 p-4 backdrop-blur-xl">
+                <nav className="flex flex-col gap-1">
+                  {navItems.map((item) => {
+                    const sectionId = item.toLowerCase().replace(/\s+/g, "-");
+                    const isActive = activeSection === sectionId;
+                    return (
+                      <a
+                        key={item}
+                        href={`#${sectionId}`}
+                        onClick={handleNavClick(sectionId)}
+                        className={`rounded-md px-3 py-2 text-sm ${
+                          isActive
+                            ? "bg-primary/15 text-primary"
+                            : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                        }`}
+                      >
+                        {item}
+                      </a>
+                    );
+                  })}
+                </nav>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      navigate('/user/login');
+                      navigate("/user/login");
                     }}
                   >
-                    Creators Login
+                    Creators
                   </Button>
-                  <Button 
-                    variant="hero" 
-                    size="sm" 
-                    className="w-full" 
+                  <Button
+                    variant="hero"
+                    size="sm"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      navigate('/client/login');
+                      navigate("/client/login");
                     }}
                   >
-                    Enterprise Login
+                    Enterprise
                   </Button>
                 </div>
-              </nav>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Container>
     </motion.header>
   );
 };

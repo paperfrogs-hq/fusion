@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Lock, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function ResetPassword() {
@@ -78,7 +79,8 @@ export default function ResetPassword() {
   if (!token || !email) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <main className="flex-1 flex items-center justify-center p-4">
+        <Header />
+        <main className="flex-1 flex items-center justify-center p-4 pt-28 sm:pt-32">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-red-500">Invalid Link</CardTitle>
@@ -101,7 +103,8 @@ export default function ResetPassword() {
   if (success) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <main className="flex-1 flex items-center justify-center p-4">
+        <Header />
+        <main className="flex-1 flex items-center justify-center p-4 pt-28 sm:pt-32">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center mb-4">
@@ -128,7 +131,8 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-1 flex items-center justify-center p-4">
+      <Header />
+      <main className="flex-1 flex items-center justify-center p-4 pt-28 sm:pt-32">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">

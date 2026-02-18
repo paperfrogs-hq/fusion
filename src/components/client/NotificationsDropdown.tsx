@@ -154,16 +154,16 @@ export default function NotificationsDropdown() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative text-neutral-400 hover:text-white">
+        <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 bg-neutral-900 border-neutral-700">
+      <DropdownMenuContent align="end" className="w-80 border-border bg-card/95">
         <DropdownMenuLabel className="flex items-center justify-between">
-          <span className="text-white">Notifications</span>
+          <span className="text-foreground">Notifications</span>
           {unreadCount > 0 && (
             <Button 
               variant="ghost" 
@@ -175,25 +175,25 @@ export default function NotificationsDropdown() {
             </Button>
           )}
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-neutral-700" />
+        <DropdownMenuSeparator className="bg-border" />
         
         <ScrollArea className="h-[300px]">
           {loading ? (
-            <div className="p-4 text-center text-neutral-400">
-              <div className="animate-spin h-6 w-6 border-2 border-neutral-600 border-t-primary rounded-full mx-auto"></div>
+            <div className="p-4 text-center text-muted-foreground">
+              <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary"></div>
               <p className="text-sm mt-2">Loading...</p>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="p-6 text-center text-neutral-400">
-              <Inbox className="h-10 w-10 mx-auto mb-2 text-neutral-600" />
+            <div className="p-6 text-center text-muted-foreground">
+              <Inbox className="mx-auto mb-2 h-10 w-10 text-muted-foreground" />
               <p className="text-sm">No notifications</p>
             </div>
           ) : (
             notifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`px-3 py-3 border-b border-neutral-800 hover:bg-neutral-800/50 cursor-pointer ${
-                  !notification.read ? 'bg-neutral-800/30' : ''
+                className={`cursor-pointer border-b border-border px-3 py-3 hover:bg-secondary/70 ${
+                  !notification.read ? 'bg-secondary/60' : ''
                 }`}
                 onClick={() => markAsRead(notification.id)}
               >
@@ -201,17 +201,17 @@ export default function NotificationsDropdown() {
                   <div className="mt-0.5">{getIcon(notification.type)}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className={`text-sm font-medium truncate ${!notification.read ? 'text-white' : 'text-neutral-300'}`}>
+                      <p className={`truncate text-sm font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
                         {notification.title}
                       </p>
                       {!notification.read && (
                         <span className="h-2 w-2 bg-primary rounded-full flex-shrink-0"></span>
                       )}
                     </div>
-                    <p className="text-xs text-neutral-500 mt-0.5 line-clamp-2">
+                    <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                       {notification.message}
                     </p>
-                    <p className="text-xs text-neutral-600 mt-1 flex items-center gap-1">
+                    <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />
                       {formatTime(notification.createdAt)}
                     </p>

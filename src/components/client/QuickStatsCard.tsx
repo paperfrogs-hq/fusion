@@ -13,18 +13,18 @@ interface QuickStatsCardProps {
 }
 
 const colorClasses = {
-  blue: 'text-blue-400',
+  blue: 'text-primary',
   green: 'text-green-400',
-  purple: 'text-purple-400',
-  yellow: 'text-yellow-400',
+  purple: 'text-primary',
+  yellow: 'text-amber-400',
   red: 'text-red-400',
 };
 
 const bgColorClasses = {
-  blue: 'bg-blue-500/20',
+  blue: 'bg-primary/18',
   green: 'bg-green-500/20',
-  purple: 'bg-purple-500/20',
-  yellow: 'bg-yellow-500/20',
+  purple: 'bg-primary/18',
+  yellow: 'bg-amber-500/20',
   red: 'bg-red-500/20',
 };
 
@@ -38,18 +38,18 @@ export default function QuickStatsCard({
   color 
 }: QuickStatsCardProps) {
   return (
-    <Card className="p-6 bg-neutral-900 border-neutral-800">
+    <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-neutral-400">{title}</h3>
-        <div className={`p-2 rounded-lg ${bgColorClasses[color]}`}>
+        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
+        <div className={`rounded-lg border border-border p-2 ${bgColorClasses[color]}`}>
           <Icon className={`h-5 w-5 ${colorClasses[color]}`} />
         </div>
       </div>
       
       <div className="flex items-baseline gap-2">
-        <p className="text-3xl font-bold text-white">{value}</p>
+        <p className="text-3xl font-bold text-foreground">{value}</p>
         {total !== undefined && (
-          <span className="text-sm text-neutral-500">/ {total}</span>
+          <span className="text-sm text-muted-foreground">/ {total}</span>
         )}
       </div>
       
@@ -66,9 +66,9 @@ export default function QuickStatsCard({
               <span className="text-xs text-red-400 font-medium">{change}</span>
             </>
           ) : (
-            <span className="text-xs text-neutral-500 font-medium">0</span>
+            <span className="text-xs font-medium text-muted-foreground">0</span>
           )}
-          <span className="text-xs text-neutral-500">{changeLabel}</span>
+          <span className="text-xs text-muted-foreground">{changeLabel}</span>
         </div>
       )}
     </Card>

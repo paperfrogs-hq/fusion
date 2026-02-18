@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Container } from "@/components/ui/container";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -10,8 +11,6 @@ const Footer = () => {
   };
 
   const links = [
-    { label: "Individual Pricing", path: "/user/pricing" },
-    { label: "Enterprise Pricing", path: "/business/pricing" },
     { label: "Whitepaper", path: "/whitepaper" },
     { label: "Contact", path: "/contact" },
     { label: "Privacy", path: "/privacy" },
@@ -19,53 +18,38 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="py-12 sm:py-16 border-t border-border/50 relative">
-      <div className="container mx-auto px-4 sm:px-6">
+    <footer className="relative border-t border-border/80 py-12 sm:py-14">
+      <Container wide>
         <motion.div
-          className="flex flex-col lg:flex-row items-center justify-between gap-8"
-          initial={{ opacity: 0, y: 20 }}
+          className="surface-panel flex flex-col gap-8 p-7 lg:flex-row lg:items-center lg:justify-between"
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.35 }}
         >
-          <div className="flex flex-col items-start gap-0">
-            <span className="font-display font-bold text-lg" style={{color: "#0DFF0D"}}>
-              Fusion
-            </span>
-            <a 
-              href="https://paperfrogs.dev/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-muted-foreground text-sm hover:text-foreground transition-colors"
-            >
-              by Paperfrogs HQ
-            </a>
+          <div className="flex items-center">
+            <img src="/Logo-01-transparent.png" alt="Fusion logo" className="fusion-logo-lockup h-14 w-[210px] shrink-0 sm:h-16 sm:w-[240px]" />
           </div>
 
-          <nav className="flex items-center gap-8">
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {links.map((link) => (
-              <motion.a
+              <a
                 key={link.label}
                 href={link.path}
                 onClick={handleNavigation(link.path)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                whileHover={{
-                  scale: 1.05,
-                  color: "hsl(var(--primary))",
-                }}
+                className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 {link.label}
-              </motion.a>
+              </a>
             ))}
           </nav>
 
-          <p className="text-sm text-muted-foreground">
-            © 2026 Paperfrogs HQ. All rights reserved.
-          </p>
+          <div className="text-sm text-muted-foreground">
+            <p>© 2026 Fusion. All rights reserved.</p>
+            <p className="mt-1 text-xs uppercase tracking-[0.14em]">Built by Paperfrogs HQ</p>
+          </div>
         </motion.div>
-
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-      </div>
+      </Container>
     </footer>
   );
 };
