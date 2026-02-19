@@ -364,7 +364,7 @@ const AdminDashboard = () => {
                   <p className="text-sm font-medium text-foreground">{admin.email}</p>
                   <p className="text-xs text-muted-foreground">Secure session active</p>
                 </div>
-                <Button onClick={handleLogout} variant="outline" className="h-10" size="sm">
+                <Button onClick={handleLogout} variant="outline" className="h-10 lg:hidden" size="sm">
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
                 </Button>

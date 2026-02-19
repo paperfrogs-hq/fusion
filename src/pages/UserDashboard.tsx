@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,12 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Music, Shield, LogOut, Key, User, Download, Trash2, Eye, EyeOff, Copy, CheckCircle2, XCircle, Clock, Camera, Zap, ArrowRight, Crown } from 'lucide-react';
+import { Upload, Music, Shield, LogOut, Key, User, Download, Trash2, Eye, EyeOff, Copy, CheckCircle2, XCircle, Clock, Camera, Zap, ArrowRight, Crown, RefreshCw, Search } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
 import AudioUpload from '@/components/user/AudioUpload';
 import AudioVerification from '@/components/user/AudioVerification';
 import UserTrialExpiredModal from '@/components/user/UserTrialExpiredModal';
+
+const USER_DASHBOARD_TAB_KEY = 'fusion_user_dashboard_tab';
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -33,6 +35,11 @@ export default function UserDashboard() {
   const [trialExpired, setTrialExpired] = useState(false);
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>('trialing');
+  const [activeTab, setActiveTab] = useState<string>(() => localStorage.getItem(USER_DASHBOARD_TAB_KEY) || 'upload');
+  const [refreshingData, setRefreshingData] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const [librarySearch, setLibrarySearch] = useState('');
+  const [librarySort, setLibrarySort] = useState<'newest' | 'oldest' | 'largest' | 'smallest' | 'name'>('newest');
   const [currentPlan] = useState({
     name: 'Trial',
     verifications_limit: 100,
@@ -52,11 +59,22 @@ export default function UserDashboard() {
     }
 
     setUser({ id: userId, email, name });
-    loadAudioFiles(userId);
-    loadVerificationHistory(userId);
-    loadUserData(userId);
-    checkTrialStatus(userId);
+    const bootstrapDashboard = async () => {
+      await Promise.all([
+        loadAudioFiles(userId),
+        loadVerificationHistory(userId),
+        loadUserData(userId),
+        checkTrialStatus(userId),
+      ]);
+      setLastSyncedAt(new Date());
+    };
+    void bootstrapDashboard();
   }, [navigate]);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    localStorage.setItem(USER_DASHBOARD_TAB_KEY, value);
+  };
 
   const checkTrialStatus = async (userId: string) => {
     try {
@@ -227,6 +245,25 @@ export default function UserDashboard() {
     navigate('/user/login');
   };
 
+  const refreshDashboardData = async () => {
+    if (!user?.id || refreshingData) return;
+    setRefreshingData(true);
+    try {
+      await Promise.all([
+        loadAudioFiles(user.id),
+        loadVerificationHistory(user.id),
+        loadUserData(user.id),
+        checkTrialStatus(user.id),
+      ]);
+      setLastSyncedAt(new Date());
+      toast({ title: 'Dashboard refreshed', description: 'Your latest data is now synced.' });
+    } catch {
+      toast({ title: 'Refresh failed', description: 'Could not refresh dashboard data.', variant: 'destructive' });
+    } finally {
+      setRefreshingData(false);
+    }
+  };
+
   const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -290,6 +327,39 @@ export default function UserDashboard() {
     return Math.round(bytes / Math.pow(k, i)) + ' ' + sizes[i];
   };
 
+  const filteredAndSortedAudioFiles = useMemo(() => {
+    const query = librarySearch.trim().toLowerCase();
+    const filtered = audioFiles.filter((file) => {
+      if (!query) return true;
+      return (
+        (file.original_filename || '').toLowerCase().includes(query) ||
+        (file.file_format || '').toLowerCase().includes(query) ||
+        (file.provenance_status || '').toLowerCase().includes(query)
+      );
+    });
+
+    const sorted = [...filtered].sort((a, b) => {
+      switch (librarySort) {
+        case 'oldest':
+          return new Date(a.uploaded_at).getTime() - new Date(b.uploaded_at).getTime();
+        case 'largest':
+          return (b.file_size_bytes || 0) - (a.file_size_bytes || 0);
+        case 'smallest':
+          return (a.file_size_bytes || 0) - (b.file_size_bytes || 0);
+        case 'name':
+          return (a.original_filename || '').localeCompare(b.original_filename || '');
+        case 'newest':
+        default:
+          return new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime();
+      }
+    });
+
+    return sorted;
+  }, [audioFiles, librarySearch, librarySort]);
+
+  const verificationUsagePercent = Math.min((verificationHistory.length / currentPlan.verifications_limit) * 100, 100);
+  const storageUsagePercent = Math.min((storageUsed / (1024 * 1024 * 1024)) * 100, 100);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -306,7 +376,7 @@ export default function UserDashboard() {
       {/* User Info Banner */}
       <div className="border-b border-border bg-secondary/70">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
                 {profilePicture ? (
@@ -320,20 +390,23 @@ export default function UserDashboard() {
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
             </div>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={refreshDashboardData} disabled={refreshingData}>
+                <RefreshCw className={`w-4 h-4 mr-2 ${refreshingData ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button onClick={handleLogout} variant="outline">
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8">
-        <Tabs defaultValue="upload" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
             <TabsTrigger value="upload">
               <Upload className="w-4 h-4 mr-2" />
@@ -353,6 +426,35 @@ export default function UserDashboard() {
             </TabsTrigger>
           </TabsList>
 
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Audio Files</p>
+                <p className="mt-2 text-2xl font-bold">{audioFiles.length}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Verifications</p>
+                <p className="mt-2 text-2xl font-bold">{verificationHistory.length}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Storage</p>
+                <p className="mt-2 text-2xl font-bold">{storageUsagePercent.toFixed(1)}%</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Last Sync</p>
+                <p className="mt-2 text-sm font-semibold">
+                  {lastSyncedAt ? lastSyncedAt.toLocaleTimeString() : 'Not synced'}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Upload Tab */}
           <TabsContent value="upload">
             <AudioUpload userId={user?.id} onUploadComplete={() => loadAudioFiles(user?.id)} />
@@ -369,19 +471,48 @@ export default function UserDashboard() {
               <CardHeader>
                 <CardTitle>My Audio Library</CardTitle>
                 <CardDescription>
-                  {audioFiles.length} file{audioFiles.length !== 1 ? 's' : ''} • {formatBytes(storageUsed)} used
+                  {filteredAndSortedAudioFiles.length} shown of {audioFiles.length} file{audioFiles.length !== 1 ? 's' : ''} • {formatBytes(storageUsed)} used
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
+                  <div className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={librarySearch}
+                      onChange={(e) => setLibrarySearch(e.target.value)}
+                      placeholder="Search by filename, format, or status..."
+                      className="pl-9"
+                    />
+                  </div>
+                  <select
+                    value={librarySort}
+                    onChange={(e) => setLibrarySort(e.target.value as typeof librarySort)}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="newest">Sort: Newest first</option>
+                    <option value="oldest">Sort: Oldest first</option>
+                    <option value="largest">Sort: Largest file</option>
+                    <option value="smallest">Sort: Smallest file</option>
+                    <option value="name">Sort: Name A-Z</option>
+                  </select>
+                </div>
+
                 {audioFiles.length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
                     <Music className="w-16 h-16 mx-auto mb-4 opacity-50" />
                     <p className="font-medium">No audio files yet</p>
                     <p className="text-sm mt-2">Upload your first audio file to get started</p>
                   </div>
+                ) : filteredAndSortedAudioFiles.length === 0 ? (
+                  <div className="text-center py-10 text-muted-foreground">
+                    <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="font-medium">No files match your search</p>
+                    <p className="text-sm mt-2">Try a different keyword or clear search filters.</p>
+                  </div>
                 ) : (
                   <div className="space-y-4">
-                    {audioFiles.map((file) => (
+                    {filteredAndSortedAudioFiles.map((file) => (
                       <div
                         key={file.id}
                         className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
@@ -580,7 +711,7 @@ export default function UserDashboard() {
                   <div className="w-full bg-muted rounded-full h-2.5">
                     <div 
                       className="bg-primary h-2.5 rounded-full transition-all" 
-                      style={{ width: `${Math.min((verificationHistory.length / currentPlan.verifications_limit) * 100, 100)}%` }}
+                      style={{ width: `${verificationUsagePercent}%` }}
                     ></div>
                   </div>
                   {verificationHistory.length >= currentPlan.verifications_limit && (
@@ -689,7 +820,7 @@ export default function UserDashboard() {
                     <div className="flex-1 bg-muted border rounded-full h-2">
                       <div 
                         className="bg-primary h-full rounded-full transition-all" 
-                        style={{ width: `${Math.min((storageUsed / (1024 * 1024 * 1024)) * 100, 100)}%` }}
+                        style={{ width: `${storageUsagePercent}%` }}
                       ></div>
                     </div>
                   </div>
