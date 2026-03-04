@@ -220,6 +220,14 @@
     opacity: 0.022;
     pointer-events: none;
   }
+
+  .auth-orbital {
+    animation: drift 9s ease-in-out infinite;
+  }
+
+  .auth-orbital-reverse {
+    animation: drift 12s ease-in-out infinite reverse;
+  }
 }
 
 @keyframes pulse-glow {

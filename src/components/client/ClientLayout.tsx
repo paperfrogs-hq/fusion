@@ -116,9 +116,9 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center border-b border-border px-5">
             <img
-              src="/Logo-01-transparent.png"
+              src="/shortIcon.png"
               alt="Fusion"
-              className="fusion-logo-lockup h-12 w-[180px]"
+              className="fusion-logo-lockup h-9 w-9 rounded-lg"
             />
           </div>
 
@@ -189,9 +189,9 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           <aside className="relative flex h-full w-[86%] max-w-[330px] flex-col border-r border-border bg-card/95 backdrop-blur-xl">
             <div className="flex h-16 items-center justify-between border-b border-border px-4">
               <img
-                src="/Logo-01-transparent.png"
+                src="/shortIcon.png"
                 alt="Fusion"
-                className="fusion-logo-lockup h-12 w-[180px]"
+                className="fusion-logo-lockup h-9 w-9 rounded-lg"
               />
               <Button
                 variant="ghost"

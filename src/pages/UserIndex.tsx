@@ -27,7 +27,7 @@ export default function UserIndex() {
               className="inline-block mb-6"
             >
               <img 
-                src="/Logo-01-transparent.png" 
+                src="/Logo.png" 
                 alt="Fusion Logo" 
                 className="fusion-logo-lockup mx-auto h-20 w-[240px]"
               />

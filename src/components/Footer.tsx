@@ -28,7 +28,7 @@ const Footer = () => {
           transition={{ duration: 0.35 }}
         >
           <div className="flex items-center">
-            <img src="/Logo-01-transparent.png" alt="Fusion logo" className="fusion-logo-lockup h-14 w-[210px] shrink-0 sm:h-16 sm:w-[240px]" />
+            <img src="/Logo.png" alt="Fusion logo" className="fusion-logo-lockup h-14 w-[210px] shrink-0 sm:h-16 sm:w-[240px]" />
           </div>
 
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-3">

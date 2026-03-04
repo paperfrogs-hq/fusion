@@ -307,7 +307,7 @@ const AdminDashboard = () => {
       <div className="relative z-10 flex min-h-screen">
         <aside className="hidden border-r border-border/80 bg-card/70 backdrop-blur-xl lg:flex lg:w-[300px] lg:flex-col xl:w-[320px]">
           <div className="border-b border-border/75 px-6 py-6">
-            <img src="/Logo-01-transparent.png" alt="Fusion Logo" className="fusion-logo-lockup h-auto w-[150px]" />
+            <img src="/shortIcon.png" alt="Fusion Logo" className="fusion-logo-lockup h-9 w-9 rounded-lg" />
             <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Admin Control Plane</p>
           </div>
 
@@ -407,9 +407,9 @@ const AdminDashboard = () => {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <img
-                        src="/Logo-01-transparent.png"
+                        src="/shortIcon.png"
                         alt="Fusion Logo"
-                        className="fusion-logo-lockup h-auto w-[150px]"
+                        className="fusion-logo-lockup h-9 w-9 rounded-lg"
                       />
                       <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                         Admin Control Plane

@@ -93,9 +93,9 @@ export default function ForgotPassword() {
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">
               <img 
-                src="/Logo-01-transparent.png" 
+                src="/shortIcon.png" 
                 alt="Fusion Logo" 
-                className="fusion-logo-lockup h-20 w-[240px]"
+                className="fusion-logo-lockup h-12 w-12 rounded-xl"
               />
             </div>
             <CardTitle className="text-2xl font-bold">Forgot Password?</CardTitle>

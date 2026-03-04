@@ -84,7 +84,7 @@ const HeroSection = () => {
           <Panel className="noise p-6 sm:p-7">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img src="/Logo-01-transparent.png" alt="Fusion logo" className="fusion-logo-lockup h-auto w-[150px]" />
+                <img src="/shortIcon.png" alt="Fusion logo" className="fusion-logo-lockup h-11 w-11 rounded-xl" />
               </div>
               <div className="rounded-full border border-primary/35 bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-primary">
                 Verification Snapshot

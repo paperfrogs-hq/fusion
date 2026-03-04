@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Loader2, Lock, Mail, User, Users } from 'lucide-react';
+import { CheckCircle2, Loader2, Lock, Mail, Sparkles, User, Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function UserSignup() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -102,7 +101,8 @@ export default function UserSignup() {
         <Header />
         <main className="relative z-10 pb-20 pt-28 sm:pt-32">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <section className="surface-panel noise mx-auto max-w-xl p-8 text-center sm:p-10">
+            <section className="surface-panel mx-auto max-w-xl p-8 text-center sm:p-10">
+              <img src="/shortIcon.png" alt="Fusion Logo" className="fusion-logo-lockup mx-auto h-10 w-10 rounded-xl" />
               <CheckCircle2 className="mx-auto h-16 w-16 text-primary" />
               <h1 className="mt-6 text-3xl font-semibold text-foreground">Check Your Email</h1>
               <p className="mt-3 text-sm text-muted-foreground">
@@ -138,17 +138,19 @@ export default function UserSignup() {
       <main className="relative z-10 pb-20 pt-28 sm:pt-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <section className="surface-panel noise relative hidden overflow-hidden p-10 lg:block">
+            <section className="surface-panel relative hidden overflow-hidden p-10 lg:block">
+              <div className="pointer-events-none absolute -left-9 top-12 h-24 w-24 rounded-[26px] border border-primary/20 bg-primary/10 auth-orbital" />
+              <div className="pointer-events-none absolute bottom-7 right-8 h-20 w-20 rounded-full border border-primary/20 auth-orbital-reverse" />
               <div className="relative z-10">
-                <Badge className="mb-5">Create Account</Badge>
+                <Badge className="mb-5">Creator Onboarding</Badge>
                 <img 
-                  src="/Logo-01-transparent.png" 
+                  src="/shortIcon.png" 
                   alt="Fusion Logo" 
-                  className="fusion-logo-lockup h-auto w-[150px]"
+                  className="fusion-logo-lockup h-11 w-11 rounded-xl"
                 />
                 <h1 className="mt-7 text-4xl font-semibold leading-tight text-foreground xl:text-5xl">
-                  Start secure audio
-                  <span className="gradient-text block">verification now</span>
+                  Build your
+                  <span className="gradient-text block">verified identity</span>
                 </h1>
                 <p className="mt-4 max-w-lg text-base text-muted-foreground">
                   Create your user account to access provenance workflows, cryptographic verification, and reporting.
@@ -159,20 +161,23 @@ export default function UserSignup() {
                     <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Setup</p>
                     <p className="mt-1 text-sm font-medium text-foreground">Account creation takes under 2 minutes</p>
                   </div>
-                  <div className="rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+                  <div className="flex items-start gap-3 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+                    <Sparkles className="mt-0.5 h-4 w-4 text-primary" />
                     <p className="text-sm font-medium text-foreground">Supports creators, artists, platforms, and developers</p>
                   </div>
                 </div>
               </div>
             </section>
 
-            <section className="surface-panel noise relative overflow-hidden p-6 sm:p-8">
+            <section className="surface-panel relative overflow-hidden p-6 sm:p-8">
+              <div className="pointer-events-none absolute right-0 top-0 h-20 w-20 rounded-bl-2xl border-b border-l border-primary/25" />
+              <div className="pointer-events-none absolute bottom-0 left-0 h-16 w-16 rounded-tr-2xl border-r border-t border-primary/20" />
               <div className="relative z-10">
                 <div className="mb-8">
                   <img 
-                    src="/Logo-01-transparent.png" 
+                    src="/shortIcon.png" 
                     alt="Fusion Logo" 
-                    className="fusion-logo-lockup h-auto w-[150px]"
+                    className="fusion-logo-lockup h-11 w-11 rounded-xl"
                   />
                   <p className="mt-5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">User Signup</p>
                   <h2 className="mt-2 text-3xl font-semibold text-foreground">Join Fusion</h2>
@@ -194,6 +199,7 @@ export default function UserSignup() {
                         id="fullName"
                         name="fullName"
                         type="text"
+                        autoComplete="name"
                         required
                         value={formData.fullName}
                         onChange={handleChange}
@@ -211,6 +217,7 @@ export default function UserSignup() {
                         id="email"
                         name="email"
                         type="email"
+                        autoComplete="email"
                         required
                         value={formData.email}
                         onChange={handleChange}
@@ -247,6 +254,7 @@ export default function UserSignup() {
                         id="password"
                         name="password"
                         type="password"
+                        autoComplete="new-password"
                         required
                         value={formData.password}
                         onChange={handleChange}
@@ -264,6 +272,7 @@ export default function UserSignup() {
                         id="confirmPassword"
                         name="confirmPassword"
                         type="password"
+                        autoComplete="new-password"
                         required
                         value={formData.confirmPassword}
                         onChange={handleChange}

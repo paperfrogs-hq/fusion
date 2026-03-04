@@ -48,6 +48,23 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (location.pathname !== "/" || !location.hash) return;
+
+    const targetId = location.hash.replace("#", "");
+    const scrollToTarget = () => {
+      const element = document.getElementById(targetId);
+      if (!element) return;
+
+      const headerOffset = 104;
+      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    };
+
+    const timer = window.setTimeout(scrollToTarget, 50);
+    return () => window.clearTimeout(timer);
+  }, [location.pathname, location.hash]);
+
   const handleNavClick =
     ({ sectionId, path }: { sectionId?: string; path?: string }) =>
     (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -101,7 +118,7 @@ const Header = () => {
         >
           <a href="/" className="flex items-center">
             <img
-              src="/Logo-01-transparent.png"
+              src="/Logo.png"
               alt="Fusion"
               className="fusion-logo-lockup h-auto w-[150px] shrink-0"
             />

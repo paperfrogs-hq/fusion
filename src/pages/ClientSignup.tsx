@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Clock, Eye, EyeOff, Loader2, Lock, Mail, User } from 'lucide-react';
+import { Building2, Clock, Eye, EyeOff, Loader2, Lock, Mail, Sparkles, User } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -101,7 +101,8 @@ export default function ClientSignup() {
         </div>
         <Header />
         <main className="relative z-10 flex flex-1 items-center justify-center px-4 pb-8 pt-28 sm:pt-32">
-          <section className="surface-panel noise w-full max-w-xl p-8 text-center sm:p-10">
+          <section className="surface-panel w-full max-w-xl p-8 text-center sm:p-10">
+            <img src="/shortIcon.png" alt="Fusion Logo" className="fusion-logo-lockup mx-auto h-10 w-10 rounded-xl" />
             <Clock className="mx-auto h-16 w-16 text-primary" />
             <h1 className="mt-6 text-3xl font-semibold text-foreground">Application Submitted!</h1>
             <p className="mt-3 text-sm text-muted-foreground">
@@ -136,17 +137,19 @@ export default function ClientSignup() {
       <Header />
       <main className="relative z-10 flex-1 px-4 pb-8 pt-28 sm:pt-32">
         <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="surface-panel noise relative hidden overflow-hidden p-10 lg:block">
+          <section className="surface-panel relative hidden overflow-hidden p-10 lg:block">
+            <div className="pointer-events-none absolute -right-10 -top-8 h-28 w-28 rounded-[30px] border border-primary/20 bg-primary/10 auth-orbital" />
+            <div className="pointer-events-none absolute bottom-10 left-8 h-20 w-20 rounded-full border border-primary/20 auth-orbital-reverse" />
             <div className="relative z-10">
-              <Badge className="mb-5">Enterprise Signup</Badge>
+              <Badge className="mb-5">Organization Onboarding</Badge>
               <img 
-                src="/Logo-01-transparent.png" 
+                src="/shortIcon.png" 
                 alt="Fusion Logo" 
-                className="fusion-logo-lockup h-auto w-[150px]"
+                className="fusion-logo-lockup h-11 w-11 rounded-xl"
               />
               <h1 className="mt-7 text-4xl font-semibold leading-tight text-foreground xl:text-5xl">
-                Launch organization-grade
-                <span className="gradient-text block">audio trust operations</span>
+                Launch your
+                <span className="gradient-text block">trust operations</span>
               </h1>
               <p className="mt-4 max-w-lg text-base text-muted-foreground">
                 Apply for Fusion enterprise access to manage teams, verification governance, and infrastructure-grade workflows.
@@ -156,24 +159,27 @@ export default function ClientSignup() {
                   <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Review Process</p>
                   <p className="mt-1 text-sm font-medium text-foreground">Application approval in 1-2 business days</p>
                 </div>
-                <div className="rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+                <div className="flex items-start gap-3 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+                  <Sparkles className="mt-0.5 h-4 w-4 text-primary" />
                   <p className="text-sm font-medium text-foreground">No credit card required to apply</p>
                 </div>
               </div>
             </div>
           </section>
 
-          <section className="surface-panel noise relative overflow-hidden p-6 sm:p-8">
+          <section className="surface-panel relative overflow-hidden p-6 sm:p-8">
+            <div className="pointer-events-none absolute right-0 top-0 h-20 w-20 rounded-bl-2xl border-b border-l border-primary/25" />
+            <div className="pointer-events-none absolute left-0 top-1/2 h-12 w-12 -translate-y-1/2 rounded-r-xl border-r border-y border-primary/20" />
             <div className="relative z-10">
               <div className="mb-8">
                 <img 
-                  src="/Logo-01-transparent.png" 
+                  src="/shortIcon.png" 
                   alt="Fusion Logo" 
-                  className="fusion-logo-lockup h-auto w-[150px]"
+                  className="fusion-logo-lockup h-11 w-11 rounded-xl"
                 />
                 <p className="mt-5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Client Signup</p>
-                <h2 className="mt-2 text-3xl font-semibold text-foreground">Create Your Account</h2>
-                <p className="mt-3 text-sm text-muted-foreground">Start your 14-day free trial. No credit card required.</p>
+                <h2 className="mt-2 text-3xl font-semibold text-foreground">Create your account</h2>
+                <p className="mt-3 text-sm text-muted-foreground">Submit your organization profile for approval and activation.</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -190,6 +196,7 @@ export default function ClientSignup() {
                     <Input
                       id="fullName"
                       type="text"
+                      autoComplete="name"
                       required
                       value={formData.fullName}
                       onChange={(e) => handleChange('fullName', e.target.value)}
@@ -206,6 +213,7 @@ export default function ClientSignup() {
                     <Input
                       id="email"
                       type="email"
+                      autoComplete="email"
                       required
                       value={formData.email}
                       onChange={(e) => handleChange('email', e.target.value)}
@@ -222,6 +230,7 @@ export default function ClientSignup() {
                     <Input
                       id="organizationName"
                       type="text"
+                      autoComplete="organization"
                       required
                       value={formData.organizationName}
                       onChange={(e) => handleChange('organizationName', e.target.value)}
@@ -238,6 +247,7 @@ export default function ClientSignup() {
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
                       required
                       value={formData.password}
                       onChange={(e) => handleChange('password', e.target.value)}
@@ -263,6 +273,7 @@ export default function ClientSignup() {
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
                       required
                       value={formData.confirmPassword}
                       onChange={(e) => handleChange('confirmPassword', e.target.value)}
@@ -312,10 +323,10 @@ export default function ClientSignup() {
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating Account...
+                      Submitting...
                     </>
                   ) : (
-                    'Create Account'
+                    'Submit Application'
                   )}
                 </Button>
 

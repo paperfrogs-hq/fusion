@@ -1,18 +1,20 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Lock, Mail } from 'lucide-react';
+import { CheckCircle2, Fingerprint, Loader2, Lock, Mail, Sparkles } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function UserLogin() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const showRegisteredMessage = searchParams.get('registered') === 'true';
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -86,16 +88,18 @@ export default function UserLogin() {
       <main className="relative z-10 pb-20 pt-28 sm:pt-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <section className="surface-panel noise relative hidden overflow-hidden p-10 lg:block">
+            <section className="surface-panel relative hidden overflow-hidden p-10 lg:block">
+              <div className="pointer-events-none absolute -left-8 top-10 h-24 w-24 rounded-[28px] border border-primary/20 bg-primary/10 auth-orbital" />
+              <div className="pointer-events-none absolute bottom-8 right-8 h-24 w-24 rounded-full border border-primary/20 auth-orbital-reverse" />
               <div className="relative z-10">
-                <Badge className="mb-5">User Access</Badge>
+                <Badge className="mb-5">Personal Access Node</Badge>
                 <img 
-                  src="/Logo-01-transparent.png" 
+                  src="/shortIcon.png" 
                   alt="Fusion Logo" 
-                  className="fusion-logo-lockup h-auto w-[150px]"
+                  className="fusion-logo-lockup h-11 w-11 rounded-xl"
                 />
                 <h1 className="mt-7 text-4xl font-semibold leading-tight text-foreground xl:text-5xl">
-                  Continue your protected
+                  Continue your
                   <span className="gradient-text block">audio workflow</span>
                 </h1>
                 <p className="mt-4 max-w-lg text-base text-muted-foreground">
@@ -103,31 +107,46 @@ export default function UserLogin() {
                 </p>
 
                 <div className="mt-8 space-y-3">
-                  <div className="rounded-xl border border-border/80 bg-secondary/55 px-4 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Session Scope</p>
-                    <p className="mt-1 text-sm font-medium text-foreground">User dashboard and report access</p>
+                  <div className="flex items-start gap-3 rounded-xl border border-border/80 bg-secondary/55 px-4 py-3">
+                    <Fingerprint className="mt-0.5 h-4 w-4 text-primary" />
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Session Scope</p>
+                      <p className="mt-1 text-sm font-medium text-foreground">User dashboard and report access</p>
+                    </div>
                   </div>
-                  <div className="rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+                  <div className="flex items-start gap-3 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+                    <Sparkles className="mt-0.5 h-4 w-4 text-primary" />
                     <p className="text-sm font-medium text-foreground">Account-level controls stay unchanged</p>
                   </div>
                 </div>
               </div>
             </section>
 
-            <section className="surface-panel noise relative overflow-hidden p-6 sm:p-8">
+            <section className="surface-panel relative overflow-hidden p-6 sm:p-8">
+              <div className="pointer-events-none absolute right-0 top-0 h-20 w-20 rounded-bl-2xl border-b border-l border-primary/25" />
+              <div className="pointer-events-none absolute bottom-0 left-0 h-16 w-16 rounded-tr-2xl border-r border-t border-primary/20" />
               <div className="relative z-10">
                 <div className="mb-8">
                   <img 
-                    src="/Logo-01-transparent.png" 
+                    src="/shortIcon.png" 
                     alt="Fusion Logo" 
-                    className="fusion-logo-lockup h-auto w-[150px]"
+                    className="fusion-logo-lockup h-11 w-11 rounded-xl"
                   />
                   <p className="mt-5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">User Login</p>
-                  <h2 className="mt-2 text-3xl font-semibold text-foreground">Welcome Back</h2>
+                  <h2 className="mt-2 text-3xl font-semibold text-foreground">Welcome back</h2>
                   <p className="mt-3 text-sm text-muted-foreground">Sign in to your Fusion account.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  {showRegisteredMessage && (
+                    <Alert className="border-primary/30 bg-primary/10">
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                      <AlertDescription className="text-foreground/90">
+                        Account created successfully. Sign in to continue.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
                   {error && (
                     <Alert variant="destructive">
                       <AlertDescription>{error}</AlertDescription>
@@ -142,6 +161,7 @@ export default function UserLogin() {
                         id="email"
                         name="email"
                         type="email"
+                        autoComplete="email"
                         required
                         value={formData.email}
                         onChange={handleChange}
@@ -164,6 +184,7 @@ export default function UserLogin() {
                         id="password"
                         name="password"
                         type="password"
+                        autoComplete="current-password"
                         required
                         value={formData.password}
                         onChange={handleChange}
