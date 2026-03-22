@@ -181,69 +181,137 @@ const Maintenance = () => {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.55, delay: 0.08 }}
-              className="relative hidden min-h-[520px] lg:block"
+              className="relative hidden min-h-[560px] lg:block"
             >
-              <div className="absolute inset-0">
+              <div className="absolute inset-0 overflow-hidden">
                 <motion.div
-                  className="absolute left-[10%] top-[12%] h-[240px] w-[240px] rounded-full border border-white/10"
-                  animate={{
-                    x: [-8, 10, -6],
-                    y: [-10, 14, -8],
-                    scale: [1, 1.05, 0.97],
-                    rotate: [0, 8, -4],
+                  className="absolute left-[48%] top-[50%] h-[72%] w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-[999px] blur-3xl"
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(182,255,0,0.24) 0%, rgba(182,255,0,0.1) 26%, rgba(234,234,234,0.04) 54%, transparent 76%)",
                   }}
-                  transition={slowTransition}
-                />
-
-                <motion.div
-                  className="absolute left-[26%] top-[24%] h-[320px] w-[320px] rounded-full border border-primary/20"
                   animate={{
-                    x: [10, -12, 8],
-                    y: [8, -10, 12],
-                    scale: [0.96, 1.04, 0.98],
-                    rotate: [0, -6, 4],
+                    x: [-8, 12, -6],
+                    y: [8, -12, 10],
+                    scale: [0.96, 1.06, 0.98],
+                    opacity: [0.35, 0.7, 0.45],
                   }}
                   transition={fluidTransition}
                 />
 
                 <motion.div
-                  className="absolute left-[8%] top-[52%] h-[120px] w-[280px] rounded-full border border-white/8 bg-white/[0.015] backdrop-blur-sm"
+                  className="absolute left-[52%] top-[12%] h-[74%] w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"
                   animate={{
-                    x: [-12, 18, -6],
-                    y: [10, -8, 12],
-                    rotate: [-8, -3, -6],
+                    x: [-4, 5, -2],
+                    y: [0, -8, 4],
+                    opacity: [0.22, 0.5, 0.28],
                   }}
                   transition={fluidTransition}
                 />
 
                 <motion.div
-                  className="absolute right-[2%] top-[18%] h-[150px] w-[320px] rounded-full border border-primary/15 bg-primary/[0.04] backdrop-blur-sm"
+                  className="absolute left-[14%] top-[10%] h-[80%] w-[74%]"
                   animate={{
-                    x: [16, -18, 8],
-                    y: [-8, 12, -4],
-                    rotate: [12, 6, 9],
+                    x: [-8, 10, -5],
+                    y: [6, -8, 10],
+                  }}
+                  transition={fluidTransition}
+                >
+                  <svg
+                    viewBox="0 0 520 620"
+                    className="h-full w-full"
+                    aria-hidden="true"
+                  >
+                    <defs>
+                      <linearGradient id="fusion-signal-primary" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="rgba(234,234,234,0)" />
+                        <stop offset="38%" stopColor="rgba(234,234,234,0.68)" />
+                        <stop offset="68%" stopColor="rgba(182,255,0,0.75)" />
+                        <stop offset="100%" stopColor="rgba(182,255,0,0)" />
+                      </linearGradient>
+                      <linearGradient id="fusion-signal-secondary" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="rgba(234,234,234,0)" />
+                        <stop offset="50%" stopColor="rgba(234,234,234,0.32)" />
+                        <stop offset="100%" stopColor="rgba(234,234,234,0)" />
+                      </linearGradient>
+                    </defs>
+
+                    <g fill="none" strokeLinecap="round">
+                      <path
+                        d="M18 132C96 88 160 74 224 98C292 124 332 202 398 216C438 224 472 212 506 188"
+                        stroke="url(#fusion-signal-primary)"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M8 188C84 154 152 148 220 176C288 204 342 284 410 300C452 310 482 298 514 270"
+                        stroke="url(#fusion-signal-secondary)"
+                        strokeWidth="1.2"
+                      />
+                      <path
+                        d="M2 248C78 222 148 226 216 262C286 298 346 382 420 398C458 406 486 394 516 372"
+                        stroke="url(#fusion-signal-primary)"
+                        strokeWidth="1.4"
+                      />
+                      <path
+                        d="M20 322C94 302 162 316 228 360C294 404 350 480 422 492C460 498 486 488 510 470"
+                        stroke="url(#fusion-signal-secondary)"
+                        strokeWidth="1.1"
+                      />
+                      <path
+                        d="M58 82C124 62 182 80 242 128C302 176 340 262 396 296"
+                        stroke="rgba(255,255,255,0.08)"
+                        strokeWidth="1"
+                      />
+                      <path
+                        d="M62 426C122 420 188 448 246 498C284 530 324 548 370 554"
+                        stroke="rgba(182,255,0,0.12)"
+                        strokeWidth="1"
+                      />
+                    </g>
+                  </svg>
+                </motion.div>
+
+                <motion.div
+                  className="absolute left-[42%] top-[20%] h-3 w-3 rounded-full border border-white/20 bg-white/80 shadow-[0_0_24px_rgba(234,234,234,0.45)]"
+                  animate={{
+                    x: [-4, 8, -3],
+                    y: [-8, 6, -4],
+                    scale: [0.92, 1.1, 0.96],
+                    opacity: [0.65, 1, 0.72],
+                  }}
+                  transition={fluidTransition}
+                />
+
+                <motion.div
+                  className="absolute left-[56%] top-[46%] h-3 w-3 rounded-full border border-primary/25 bg-primary shadow-[0_0_26px_rgba(182,255,0,0.55)]"
+                  animate={{
+                    x: [6, -6, 5],
+                    y: [8, -10, 6],
+                    scale: [0.9, 1.14, 0.94],
+                    opacity: [0.7, 1, 0.74],
                   }}
                   transition={slowTransition}
                 />
 
                 <motion.div
-                  className="absolute right-[6%] bottom-[12%] h-[220px] w-[220px] rounded-full border border-white/10"
+                  className="absolute left-[70%] top-[68%] h-2.5 w-2.5 rounded-full border border-white/20 bg-white/75 shadow-[0_0_18px_rgba(234,234,234,0.35)]"
                   animate={{
-                    x: [8, -10, 6],
-                    y: [12, -14, 8],
-                    scale: [0.98, 1.06, 0.94],
+                    x: [-6, 8, -3],
+                    y: [6, -8, 4],
+                    scale: [0.94, 1.08, 0.98],
+                    opacity: [0.55, 0.92, 0.6],
                   }}
                   transition={slowTransition}
                 />
 
-                <div className="absolute left-[16%] top-[18%] text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                  Private
+                <div className="absolute left-[36%] top-[14%] text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                  Origin
                 </div>
-                <div className="absolute left-[56%] top-[38%] text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                  Verifiable
+                <div className="absolute left-[60%] top-[40%] text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                  Signal
                 </div>
-                <div className="absolute left-[20%] bottom-[18%] text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                  Launching Soon
+                <div className="absolute left-[68%] top-[62%] text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                  Proof
                 </div>
               </div>
             </motion.section>
