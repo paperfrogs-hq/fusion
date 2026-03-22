@@ -88,10 +88,12 @@ const Maintenance = () => {
             transition={{ duration: 0.45 }}
             className="mx-auto max-w-5xl"
           >
-            <div className="flex flex-col gap-3 md:flex-row md:items-end md:gap-5">
-              <h1 className="text-[4.2rem] font-medium leading-[0.9] tracking-[-0.06em] text-foreground sm:text-[5.8rem] md:text-[7.8rem] lg:text-[9rem]">
-                Fusion
-              </h1>
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:gap-6">
+              <img
+                src="/Logo.png"
+                alt="Fusion"
+                className="fusion-logo-lockup h-auto w-[240px] sm:w-[320px] md:w-[390px] lg:w-[460px]"
+              />
               <div className="max-w-[240px] pb-2 text-sm leading-snug text-foreground/78 sm:text-base">
                 <p>Launching soon</p>
                 <p>Audio trust platform</p>
@@ -109,6 +111,10 @@ const Maintenance = () => {
                 hello@paperfrogs.dev
               </a>
               .
+            </p>
+
+            <p className="mt-6 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+              Built by Paperfrogs
             </p>
           </motion.section>
         </Container>
