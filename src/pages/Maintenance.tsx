@@ -34,83 +34,94 @@ const Maintenance = () => {
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#040705_0%,#030504_52%,#020403_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(90%_42%_at_50%_112%,rgba(245,244,236,0.94)_0%,rgba(228,242,198,0.82)_14%,rgba(200,255,47,0.72)_28%,rgba(182,255,0,0.58)_40%,rgba(92,124,24,0.28)_54%,rgba(12,20,12,0)_74%),linear-gradient(180deg,rgba(255,255,255,0.025),transparent_24%,transparent_76%,rgba(0,0,0,0.24))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_20%,transparent_74%,rgba(0,0,0,0.26))]" />
 
         <motion.div
-          className="absolute bottom-[-8%] left-1/2 h-[340px] w-[980px] -translate-x-1/2 rounded-full blur-[95px]"
+          className="absolute bottom-[-18%] left-[-12%] h-[520px] w-[520px] rounded-full blur-[95px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(242,242,232,0.86) 0%, rgba(224,240,192,0.76) 18%, rgba(200,255,47,0.64) 34%, rgba(182,255,0,0.44) 48%, transparent 76%)",
-            maskImage: "radial-gradient(ellipse at center, black 0%, black 58%, transparent 82%)",
+              "radial-gradient(circle, rgba(244,244,236,0.88) 0%, rgba(228,242,198,0.8) 18%, rgba(200,255,47,0.62) 34%, rgba(182,255,0,0.32) 52%, transparent 76%)",
+            maskImage: "radial-gradient(circle at 62% 38%, black 0%, black 54%, transparent 80%)",
           }}
           animate={{
-            x: [-12, 10, -8],
+            x: [-14, 12, -8],
             y: [12, -14, 8],
-            scaleX: [0.98, 1.04, 1],
-            scaleY: [1, 1.08, 0.98],
-            opacity: [0.56, 0.84, 0.68],
+            scale: [0.98, 1.05, 1],
+            opacity: [0.52, 0.82, 0.64],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute bottom-[10%] left-1/2 h-[240px] w-[860px] -translate-x-1/2 rounded-full blur-[85px]"
+          className="absolute bottom-[-18%] right-[-12%] h-[520px] w-[520px] rounded-full blur-[95px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(238,238,228,0.64) 0%, rgba(226,244,196,0.42) 34%, rgba(182,255,0,0.18) 56%, transparent 78%)",
-            maskImage: "radial-gradient(ellipse at center, black 0%, black 56%, transparent 80%)",
+              "radial-gradient(circle, rgba(244,244,236,0.86) 0%, rgba(228,242,198,0.78) 18%, rgba(200,255,47,0.58) 34%, rgba(182,255,0,0.3) 52%, transparent 76%)",
+            maskImage: "radial-gradient(circle at 38% 38%, black 0%, black 54%, transparent 80%)",
           }}
           animate={{
-            x: [10, -8, 6],
+            x: [14, -12, 8],
             y: [10, -12, 8],
-            scaleX: [1, 0.95, 1.03],
-            scaleY: [0.98, 1.05, 1],
-            opacity: [0.26, 0.42, 0.3],
+            scale: [1, 1.05, 0.98],
+            opacity: [0.5, 0.8, 0.62],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute bottom-[2%] left-1/2 h-[320px] w-[1080px] -translate-x-1/2 rounded-full blur-[110px]"
+          className="absolute bottom-[-6%] left-[8%] h-[360px] w-[360px] rounded-full blur-[105px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(168,224,56,0.42) 0%, rgba(130,182,28,0.32) 32%, rgba(48,76,18,0.22) 52%, transparent 76%)",
-            maskImage: "radial-gradient(ellipse at center, black 0%, black 56%, transparent 82%)",
+              "radial-gradient(circle, rgba(214,255,110,0.32) 0%, rgba(182,255,0,0.24) 34%, rgba(38,58,18,0.12) 56%, transparent 76%)",
           }}
           animate={{
-            x: [-10, 12, -8],
-            y: [14, -16, 10],
-            scaleX: [1.02, 0.98, 1],
-            scaleY: [1, 1.06, 0.98],
-            opacity: [0.24, 0.42, 0.3],
+            x: [-10, 10, -6],
+            y: [10, -12, 6],
+            scale: [1, 1.04, 0.98],
+            opacity: [0.18, 0.3, 0.22],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute inset-x-0 bottom-0 h-[46%] bg-[linear-gradient(0deg,rgba(255,255,255,0.045),rgba(255,255,255,0)_72%)] mix-blend-screen"
+          className="absolute bottom-[-6%] right-[8%] h-[360px] w-[360px] rounded-full blur-[105px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(214,255,110,0.3) 0%, rgba(182,255,0,0.22) 34%, rgba(38,58,18,0.12) 56%, transparent 76%)",
+          }}
           animate={{
-            opacity: [0.24, 0.34, 0.26],
+            x: [10, -10, 6],
+            y: [10, -12, 6],
+            scale: [1, 1.04, 0.98],
+            opacity: [0.16, 0.28, 0.2],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute inset-x-[-10%] bottom-[-18%] h-[55%] bg-[radial-gradient(ellipse_at_top,rgba(34,58,18,0.38),transparent_62%)] blur-[70px]"
+          className="absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(0deg,rgba(255,255,255,0.04),rgba(255,255,255,0)_74%)] mix-blend-screen"
           animate={{
-            x: [-10, 14, -8],
-            y: [8, -6, 4],
-            opacity: [0.46, 0.68, 0.52],
+            opacity: [0.18, 0.3, 0.22],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute bottom-[18%] left-1/2 h-[120px] w-[920px] -translate-x-1/2 rounded-full bg-[linear-gradient(90deg,transparent,rgba(244,244,235,0.16),rgba(200,255,47,0.14),transparent)] blur-[70px] mix-blend-screen"
+          className="absolute inset-x-[-10%] bottom-[-20%] h-[50%] bg-[radial-gradient(ellipse_at_top,rgba(34,58,18,0.32),transparent_64%)] blur-[70px]"
           animate={{
-            x: [-12, 12, -10],
+            x: [-8, 10, -6],
+            y: [6, -6, 4],
+            opacity: [0.38, 0.54, 0.42],
+          }}
+          transition={ambientTransition}
+        />
+
+        <motion.div
+          className="absolute bottom-[16%] left-1/2 h-[100px] w-[680px] -translate-x-1/2 rounded-full bg-[linear-gradient(90deg,transparent,rgba(244,244,235,0.12),rgba(200,255,47,0.12),transparent)] blur-[65px] mix-blend-screen"
+          animate={{
+            x: [-10, 10, -8],
             y: [6, -8, 4],
-            opacity: [0.14, 0.26, 0.18],
+            opacity: [0.1, 0.2, 0.14],
             scaleX: [0.98, 1.04, 1],
           }}
           transition={sweepTransition}
