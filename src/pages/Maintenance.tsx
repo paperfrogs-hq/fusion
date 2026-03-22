@@ -26,38 +26,55 @@ const Maintenance = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,#050806_0%,#050806_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(234,234,234,0.04),transparent_30%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,#040705_0%,#050806_48%,#030504_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_34%_46%,rgba(234,234,234,0.08),transparent_24%),radial-gradient(circle_at_24%_62%,rgba(182,255,0,0.18),transparent_30%),radial-gradient(circle_at_72%_22%,rgba(200,255,47,0.06),transparent_24%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,5,4,0.2),transparent_24%,transparent_72%,rgba(3,5,4,0.45))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.015),transparent_24%,transparent_72%,rgba(0,0,0,0.22))]" />
 
         <motion.div
-          className="absolute left-[18%] top-[52%] h-[520px] w-[360px] -translate-y-1/2 rounded-full bg-primary/18 blur-[120px]"
+          className="absolute left-[18%] top-[54%] h-[620px] w-[430px] -translate-y-1/2 rounded-full blur-[125px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(182,255,0,0.34) 0%, rgba(182,255,0,0.16) 30%, rgba(234,234,234,0.08) 56%, transparent 76%)",
+          }}
           animate={{
-            x: [-18, 16, -10],
-            y: [-12, 18, -8],
-            scale: [0.96, 1.06, 0.98],
-            opacity: [0.45, 0.82, 0.54],
+            x: [-14, 12, -8],
+            y: [-10, 14, -6],
+            scale: [0.98, 1.05, 0.99],
+            opacity: [0.48, 0.86, 0.58],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute left-[30%] top-[42%] h-[360px] w-[260px] -translate-y-1/2 rounded-full bg-white/14 blur-[120px]"
+          className="absolute left-[31%] top-[40%] h-[420px] w-[280px] -translate-y-1/2 rounded-full bg-white/14 blur-[135px]"
           animate={{
-            x: [14, -12, 8],
-            y: [-10, 12, -6],
-            scale: [0.94, 1.08, 0.97],
-            opacity: [0.26, 0.46, 0.3],
+            x: [10, -10, 6],
+            y: [-8, 10, -5],
+            scale: [0.96, 1.06, 0.99],
+            opacity: [0.22, 0.42, 0.28],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute left-[24%] top-[68%] h-[260px] w-[220px] -translate-y-1/2 rounded-full bg-accent/12 blur-[110px]"
+          className="absolute left-[23%] top-[70%] h-[300px] w-[230px] -translate-y-1/2 rounded-full bg-accent/12 blur-[120px]"
           animate={{
-            x: [-10, 14, -8],
-            y: [10, -12, 8],
-            scale: [1, 0.92, 1.04],
-            opacity: [0.18, 0.34, 0.22],
+            x: [-8, 12, -6],
+            y: [8, -10, 6],
+            scale: [1, 0.94, 1.03],
+            opacity: [0.16, 0.32, 0.2],
+          }}
+          transition={ambientTransition}
+        />
+
+        <motion.div
+          className="absolute left-[40%] top-[52%] h-[540px] w-[540px] -translate-y-1/2 rounded-full bg-primary/6 blur-[180px]"
+          animate={{
+            x: [-8, 10, -5],
+            y: [-6, 8, -4],
+            scale: [0.98, 1.04, 1],
+            opacity: [0.14, 0.24, 0.16],
           }}
           transition={ambientTransition}
         />
