@@ -10,6 +10,13 @@ const ambientTransition = {
   repeatType: "mirror" as const,
 };
 
+const sweepTransition = {
+  duration: 14,
+  ease: [0.22, 1, 0.36, 1] as const,
+  repeat: Infinity,
+  repeatType: "mirror" as const,
+};
+
 const Maintenance = () => {
   useEffect(() => {
     document.title = "Fusion | Launching Soon";
@@ -26,21 +33,21 @@ const Maintenance = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,#12031d_0%,#100218_48%,#09010f_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(90%_42%_at_50%_-6%,rgba(255,122,143,0.95)_0%,rgba(255,176,173,0.84)_18%,rgba(246,236,223,0.82)_29%,rgba(210,173,255,0.68)_43%,rgba(133,48,255,0.42)_56%,rgba(34,5,52,0)_74%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_24%,transparent_76%,rgba(0,0,0,0.2))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,#040705_0%,#030504_52%,#020403_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(90%_42%_at_50%_-8%,rgba(245,244,236,0.94)_0%,rgba(228,242,198,0.82)_14%,rgba(200,255,47,0.72)_28%,rgba(182,255,0,0.58)_40%,rgba(92,124,24,0.28)_54%,rgba(12,20,12,0)_74%),linear-gradient(180deg,rgba(255,255,255,0.025),transparent_24%,transparent_76%,rgba(0,0,0,0.24))]" />
 
         <motion.div
           className="absolute left-1/2 top-[6%] h-[340px] w-[1100px] -translate-x-1/2 rounded-full blur-[95px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(255,124,141,0.92) 0%, rgba(255,171,164,0.78) 22%, rgba(247,238,225,0.62) 42%, rgba(194,143,255,0.34) 60%, transparent 76%)",
+              "radial-gradient(circle, rgba(242,242,232,0.86) 0%, rgba(224,240,192,0.76) 18%, rgba(200,255,47,0.64) 34%, rgba(182,255,0,0.44) 48%, transparent 76%)",
           }}
           animate={{
-            x: [-18, 14, -10],
-            y: [-10, 12, -6],
-            scaleX: [0.98, 1.03, 1],
-            scaleY: [1, 1.06, 0.98],
-            opacity: [0.66, 0.92, 0.74],
+            x: [-22, 18, -12],
+            y: [-12, 14, -8],
+            scaleX: [0.98, 1.04, 1],
+            scaleY: [1, 1.08, 0.98],
+            opacity: [0.6, 0.9, 0.72],
           }}
           transition={ambientTransition}
         />
@@ -49,14 +56,14 @@ const Maintenance = () => {
           className="absolute left-1/2 top-[20%] h-[240px] w-[960px] -translate-x-1/2 rounded-full blur-[85px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(248,240,229,0.72) 0%, rgba(236,218,248,0.46) 38%, rgba(180,110,255,0.22) 58%, transparent 78%)",
+              "radial-gradient(circle, rgba(238,238,228,0.64) 0%, rgba(226,244,196,0.42) 34%, rgba(182,255,0,0.18) 56%, transparent 78%)",
           }}
           animate={{
-            x: [14, -12, 8],
-            y: [6, -8, 4],
-            scaleX: [1, 0.96, 1.02],
-            scaleY: [0.98, 1.04, 1],
-            opacity: [0.34, 0.54, 0.4],
+            x: [18, -16, 10],
+            y: [8, -10, 6],
+            scaleX: [1, 0.95, 1.03],
+            scaleY: [0.98, 1.05, 1],
+            opacity: [0.3, 0.5, 0.36],
           }}
           transition={ambientTransition}
         />
@@ -65,14 +72,14 @@ const Maintenance = () => {
           className="absolute left-1/2 top-[28%] h-[320px] w-[1280px] -translate-x-1/2 rounded-full blur-[110px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(173,88,255,0.58) 0%, rgba(129,40,255,0.44) 34%, rgba(72,16,120,0.22) 56%, transparent 76%)",
+              "radial-gradient(circle, rgba(168,224,56,0.42) 0%, rgba(130,182,28,0.32) 32%, rgba(48,76,18,0.22) 52%, transparent 76%)",
           }}
           animate={{
-            x: [-12, 16, -8],
-            y: [10, -12, 6],
+            x: [-16, 20, -10],
+            y: [12, -14, 8],
             scaleX: [1.02, 0.98, 1],
             scaleY: [1, 1.06, 0.98],
-            opacity: [0.34, 0.56, 0.42],
+            opacity: [0.28, 0.5, 0.34],
           }}
           transition={ambientTransition}
         />
@@ -86,13 +93,24 @@ const Maintenance = () => {
         />
 
         <motion.div
-          className="absolute inset-x-[-10%] bottom-[-8%] h-[55%] bg-[radial-gradient(ellipse_at_top,rgba(84,20,130,0.32),transparent_62%)] blur-[70px]"
+          className="absolute inset-x-[-10%] bottom-[-8%] h-[55%] bg-[radial-gradient(ellipse_at_top,rgba(34,58,18,0.38),transparent_62%)] blur-[70px]"
           animate={{
-            x: [-8, 12, -6],
+            x: [-10, 14, -8],
             y: [8, -6, 4],
-            opacity: [0.5, 0.72, 0.56],
+            opacity: [0.46, 0.68, 0.52],
           }}
           transition={ambientTransition}
+        />
+
+        <motion.div
+          className="absolute left-1/2 top-[18%] h-[120px] w-[1200px] -translate-x-1/2 rounded-full bg-[linear-gradient(90deg,transparent,rgba(244,244,235,0.18),rgba(200,255,47,0.18),transparent)] blur-[70px] mix-blend-screen"
+          animate={{
+            x: [-24, 24, -16],
+            y: [0, 8, -4],
+            opacity: [0.18, 0.34, 0.22],
+            scaleX: [0.98, 1.04, 1],
+          }}
+          transition={sweepTransition}
         />
       </div>
 
