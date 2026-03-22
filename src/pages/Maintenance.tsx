@@ -86,23 +86,32 @@ const Maintenance = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45 }}
-            className="mx-auto max-w-5xl"
+            className="mx-auto max-w-4xl"
           >
-            <div className="flex flex-col gap-4 md:flex-row md:items-end md:gap-6">
+            <div className="flex flex-col items-start gap-6">
               <img
                 src="/Logo.png"
                 alt="Fusion"
-                className="fusion-logo-lockup h-auto w-[240px] sm:w-[320px] md:w-[390px] lg:w-[460px]"
+                className="fusion-logo-lockup h-auto w-[170px] sm:w-[210px] md:w-[240px]"
               />
-              <div className="max-w-[240px] pb-2 text-sm leading-snug text-foreground/78 sm:text-base">
-                <p>Launching soon</p>
-                <p>Audio trust platform</p>
+
+              <div className="space-y-4">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+                  Audio trust platform
+                </p>
+
+                <h1 className="text-balance text-[3.4rem] font-medium leading-[0.9] tracking-[-0.06em] text-foreground sm:text-[4.4rem] md:text-[5.4rem] lg:text-[6.4rem]">
+                  Launching soon
+                </h1>
+
+                <p className="max-w-[560px] text-base leading-relaxed text-foreground/78 sm:text-lg">
+                  Fusion is almost here.
+                </p>
               </div>
             </div>
 
             <p className="mt-8 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
               We&apos;re making the final tweaks behind the scenes.
-              <br />
               For any queries, contact{" "}
               <a
                 href="mailto:hello@paperfrogs.dev"
