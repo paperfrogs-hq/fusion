@@ -25,7 +25,7 @@ const Maintenance = () => {
     if (description) {
       description.setAttribute(
         "content",
-        "Fusion is getting ready to launch soon. For any queries, contact hello@paperfrogs.dev.",
+        "Fusion is getting ready to launch soon. For any queries, contact fusion@paperfrogs.dev.",
       );
     }
   }, []);
@@ -170,10 +170,10 @@ const Maintenance = () => {
               We&apos;re making the final tweaks behind the scenes.
               For any queries, contact{" "}
               <a
-                href="mailto:hello@paperfrogs.dev"
+                href="mailto:fusion@paperfrogs.dev"
                 className="text-foreground transition-colors hover:text-primary"
               >
-                hello@paperfrogs.dev
+                fusion@paperfrogs.dev
               </a>
               .
             </p>
