@@ -47,7 +47,7 @@ interface VerificationActivity {
   processing_time_ms: number;
   api_key_name: string;
   created_at: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 interface Filters {

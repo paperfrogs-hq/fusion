@@ -34,6 +34,12 @@ interface PendingBusiness {
   }[];
 }
 
+interface BusinessApprovalResponse {
+  error?: string;
+  users?: PendingBusiness["users"];
+  businesses?: PendingBusiness[];
+}
+
 const BusinessApprovalModule = () => {
   const [pendingBusinesses, setPendingBusinesses] = useState<PendingBusiness[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,7 +75,7 @@ const BusinessApprovalModule = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as BusinessApprovalResponse;
       console.log("Business approval fetch response:", data);
 
       if (!response.ok) {
@@ -104,7 +110,7 @@ const BusinessApprovalModule = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as BusinessApprovalResponse;
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to approve business");
@@ -131,7 +137,7 @@ const BusinessApprovalModule = () => {
       // Log admin action
       await logAdminAction("business_approved", "organization", business.id, {
         name: business.name,
-        users: (data.users || []).map((u: any) => u.email),
+        users: (data.users || []).map((u) => u.email),
       });
 
       toast({
@@ -177,7 +183,7 @@ const BusinessApprovalModule = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as BusinessApprovalResponse;
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to reject business");
@@ -206,7 +212,7 @@ const BusinessApprovalModule = () => {
       await logAdminAction("business_rejected", "organization", selectedBusiness.id, {
         name: selectedBusiness.name,
         reason: rejectReason,
-        users: (data.users || []).map((u: any) => u.email),
+        users: (data.users || []).map((u) => u.email),
       });
 
       toast({

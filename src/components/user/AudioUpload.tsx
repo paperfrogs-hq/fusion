@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Upload, File, CheckCircle2, XCircle, Loader2, Music } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
+import { getErrorMessage, getErrorMetadata } from '@/lib/error-utils';
 
 interface AudioUploadProps {
   userId: string;
@@ -190,16 +191,17 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
         onUploadComplete();
       }
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Upload failed:', err);
-      const errorMessage = err.message || 'Failed to upload audio';
+      const errorMessage = getErrorMessage(err, 'Failed to upload audio');
+      const errorMetadata = getErrorMetadata(err);
       setError(errorMessage);
       setUploadProgress(0);
       
       // Log detailed error info for debugging
-      if (err.details) console.error('Error details:', err.details);
-      if (err.hint) console.error('Error hint:', err.hint);
-      if (err.code) console.error('Error code:', err.code);
+      if (errorMetadata.details) console.error('Error details:', errorMetadata.details);
+      if (errorMetadata.hint) console.error('Error hint:', errorMetadata.hint);
+      if (errorMetadata.code) console.error('Error code:', errorMetadata.code);
     } finally {
       setUploading(false);
     }

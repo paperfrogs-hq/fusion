@@ -71,7 +71,7 @@ export const logAdminAction = async (
   action: string,
   resourceType: string,
   resourceId?: string,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ) => {
   const session = getSession();
   if (!session) return;

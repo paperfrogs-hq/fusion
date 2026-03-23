@@ -5,11 +5,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Upload, CheckCircle2, AlertTriangle, XCircle, Loader2, Music, Calendar, User } from 'lucide-react';
+import { getErrorMessage } from '@/lib/error-utils';
+
+interface AudioVerificationMetadata {
+  title?: string;
+  artist?: string;
+  origin?: 'human' | 'ai' | 'hybrid';
+  uploadedAt?: string;
+}
+
+interface AudioVerificationResult {
+  confidence: number;
+  verified: boolean;
+  watermarkFound: boolean;
+  metadata?: AudioVerificationMetadata;
+  tamperedSections?: unknown[];
+}
 
 export default function AudioVerification() {
   const [file, setFile] = useState<File | null>(null);
   const [verifying, setVerifying] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<AudioVerificationResult | null>(null);
   const [error, setError] = useState('');
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -80,9 +96,9 @@ export default function AudioVerification() {
       }
 
       setResult(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Verification error:', err);
-      setError(err.message || 'Failed to verify audio');
+      setError(getErrorMessage(err, 'Failed to verify audio'));
     } finally {
       setVerifying(false);
     }

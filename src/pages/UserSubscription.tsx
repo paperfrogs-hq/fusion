@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import { CreditCard, Calendar, AlertCircle, CheckCircle2, XCircle, Loader2, TrendingUp, Pencil } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -122,7 +123,7 @@ export default function UserSubscription() {
   const getStatusBadge = () => {
     if (!subscription) return null;
 
-    const statusConfig: Record<string, { label: string; className: string; icon: any }> = {
+    const statusConfig: Record<string, { label: string; className: string; icon: LucideIcon }> = {
       active: { label: 'Active', className: 'bg-green-100 text-green-800 border-green-300', icon: CheckCircle2 },
       trialing: { label: 'Trial', className: 'bg-blue-100 text-blue-800 border-blue-300', icon: AlertCircle },
       past_due: { label: 'Past Due', className: 'bg-red-100 text-red-800 border-red-300', icon: XCircle },

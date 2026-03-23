@@ -2,6 +2,12 @@
 
 export type AdminRole = 'super_admin' | 'security_admin' | 'ops_admin' | 'read_only';
 
+type JsonPrimitive = string | number | boolean | null;
+type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+type JsonObject = {
+  [key: string]: JsonValue;
+};
+
 export interface AdminUser {
   id: string;
   email: string;
@@ -38,7 +44,7 @@ export interface AuditLogEntry {
   resource_type: string;
   resource_id?: string;
   action_hash: string;
-  details?: Record<string, any>;
+  details?: JsonObject;
   ip_address?: string;
   user_agent?: string;
   timestamp: string;
@@ -65,11 +71,11 @@ export interface AudioAsset {
   creator_id?: string;
   model_used?: string;
   platform_id?: string;
-  metadata?: Record<string, any>;
+  metadata?: JsonObject;
   created_at: string;
   verified_at?: string;
   tamper_detected: boolean;
-  tamper_details?: Record<string, any>;
+  tamper_details?: JsonObject;
 }
 
 export interface Client {
@@ -96,7 +102,7 @@ export interface VerificationPolicy {
   deterministic_mode: boolean;
   version: number;
   is_active: boolean;
-  policy_config: Record<string, any>;
+  policy_config: JsonObject;
   created_at: string;
   updated_at: string;
 }

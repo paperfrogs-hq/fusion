@@ -13,14 +13,17 @@ interface ChartBar {
 }
 
 interface AnalyticsChartProps {
-  data: any[];
+  data: ChartDatum[];
   type: 'line' | 'bar';
   xKey: string;
   lines?: ChartLine[];
   bars?: ChartBar[];
-  xAxisFormatter?: (value: any) => string;
+  xAxisFormatter?: (value: ChartDatumValue) => string;
   height?: number;
 }
+
+type ChartDatumValue = string | number | null | undefined;
+type ChartDatum = Record<string, ChartDatumValue>;
 
 export default function AnalyticsChart({ 
   data, 

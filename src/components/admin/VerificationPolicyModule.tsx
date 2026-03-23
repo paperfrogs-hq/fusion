@@ -500,7 +500,12 @@ const VerificationPolicyModule = () => {
               <label className="text-sm font-medium mb-2 block">Mode</label>
               <select
                 value={formData.policy_mode}
-                onChange={(e) => setFormData({ ...formData, policy_mode: e.target.value as any })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    policy_mode: e.target.value as "strict" | "permissive" | "experimental",
+                  })
+                }
                 className="w-full px-4 py-2 bg-background border border-border rounded-lg"
               >
                 <option value="strict">Strict</option>
@@ -524,7 +529,12 @@ const VerificationPolicyModule = () => {
               <label className="text-sm font-medium mb-2 block">Tamper Sensitivity</label>
               <select
                 value={formData.tamper_sensitivity}
-                onChange={(e) => setFormData({ ...formData, tamper_sensitivity: e.target.value as any })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    tamper_sensitivity: e.target.value as "low" | "medium" | "high",
+                  })
+                }
                 className="w-full px-4 py-2 bg-background border border-border rounded-lg"
               >
                 <option value="low">Low</option>

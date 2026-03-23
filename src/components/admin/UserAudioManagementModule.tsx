@@ -19,9 +19,21 @@ interface UserAudio {
   confidence_score: number;
   watermark_embedded: boolean;
   uploaded_at: string;
-  metadata: any;
+  metadata?: {
+    title?: string;
+    artist?: string;
+    origin?: string;
+    description?: string;
+  };
   user_email?: string;
   user_name?: string;
+}
+
+interface UserAudioRow extends UserAudio {
+  users?: {
+    email?: string | null;
+    full_name?: string | null;
+  } | null;
 }
 
 const UserAudioManagementModule = () => {
@@ -72,7 +84,7 @@ const UserAudioManagementModule = () => {
 
       if (error) throw error;
 
-      const filesWithUserData = (data || []).map((file: any) => ({
+      const filesWithUserData = ((data || []) as UserAudioRow[]).map((file) => ({
         ...file,
         user_email: file.users?.email,
         user_name: file.users?.full_name

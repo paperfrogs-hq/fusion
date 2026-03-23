@@ -16,12 +16,12 @@ interface SecurityEvent {
   user_agent: string;
   endpoint: string;
   request_method: string;
-  request_body: any;
+  request_body: unknown;
   response_status: number;
   threat_level: string;
   reason: string;
   detected_at: string;
-  metadata: any;
+  metadata: unknown;
   location?: string;
   blocked: boolean;
 }

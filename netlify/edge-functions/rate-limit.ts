@@ -5,6 +5,10 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
+interface EdgeContext {
+  next: () => Promise<Response>;
+}
+
 // In-memory rate limit store (survives across requests in same edge instance)
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
@@ -50,7 +54,7 @@ function checkRateLimit(ip: string, path: string): { allowed: boolean; remaining
   return { allowed: true, remaining: limit.requests - entry.count, resetTime: entry.resetTime };
 }
 
-export default async (request: Request, context: any) => {
+export default async (request: Request, context: EdgeContext) => {
   const url = new URL(request.url);
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
              request.headers.get('x-real-ip') || 
