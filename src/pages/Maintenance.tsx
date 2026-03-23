@@ -38,31 +38,31 @@ const Maintenance = () => {
         <div className="absolute inset-x-0 top-0 h-[54%] bg-[linear-gradient(180deg,rgba(0,0,0,0.76)_0%,rgba(0,0,0,0.24)_62%,transparent)]" />
 
         <motion.div
-          className="absolute left-[-4%] top-[4%] h-[16rem] w-[30rem] rounded-full blur-[64px] mix-blend-screen"
+          className="absolute left-[-6%] top-[-3%] h-[21rem] w-[35rem] rounded-full blur-[68px] mix-blend-screen"
           style={{
             background:
-              "radial-gradient(ellipse at 36% 50%, rgba(244,247,232,0.08) 0%, rgba(163,255,84,0.12) 28%, rgba(121,255,182,0.06) 46%, transparent 74%)",
+              "radial-gradient(ellipse at 28% 34%, rgba(244,247,232,0.18) 0%, rgba(163,255,84,0.18) 22%, rgba(121,255,182,0.11) 42%, rgba(10,30,19,0.04) 62%, transparent 78%)",
           }}
           animate={{
-            x: [-8, 10, -6],
-            y: [6, -8, 5],
-            scaleX: [0.96, 1.03, 0.98],
-            opacity: [0.08, 0.18, 0.1],
+            x: [-10, 12, -7],
+            y: [8, -9, 5],
+            scaleX: [0.99, 1.05, 1],
+            opacity: [0.16, 0.32, 0.2],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute left-[2%] top-[12%] h-[5rem] w-[26rem] rounded-full blur-[40px] mix-blend-screen"
+          className="absolute right-[-6%] top-[-3%] h-[22rem] w-[36rem] rounded-full blur-[66px] mix-blend-screen"
           style={{
             background:
-              "linear-gradient(90deg, transparent, rgba(244,247,232,0.04) 20%, rgba(163,255,84,0.14) 42%, rgba(244,247,232,0.04) 74%, transparent)",
+              "radial-gradient(ellipse at 72% 34%, rgba(244,247,232,0.2) 0%, rgba(163,255,84,0.22) 22%, rgba(121,255,182,0.12) 42%, rgba(10,30,19,0.05) 62%, transparent 78%)",
           }}
           animate={{
-            x: [-10, 12, -8],
-            y: [4, -6, 3],
-            scaleX: [0.96, 1.03, 0.98],
-            opacity: [0.06, 0.14, 0.08],
+            x: [10, -12, 7],
+            y: [8, -9, 5],
+            scaleX: [0.99, 1.05, 1],
+            opacity: [0.18, 0.36, 0.22],
           }}
           transition={ambientTransition}
         />
