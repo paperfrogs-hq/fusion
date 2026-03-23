@@ -215,8 +215,8 @@ const Maintenance = () => {
           animate={{
             x: cometX,
             y: cometY,
-            opacity: [0, 0, 0, 0.42, 0],
-            scale: [0.2, 0.2, 0.24, 1.5, 0.44],
+            opacity: [0, 0, 0, 0.5, 0],
+            scale: [0.2, 0.2, 0.24, 1.7, 0.46],
           }}
           transition={cometTransition}
         />
@@ -226,53 +226,8 @@ const Maintenance = () => {
           animate={{
             x: cometX,
             y: cometY,
-            opacity: [0, 0, 0, 0.36, 0],
-            scale: [0.12, 0.12, 0.16, 1.46, 1.9],
-          }}
-          transition={cometTransition}
-        />
-
-        <motion.span
-          className="absolute left-[-18%] top-[74%] h-[0.28rem] w-[0.28rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
-          style={{
-            boxShadow:
-              "0 0 12px rgba(244,247,232,0.9), 0 0 24px rgba(163,255,84,0.45)",
-          }}
-          animate={{
-            x: ["0vw", "12vw", "30vw", "52vw", "82vw"],
-            y: ["0vh", "-6vh", "-18vh", "-38vh", "-74vh"],
-            opacity: [0, 0, 0, 0.9, 0],
-            scale: [0.3, 0.3, 0.3, 1.02, 0.16],
-          }}
-          transition={cometTransition}
-        />
-
-        <motion.span
-          className="absolute left-[-18%] top-[74%] h-[0.28rem] w-[0.28rem] rounded-full bg-[#d7ff85] mix-blend-screen"
-          style={{
-            boxShadow:
-              "0 0 12px rgba(215,255,133,0.78), 0 0 22px rgba(163,255,84,0.38)",
-          }}
-          animate={{
-            x: ["0vw", "12vw", "30vw", "52vw", "88vw"],
-            y: ["0vh", "-6vh", "-18vh", "-38vh", "-58vh"],
-            opacity: [0, 0, 0, 0.82, 0],
-            scale: [0.3, 0.3, 0.3, 0.98, 0.14],
-          }}
-          transition={cometTransition}
-        />
-
-        <motion.span
-          className="absolute left-[-18%] top-[74%] h-[0.28rem] w-[0.28rem] rounded-full bg-[#b8ff52] mix-blend-screen"
-          style={{
-            boxShadow:
-              "0 0 12px rgba(184,255,82,0.74), 0 0 22px rgba(163,255,84,0.34)",
-          }}
-          animate={{
-            x: ["0vw", "12vw", "30vw", "52vw", "72vw"],
-            y: ["0vh", "-6vh", "-18vh", "-38vh", "-56vh"],
-            opacity: [0, 0, 0, 0.72, 0],
-            scale: [0.3, 0.3, 0.3, 0.92, 0.14],
+            opacity: [0, 0, 0, 0.42, 0],
+            scale: [0.12, 0.12, 0.16, 1.54, 2.1],
           }}
           transition={cometTransition}
         />
