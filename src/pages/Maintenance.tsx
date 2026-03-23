@@ -66,29 +66,29 @@ const Maintenance = () => {
         />
 
         <motion.div
-          className="absolute bottom-[-14%] left-1/2 h-[38vh] w-[92vw] max-w-[1480px] -translate-x-1/2 rounded-full blur-[104px] mix-blend-screen"
+          className="absolute bottom-[-14%] left-1/2 h-[40vh] w-[96vw] max-w-[1520px] -translate-x-1/2 rounded-full blur-[104px] mix-blend-screen"
           style={{
             background:
               "radial-gradient(ellipse at 50% 0%, rgba(221,255,170,0.18) 0%, rgba(163,255,84,0.14) 26%, rgba(92,255,0,0.08) 46%, transparent 74%)",
           }}
           animate={{
             y: [6, -8, 5],
-            scaleX: [0.98, 1.03, 1],
+            scaleX: [0.99, 1.02, 1],
             opacity: [0.22, 0.34, 0.28],
           }}
           transition={ambientTransition}
         />
 
         <motion.div
-          className="absolute inset-x-[18%] bottom-[20%] h-[7rem] rounded-full blur-[48px] mix-blend-screen"
+          className="absolute bottom-[20%] left-1/2 h-[7rem] w-[76vw] max-w-[1120px] -translate-x-1/2 rounded-full blur-[48px] mix-blend-screen"
           style={{
             background:
-              "linear-gradient(90deg, transparent, rgba(244,247,232,0.06) 24%, rgba(163,255,84,0.18) 50%, rgba(121,255,182,0.08) 76%, transparent)",
+              "linear-gradient(90deg, transparent, rgba(244,247,232,0.04) 24%, rgba(163,255,84,0.16) 50%, rgba(244,247,232,0.04) 76%, transparent)",
           }}
           animate={{
-            x: [-20, 22, -10],
+            y: [4, -6, 3],
             opacity: [0.08, 0.18, 0.1],
-            scaleX: [0.94, 1.04, 0.98],
+            scaleX: [0.96, 1.02, 0.98],
           }}
           transition={ambientTransition}
         />
