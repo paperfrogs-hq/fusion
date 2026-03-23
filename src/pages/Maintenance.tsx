@@ -178,8 +178,13 @@ const Maintenance = () => {
               .
             </p>
 
-            <p className="mt-8 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
-              Built by Paperfrogs
+            <p className="mt-8 flex items-center justify-center gap-2 leading-none">
+              <span className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground/72">
+                Built by
+              </span>
+              <span className="bg-[linear-gradient(90deg,rgba(244,247,232,0.92),rgba(163,255,84,0.92))] bg-clip-text text-[15px] font-medium tracking-[-0.04em] text-transparent">
+                Paperfrogs
+              </span>
             </p>
           </motion.section>
         </Container>
