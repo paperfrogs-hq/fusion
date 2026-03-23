@@ -26,6 +26,9 @@ const ambientTransition = {
 };
 
 const cometTimes = [0, 0.2, 0.48, 0.78, 1] as const;
+const cometX = ["0vw", "12vw", "30vw", "52vw", "76vw"] as const;
+const cometY = ["0vh", "-6vh", "-18vh", "-38vh", "-62vh"] as const;
+const cometRotate = [-24, -18, -10, -2, 8] as const;
 
 const cometTransition = {
   duration: 11.5,
@@ -137,83 +140,139 @@ const Maintenance = () => {
         ))}
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[2px] w-[18rem] origin-center rounded-full mix-blend-screen sm:w-[26rem]"
+          className="absolute left-[-18%] top-[74%] h-[2px] w-[22rem] origin-center rounded-full mix-blend-screen sm:w-[30rem]"
           style={{
             background:
-              "linear-gradient(90deg, rgba(236,247,230,0) 0%, rgba(236,247,230,0.06) 18%, rgba(206,255,132,0.32) 54%, rgba(244,247,232,0.94) 100%)",
+              "linear-gradient(90deg, rgba(236,247,230,0) 0%, rgba(236,247,230,0.02) 24%, rgba(170,255,88,0.1) 54%, rgba(206,255,132,0.34) 78%, rgba(244,247,232,0.94) 100%)",
             boxShadow:
-              "0 0 10px rgba(230,255,182,0.22), 0 0 28px rgba(147,255,71,0.16)",
+              "0 0 12px rgba(230,255,182,0.18), 0 0 24px rgba(147,255,71,0.14)",
             transformOrigin: "center",
           }}
           animate={{
-            x: ["0vw", "14vw", "34vw", "58vw", "82vw"],
-            y: ["0vh", "-8vh", "-23vh", "-42vh", "-58vh"],
-            rotate: [-18, -16, -12, -8, -6],
-            opacity: [0, 0.18, 0.5, 0.34, 0],
-            scaleX: [0.5, 0.78, 1, 0.96, 0.7],
+            x: cometX,
+            y: cometY,
+            rotate: cometRotate,
+            opacity: [0, 0.14, 0.46, 0.36, 0],
+            scaleX: [0.48, 0.72, 1, 1.02, 0.74],
           }}
           transition={cometTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[0.55rem] w-[0.55rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
+          className="absolute left-[-18%] top-[74%] h-[0.6rem] w-[0.6rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
           style={{
             boxShadow:
               "0 0 16px rgba(244,247,232,0.95), 0 0 36px rgba(163,255,84,0.8), 0 0 60px rgba(163,255,84,0.4)",
           }}
           animate={{
-            x: ["0vw", "14vw", "34vw", "58vw", "82vw"],
-            y: ["0vh", "-8vh", "-23vh", "-42vh", "-58vh"],
-            opacity: [0, 0.42, 1, 0.66, 0],
-            scale: [0.42, 0.84, 1.3, 1.02, 0.62],
+            x: cometX,
+            y: cometY,
+            opacity: [0, 0.36, 1, 0.78, 0],
+            scale: [0.38, 0.76, 1.18, 1.04, 0.62],
           }}
           transition={cometTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[7rem] w-[7rem] rounded-full mix-blend-screen blur-[42px]"
+          className="absolute left-[-18%] top-[74%] h-[6rem] w-[6rem] rounded-full mix-blend-screen blur-[40px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(244,247,232,0.34) 0%, rgba(180,255,82,0.18) 30%, rgba(122,255,70,0.08) 52%, transparent 76%)",
+              "radial-gradient(circle, rgba(244,247,232,0.28) 0%, rgba(180,255,82,0.16) 30%, rgba(122,255,70,0.06) 52%, transparent 76%)",
           }}
           animate={{
-            x: ["0vw", "14vw", "34vw", "58vw", "82vw"],
-            y: ["0vh", "-8vh", "-23vh", "-42vh", "-58vh"],
-            opacity: [0, 0.1, 0.24, 0.2, 0],
-            scale: [0.26, 0.44, 0.78, 0.82, 0.46],
+            x: cometX,
+            y: cometY,
+            opacity: [0, 0.08, 0.18, 0.16, 0],
+            scale: [0.24, 0.42, 0.68, 0.76, 0.44],
           }}
           transition={cometTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[5rem] w-[22rem] origin-center rounded-full mix-blend-screen blur-[24px] sm:w-[28rem]"
+          className="absolute left-[-18%] top-[74%] h-[4rem] w-[24rem] origin-center rounded-full mix-blend-screen blur-[22px] sm:w-[32rem]"
           style={{
             background:
-              "linear-gradient(90deg, rgba(122,255,70,0) 0%, rgba(122,255,70,0.02) 24%, rgba(122,255,70,0.08) 58%, rgba(206,255,132,0.18) 82%, rgba(244,247,232,0.28) 100%)",
+              "linear-gradient(90deg, rgba(122,255,70,0) 0%, rgba(122,255,70,0.01) 24%, rgba(122,255,70,0.06) 58%, rgba(206,255,132,0.14) 84%, rgba(244,247,232,0.22) 100%)",
             transformOrigin: "center",
           }}
           animate={{
-            x: ["-2vw", "12vw", "32vw", "56vw", "80vw"],
-            y: ["2vh", "-6vh", "-21vh", "-40vh", "-56vh"],
-            rotate: [-18, -16, -12, -8, -6],
-            opacity: [0, 0.08, 0.14, 0.12, 0],
-            scaleX: [0.72, 0.88, 1, 0.98, 0.76],
-            scaleY: [0.6, 0.76, 1, 0.94, 0.72],
+            x: ["-2vw", "10vw", "28vw", "50vw", "74vw"],
+            y: ["2vh", "-4vh", "-16vh", "-36vh", "-60vh"],
+            rotate: cometRotate,
+            opacity: [0, 0.06, 0.12, 0.1, 0],
+            scaleX: [0.64, 0.84, 1, 0.98, 0.74],
+            scaleY: [0.54, 0.72, 0.96, 0.92, 0.7],
           }}
           transition={cometTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[10rem] w-[10rem] rounded-full mix-blend-screen blur-[54px]"
+          className="absolute left-[-18%] top-[74%] h-[7rem] w-[7rem] rounded-full mix-blend-screen blur-[28px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(180,255,82,0.12) 0%, rgba(122,255,70,0.08) 26%, transparent 70%)",
+              "radial-gradient(circle, rgba(244,247,232,0.42) 0%, rgba(180,255,82,0.26) 24%, rgba(122,255,70,0.1) 46%, transparent 74%)",
           }}
           animate={{
-            x: ["0vw", "14vw", "34vw", "58vw", "82vw"],
-            y: ["0vh", "-8vh", "-23vh", "-42vh", "-58vh"],
-            opacity: [0, 0.06, 0.12, 0.1, 0],
-            scale: [0.46, 0.66, 0.92, 0.96, 0.7],
+            x: cometX,
+            y: cometY,
+            opacity: [0, 0, 0, 0.42, 0],
+            scale: [0.2, 0.2, 0.24, 1.5, 0.44],
+          }}
+          transition={cometTransition}
+        />
+
+        <motion.div
+          className="absolute left-[-18%] top-[74%] h-[8rem] w-[8rem] rounded-full border border-primary/30 mix-blend-screen"
+          animate={{
+            x: cometX,
+            y: cometY,
+            opacity: [0, 0, 0, 0.36, 0],
+            scale: [0.12, 0.12, 0.16, 1.46, 1.9],
+          }}
+          transition={cometTransition}
+        />
+
+        <motion.span
+          className="absolute left-[-18%] top-[74%] h-[0.28rem] w-[0.28rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
+          style={{
+            boxShadow:
+              "0 0 12px rgba(244,247,232,0.9), 0 0 24px rgba(163,255,84,0.45)",
+          }}
+          animate={{
+            x: ["0vw", "12vw", "30vw", "52vw", "82vw"],
+            y: ["0vh", "-6vh", "-18vh", "-38vh", "-74vh"],
+            opacity: [0, 0, 0, 0.9, 0],
+            scale: [0.3, 0.3, 0.3, 1.02, 0.16],
+          }}
+          transition={cometTransition}
+        />
+
+        <motion.span
+          className="absolute left-[-18%] top-[74%] h-[0.28rem] w-[0.28rem] rounded-full bg-[#d7ff85] mix-blend-screen"
+          style={{
+            boxShadow:
+              "0 0 12px rgba(215,255,133,0.78), 0 0 22px rgba(163,255,84,0.38)",
+          }}
+          animate={{
+            x: ["0vw", "12vw", "30vw", "52vw", "88vw"],
+            y: ["0vh", "-6vh", "-18vh", "-38vh", "-58vh"],
+            opacity: [0, 0, 0, 0.82, 0],
+            scale: [0.3, 0.3, 0.3, 0.98, 0.14],
+          }}
+          transition={cometTransition}
+        />
+
+        <motion.span
+          className="absolute left-[-18%] top-[74%] h-[0.28rem] w-[0.28rem] rounded-full bg-[#b8ff52] mix-blend-screen"
+          style={{
+            boxShadow:
+              "0 0 12px rgba(184,255,82,0.74), 0 0 22px rgba(163,255,84,0.34)",
+          }}
+          animate={{
+            x: ["0vw", "12vw", "30vw", "52vw", "72vw"],
+            y: ["0vh", "-6vh", "-18vh", "-38vh", "-56vh"],
+            opacity: [0, 0, 0, 0.72, 0],
+            scale: [0.3, 0.3, 0.3, 0.92, 0.14],
           }}
           transition={cometTransition}
         />
