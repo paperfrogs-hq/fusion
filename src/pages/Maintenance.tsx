@@ -25,20 +25,13 @@ const ambientTransition = {
   repeatType: "mirror" as const,
 };
 
+const cometTimes = [0, 0.2, 0.48, 0.78, 1] as const;
+
 const cometTransition = {
-  duration: 8.5,
-  ease: [0.22, 1, 0.36, 1] as const,
+  duration: 11.5,
+  ease: [0.19, 1, 0.22, 1] as const,
   repeat: Infinity,
-  repeatDelay: 2.4,
-};
-
-const cometTimes = [0, 0.18, 0.46, 0.78, 1] as const;
-
-const burstTransition = {
-  duration: 8.5,
-  ease: [0.22, 1, 0.36, 1] as const,
-  repeat: Infinity,
-  repeatDelay: 2.4,
+  repeatDelay: 1.8,
   times: cometTimes,
 };
 
@@ -144,22 +137,22 @@ const Maintenance = () => {
         ))}
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[2px] w-[18rem] origin-center rounded-full mix-blend-screen sm:w-[24rem]"
+          className="absolute left-[-18%] top-[74%] h-[2px] w-[18rem] origin-center rounded-full mix-blend-screen sm:w-[26rem]"
           style={{
             background:
-              "linear-gradient(90deg, rgba(236,247,230,0) 0%, rgba(236,247,230,0.4) 18%, rgba(228,255,176,0.92) 56%, rgba(255,255,255,1) 100%)",
+              "linear-gradient(90deg, rgba(236,247,230,0) 0%, rgba(236,247,230,0.06) 18%, rgba(206,255,132,0.32) 54%, rgba(244,247,232,0.94) 100%)",
             boxShadow:
-              "0 0 14px rgba(230,255,182,0.5), 0 0 34px rgba(147,255,71,0.32)",
+              "0 0 10px rgba(230,255,182,0.22), 0 0 28px rgba(147,255,71,0.16)",
             transformOrigin: "center",
           }}
           animate={{
-            x: ["0vw", "16vw", "38vw", "62vw", "84vw"],
-            y: ["0vh", "-10vh", "-28vh", "-50vh", "-66vh"],
-            rotate: [-22, -20, -15, -10, -6],
-            opacity: [0, 0.3, 0.94, 0.52, 0],
-            scaleX: [0.56, 0.86, 1.08, 1.02, 0.66],
+            x: ["0vw", "14vw", "34vw", "58vw", "82vw"],
+            y: ["0vh", "-8vh", "-23vh", "-42vh", "-58vh"],
+            rotate: [-18, -16, -12, -8, -6],
+            opacity: [0, 0.18, 0.5, 0.34, 0],
+            scaleX: [0.5, 0.78, 1, 0.96, 0.7],
           }}
-          transition={{ ...burstTransition }}
+          transition={cometTransition}
         />
 
         <motion.div
@@ -169,98 +162,60 @@ const Maintenance = () => {
               "0 0 16px rgba(244,247,232,0.95), 0 0 36px rgba(163,255,84,0.8), 0 0 60px rgba(163,255,84,0.4)",
           }}
           animate={{
-            x: ["0vw", "16vw", "38vw", "62vw", "84vw"],
-            y: ["0vh", "-10vh", "-28vh", "-50vh", "-66vh"],
-            opacity: [0, 0.36, 1, 0.42, 0],
-            scale: [0.4, 0.9, 1.48, 1.06, 0.62],
+            x: ["0vw", "14vw", "34vw", "58vw", "82vw"],
+            y: ["0vh", "-8vh", "-23vh", "-42vh", "-58vh"],
+            opacity: [0, 0.42, 1, 0.66, 0],
+            scale: [0.42, 0.84, 1.3, 1.02, 0.62],
           }}
-          transition={{ ...burstTransition }}
+          transition={cometTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[8rem] w-[8rem] rounded-full mix-blend-screen blur-[36px]"
+          className="absolute left-[-18%] top-[74%] h-[7rem] w-[7rem] rounded-full mix-blend-screen blur-[42px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(244,247,232,0.42) 0%, rgba(180,255,82,0.24) 28%, rgba(122,255,70,0.08) 52%, transparent 76%)",
+              "radial-gradient(circle, rgba(244,247,232,0.34) 0%, rgba(180,255,82,0.18) 30%, rgba(122,255,70,0.08) 52%, transparent 76%)",
           }}
           animate={{
-            x: ["0vw", "16vw", "38vw", "62vw", "84vw"],
-            y: ["0vh", "-10vh", "-28vh", "-50vh", "-66vh"],
-            opacity: [0, 0, 0, 0.54, 0],
-            scale: [0.24, 0.28, 0.34, 1.46, 0.44],
+            x: ["0vw", "14vw", "34vw", "58vw", "82vw"],
+            y: ["0vh", "-8vh", "-23vh", "-42vh", "-58vh"],
+            opacity: [0, 0.1, 0.24, 0.2, 0],
+            scale: [0.26, 0.44, 0.78, 0.82, 0.46],
           }}
-          transition={{ ...burstTransition }}
+          transition={cometTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[9rem] w-[9rem] rounded-full border border-primary/35 mix-blend-screen blur-[2px]"
-          animate={{
-            x: ["0vw", "16vw", "38vw", "62vw", "84vw"],
-            y: ["0vh", "-10vh", "-28vh", "-50vh", "-66vh"],
-            opacity: [0, 0, 0, 0.46, 0],
-            scale: [0.12, 0.12, 0.12, 1.28, 1.72],
+          className="absolute left-[-18%] top-[74%] h-[5rem] w-[22rem] origin-center rounded-full mix-blend-screen blur-[24px] sm:w-[28rem]"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(122,255,70,0) 0%, rgba(122,255,70,0.02) 24%, rgba(122,255,70,0.08) 58%, rgba(206,255,132,0.18) 82%, rgba(244,247,232,0.28) 100%)",
+            transformOrigin: "center",
           }}
-          transition={{ ...burstTransition }}
+          animate={{
+            x: ["-2vw", "12vw", "32vw", "56vw", "80vw"],
+            y: ["2vh", "-6vh", "-21vh", "-40vh", "-56vh"],
+            rotate: [-18, -16, -12, -8, -6],
+            opacity: [0, 0.08, 0.14, 0.12, 0],
+            scaleX: [0.72, 0.88, 1, 0.98, 0.76],
+            scaleY: [0.6, 0.76, 1, 0.94, 0.72],
+          }}
+          transition={cometTransition}
         />
 
-        <motion.span
-          className="absolute left-[-18%] top-[74%] h-[0.32rem] w-[0.32rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
+        <motion.div
+          className="absolute left-[-18%] top-[74%] h-[10rem] w-[10rem] rounded-full mix-blend-screen blur-[54px]"
           style={{
-            boxShadow:
-              "0 0 12px rgba(244,247,232,0.88), 0 0 26px rgba(163,255,84,0.5)",
+            background:
+              "radial-gradient(circle, rgba(180,255,82,0.12) 0%, rgba(122,255,70,0.08) 26%, transparent 70%)",
           }}
           animate={{
-            x: ["0vw", "16vw", "38vw", "62vw", "90vw"],
-            y: ["0vh", "-10vh", "-28vh", "-50vh", "-72vh"],
-            opacity: [0, 0, 0, 0.9, 0],
-            scale: [0.4, 0.4, 0.4, 1.06, 0.26],
+            x: ["0vw", "14vw", "34vw", "58vw", "82vw"],
+            y: ["0vh", "-8vh", "-23vh", "-42vh", "-58vh"],
+            opacity: [0, 0.06, 0.12, 0.1, 0],
+            scale: [0.46, 0.66, 0.92, 0.96, 0.7],
           }}
-          transition={{ ...burstTransition }}
-        />
-
-        <motion.span
-          className="absolute left-[-18%] top-[74%] h-[0.32rem] w-[0.32rem] rounded-full bg-[#d7ff85] mix-blend-screen"
-          style={{
-            boxShadow:
-              "0 0 12px rgba(215,255,133,0.8), 0 0 24px rgba(163,255,84,0.42)",
-          }}
-          animate={{
-            x: ["0vw", "16vw", "38vw", "62vw", "80vw"],
-            y: ["0vh", "-10vh", "-28vh", "-50vh", "-80vh"],
-            opacity: [0, 0, 0, 0.82, 0],
-            scale: [0.4, 0.4, 0.4, 1, 0.22],
-          }}
-          transition={{ ...burstTransition }}
-        />
-
-        <motion.span
-          className="absolute left-[-18%] top-[74%] h-[0.32rem] w-[0.32rem] rounded-full bg-[#b8ff52] mix-blend-screen"
-          style={{
-            boxShadow:
-              "0 0 12px rgba(184,255,82,0.76), 0 0 24px rgba(163,255,84,0.38)",
-          }}
-          animate={{
-            x: ["0vw", "16vw", "38vw", "62vw", "76vw"],
-            y: ["0vh", "-10vh", "-28vh", "-50vh", "-60vh"],
-            opacity: [0, 0, 0, 0.78, 0],
-            scale: [0.4, 0.4, 0.4, 0.98, 0.18],
-          }}
-          transition={{ ...burstTransition }}
-        />
-
-        <motion.span
-          className="absolute left-[-18%] top-[74%] h-[0.32rem] w-[0.32rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
-          style={{
-            boxShadow:
-              "0 0 12px rgba(244,247,232,0.88), 0 0 24px rgba(163,255,84,0.42)",
-          }}
-          animate={{
-            x: ["0vw", "16vw", "38vw", "62vw", "88vw"],
-            y: ["0vh", "-10vh", "-28vh", "-50vh", "-58vh"],
-            opacity: [0, 0, 0, 0.84, 0],
-            scale: [0.4, 0.4, 0.4, 1.02, 0.2],
-          }}
-          transition={{ ...burstTransition }}
+          transition={cometTransition}
         />
 
         <motion.div
