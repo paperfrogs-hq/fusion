@@ -25,7 +25,7 @@ const Maintenance = () => {
     if (description) {
       description.setAttribute(
         "content",
-        "Fusion is getting ready to launch soon. For any queries, contact fusion@paperfrogs.dev.",
+        "Fusion is getting ready to launch soon. For any queries, contact fusion@paperfrogs.dev",
       );
     }
   }, []);
@@ -175,7 +175,6 @@ const Maintenance = () => {
               >
                 fusion@paperfrogs.dev
               </a>
-              .
             </p>
 
             <p className="mt-8 flex items-center justify-center gap-2 leading-none">
