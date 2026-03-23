@@ -3,21 +3,6 @@ import { motion } from "framer-motion";
 
 import { Container } from "@/components/ui/container";
 
-const starField = [
-  { left: "8%", top: "16%", size: 2, opacity: 0.48, duration: 3.4, delay: 0.2 },
-  { left: "16%", top: "26%", size: 3, opacity: 0.3, duration: 4.2, delay: 1.1 },
-  { left: "24%", top: "12%", size: 2, opacity: 0.42, duration: 3.8, delay: 0.7 },
-  { left: "32%", top: "30%", size: 2, opacity: 0.36, duration: 4.6, delay: 1.8 },
-  { left: "42%", top: "18%", size: 3, opacity: 0.3, duration: 4, delay: 0.3 },
-  { left: "52%", top: "10%", size: 2, opacity: 0.44, duration: 3.6, delay: 1.4 },
-  { left: "58%", top: "22%", size: 2, opacity: 0.34, duration: 4.4, delay: 0.9 },
-  { left: "66%", top: "14%", size: 3, opacity: 0.28, duration: 4.8, delay: 2.1 },
-  { left: "74%", top: "28%", size: 2, opacity: 0.4, duration: 3.9, delay: 1.2 },
-  { left: "82%", top: "18%", size: 2, opacity: 0.34, duration: 4.3, delay: 0.6 },
-  { left: "88%", top: "12%", size: 3, opacity: 0.26, duration: 4.7, delay: 1.7 },
-  { left: "92%", top: "30%", size: 2, opacity: 0.38, duration: 3.7, delay: 0.4 },
-];
-
 const ambientTransition = {
   duration: 20,
   ease: [0.22, 1, 0.36, 1] as const,
@@ -25,17 +10,18 @@ const ambientTransition = {
   repeatType: "mirror" as const,
 };
 
-const cometTimes = [0, 0.2, 0.48, 0.78, 1] as const;
-const cometX = ["0vw", "12vw", "30vw", "52vw", "76vw"] as const;
-const cometY = ["0vh", "-6vh", "-18vh", "-38vh", "-62vh"] as const;
-const cometRotate = [-24, -18, -10, -2, 8] as const;
-
-const cometTransition = {
-  duration: 11.5,
-  ease: [0.19, 1, 0.22, 1] as const,
+const fieldTransition = {
+  duration: 18,
+  ease: [0.22, 1, 0.36, 1] as const,
   repeat: Infinity,
-  repeatDelay: 1.8,
-  times: cometTimes,
+  repeatType: "mirror" as const,
+};
+
+const contourTransition = {
+  duration: 15,
+  ease: [0.22, 1, 0.36, 1] as const,
+  repeat: Infinity,
+  repeatType: "mirror" as const,
 };
 
 const Maintenance = () => {
@@ -114,123 +100,154 @@ const Maintenance = () => {
           transition={ambientTransition}
         />
 
-        {starField.map((star) => (
-          <motion.span
-            key={`${star.left}-${star.top}`}
-            className="absolute rounded-full bg-white"
-            style={{
-              left: star.left,
-              top: star.top,
-              width: `${star.size}px`,
-              height: `${star.size}px`,
-              opacity: star.opacity,
-              boxShadow: "0 0 10px rgba(208,255,153,0.6)",
-            }}
-            animate={{
-              opacity: [star.opacity * 0.45, star.opacity, star.opacity * 0.55],
-              scale: [0.9, 1.15, 0.95],
-            }}
-            transition={{
-              duration: star.duration,
-              delay: star.delay,
-              repeat: Infinity,
-              repeatType: "mirror",
-            }}
-          />
-        ))}
-
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[2px] w-[22rem] origin-center rounded-full mix-blend-screen sm:w-[30rem]"
+          className="absolute left-[10%] top-[-12%] h-[92vh] w-[18rem] rounded-full blur-[86px] mix-blend-screen"
           style={{
             background:
-              "linear-gradient(90deg, rgba(236,247,230,0) 0%, rgba(236,247,230,0.02) 24%, rgba(170,255,88,0.1) 54%, rgba(206,255,132,0.34) 78%, rgba(244,247,232,0.94) 100%)",
-            boxShadow:
-              "0 0 12px rgba(230,255,182,0.18), 0 0 24px rgba(147,255,71,0.14)",
-            transformOrigin: "center",
+              "linear-gradient(180deg, rgba(163,255,84,0.02) 0%, rgba(163,255,84,0.14) 28%, rgba(104,255,182,0.12) 52%, rgba(104,255,182,0.02) 76%, transparent 100%)",
           }}
           animate={{
-            x: cometX,
-            y: cometY,
-            rotate: cometRotate,
-            opacity: [0, 0.14, 0.46, 0.36, 0],
-            scaleX: [0.48, 0.72, 1, 1.02, 0.74],
+            x: [-10, 12, -6],
+            y: [12, -10, 8],
+            rotate: [-7, -2, -5],
+            opacity: [0.14, 0.22, 0.16],
+            scaleY: [0.92, 1.04, 0.98],
           }}
-          transition={cometTransition}
+          transition={fieldTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[0.6rem] w-[0.6rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
-          style={{
-            boxShadow:
-              "0 0 16px rgba(244,247,232,0.95), 0 0 36px rgba(163,255,84,0.8), 0 0 60px rgba(163,255,84,0.4)",
-          }}
-          animate={{
-            x: cometX,
-            y: cometY,
-            opacity: [0, 0.36, 1, 0.78, 0],
-            scale: [0.38, 0.76, 1.18, 1.04, 0.62],
-          }}
-          transition={cometTransition}
-        />
-
-        <motion.div
-          className="absolute left-[-18%] top-[74%] h-[6rem] w-[6rem] rounded-full mix-blend-screen blur-[40px]"
+          className="absolute left-1/2 top-[-10%] h-[88vh] w-[16rem] -translate-x-1/2 rounded-full blur-[84px] mix-blend-screen"
           style={{
             background:
-              "radial-gradient(circle, rgba(244,247,232,0.28) 0%, rgba(180,255,82,0.16) 30%, rgba(122,255,70,0.06) 52%, transparent 76%)",
+              "linear-gradient(180deg, rgba(244,247,232,0.02) 0%, rgba(206,255,132,0.1) 30%, rgba(163,255,84,0.16) 50%, rgba(78,255,192,0.08) 72%, transparent 100%)",
           }}
           animate={{
-            x: cometX,
-            y: cometY,
-            opacity: [0, 0.08, 0.18, 0.16, 0],
-            scale: [0.24, 0.42, 0.68, 0.76, 0.44],
+            x: [8, -10, 6],
+            y: [10, -8, 6],
+            rotate: [5, 1, 4],
+            opacity: [0.12, 0.22, 0.16],
+            scaleY: [0.9, 1.06, 0.96],
           }}
-          transition={cometTransition}
+          transition={fieldTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[4rem] w-[24rem] origin-center rounded-full mix-blend-screen blur-[22px] sm:w-[32rem]"
+          className="absolute right-[12%] top-[-8%] h-[84vh] w-[18rem] rounded-full blur-[82px] mix-blend-screen"
           style={{
             background:
-              "linear-gradient(90deg, rgba(122,255,70,0) 0%, rgba(122,255,70,0.01) 24%, rgba(122,255,70,0.06) 58%, rgba(206,255,132,0.14) 84%, rgba(244,247,232,0.22) 100%)",
-            transformOrigin: "center",
+              "linear-gradient(180deg, rgba(128,255,218,0.02) 0%, rgba(128,255,218,0.1) 26%, rgba(163,255,84,0.14) 54%, rgba(163,255,84,0.02) 80%, transparent 100%)",
           }}
           animate={{
-            x: ["-2vw", "10vw", "28vw", "50vw", "74vw"],
-            y: ["2vh", "-4vh", "-16vh", "-36vh", "-60vh"],
-            rotate: cometRotate,
-            opacity: [0, 0.06, 0.12, 0.1, 0],
-            scaleX: [0.64, 0.84, 1, 0.98, 0.74],
-            scaleY: [0.54, 0.72, 0.96, 0.92, 0.7],
+            x: [10, -12, 6],
+            y: [14, -12, 8],
+            rotate: [7, 2, 5],
+            opacity: [0.1, 0.2, 0.14],
+            scaleY: [0.9, 1.04, 0.98],
           }}
-          transition={cometTransition}
+          transition={fieldTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[7rem] w-[7rem] rounded-full mix-blend-screen blur-[28px]"
+          className="absolute inset-x-[22%] bottom-[20%] h-[10rem] rounded-full blur-[96px] mix-blend-screen"
           style={{
             background:
-              "radial-gradient(circle, rgba(244,247,232,0.42) 0%, rgba(180,255,82,0.26) 24%, rgba(122,255,70,0.1) 46%, transparent 74%)",
+              "radial-gradient(ellipse at 50% 50%, rgba(244,247,232,0.08) 0%, rgba(163,255,84,0.12) 28%, rgba(122,255,70,0.06) 44%, transparent 74%)",
           }}
           animate={{
-            x: cometX,
-            y: cometY,
-            opacity: [0, 0, 0, 0.5, 0],
-            scale: [0.2, 0.2, 0.24, 1.7, 0.46],
+            x: [-12, 12, -8],
+            y: [8, -10, 6],
+            scaleX: [0.94, 1.06, 1],
+            opacity: [0.12, 0.2, 0.14],
           }}
-          transition={cometTransition}
+          transition={fieldTransition}
         />
 
         <motion.div
-          className="absolute left-[-18%] top-[74%] h-[8rem] w-[8rem] rounded-full border border-primary/30 mix-blend-screen"
+          className="absolute inset-0"
           animate={{
-            x: cometX,
-            y: cometY,
-            opacity: [0, 0, 0, 0.42, 0],
-            scale: [0.12, 0.12, 0.16, 1.54, 2.1],
+            scale: [1, 1.018, 0.994],
+            rotate: [0, 0.7, -0.4],
           }}
-          transition={cometTransition}
-        />
+          transition={fieldTransition}
+        >
+          <svg
+            className="h-full w-full"
+            viewBox="0 0 1440 900"
+            fill="none"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <defs>
+              <linearGradient id="resonance-stroke" x1="88" y1="172" x2="1268" y2="618" gradientUnits="userSpaceOnUse">
+                <stop stopColor="rgba(244,247,232,0)" />
+                <stop offset="0.24" stopColor="rgba(174,255,96,0.16)" />
+                <stop offset="0.54" stopColor="rgba(244,247,232,0.48)" />
+                <stop offset="0.78" stopColor="rgba(121,255,182,0.22)" />
+                <stop offset="1" stopColor="rgba(244,247,232,0)" />
+              </linearGradient>
+              <linearGradient id="resonance-stroke-soft" x1="164" y1="240" x2="1220" y2="688" gradientUnits="userSpaceOnUse">
+                <stop stopColor="rgba(244,247,232,0)" />
+                <stop offset="0.32" stopColor="rgba(163,255,84,0.08)" />
+                <stop offset="0.56" stopColor="rgba(244,247,232,0.22)" />
+                <stop offset="0.82" stopColor="rgba(121,255,182,0.12)" />
+                <stop offset="1" stopColor="rgba(244,247,232,0)" />
+              </linearGradient>
+            </defs>
+
+            <motion.g
+              animate={{
+                x: [-10, 12, -6],
+                y: [8, -10, 5],
+              }}
+              transition={fieldTransition}
+            >
+              <motion.path
+                d="M-140 632C124 554 262 298 524 322C818 350 964 678 1580 458"
+                stroke="url(#resonance-stroke)"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                animate={{
+                  opacity: [0.18, 0.42, 0.24],
+                  pathLength: [0.94, 1, 0.96],
+                }}
+                transition={contourTransition}
+              />
+              <motion.path
+                d="M-188 706C132 590 326 342 614 382C930 426 1124 736 1608 572"
+                stroke="url(#resonance-stroke-soft)"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                animate={{
+                  opacity: [0.14, 0.3, 0.2],
+                  pathLength: [0.92, 1, 0.95],
+                }}
+                transition={{ ...contourTransition, duration: 17 }}
+              />
+              <motion.path
+                d="M-98 548C156 474 274 214 500 232C804 256 978 548 1566 402"
+                stroke="url(#resonance-stroke-soft)"
+                strokeWidth="1.1"
+                strokeLinecap="round"
+                animate={{
+                  opacity: [0.08, 0.22, 0.12],
+                  pathLength: [0.9, 1, 0.94],
+                }}
+                transition={{ ...contourTransition, duration: 16 }}
+              />
+              <motion.path
+                d="M-120 594C108 532 224 410 402 420C660 434 792 610 1040 620C1264 628 1392 530 1542 484"
+                stroke="url(#resonance-stroke)"
+                strokeWidth="1.05"
+                strokeLinecap="round"
+                animate={{
+                  opacity: [0.1, 0.26, 0.16],
+                  pathLength: [0.9, 1, 0.94],
+                }}
+                transition={{ ...contourTransition, duration: 14 }}
+              />
+            </motion.g>
+          </svg>
+        </motion.div>
 
         <motion.div
           className="absolute inset-x-0 bottom-0 h-[34%] bg-[linear-gradient(0deg,rgba(0,0,0,0.66),rgba(0,0,0,0.08)_52%,transparent)]"
