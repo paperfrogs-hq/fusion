@@ -38,6 +38,36 @@ const Maintenance = () => {
         <div className="absolute inset-x-0 top-0 h-[54%] bg-[linear-gradient(180deg,rgba(0,0,0,0.76)_0%,rgba(0,0,0,0.24)_62%,transparent)]" />
 
         <motion.div
+          className="absolute left-[-4%] top-[4%] h-[16rem] w-[30rem] rounded-full blur-[64px] mix-blend-screen"
+          style={{
+            background:
+              "radial-gradient(ellipse at 36% 50%, rgba(244,247,232,0.08) 0%, rgba(163,255,84,0.12) 28%, rgba(121,255,182,0.06) 46%, transparent 74%)",
+          }}
+          animate={{
+            x: [-8, 10, -6],
+            y: [6, -8, 5],
+            scaleX: [0.96, 1.03, 0.98],
+            opacity: [0.08, 0.18, 0.1],
+          }}
+          transition={ambientTransition}
+        />
+
+        <motion.div
+          className="absolute left-[2%] top-[12%] h-[5rem] w-[26rem] rounded-full blur-[40px] mix-blend-screen"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent, rgba(244,247,232,0.04) 20%, rgba(163,255,84,0.14) 42%, rgba(244,247,232,0.04) 74%, transparent)",
+          }}
+          animate={{
+            x: [-10, 12, -8],
+            y: [4, -6, 3],
+            scaleX: [0.96, 1.03, 0.98],
+            opacity: [0.06, 0.14, 0.08],
+          }}
+          transition={ambientTransition}
+        />
+
+        <motion.div
           className="absolute bottom-[-122vmax] left-1/2 h-[178vmax] w-[178vmax] -translate-x-1/2 rounded-full blur-[18px] mix-blend-screen"
           style={{
             background:
