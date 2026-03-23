@@ -134,7 +134,7 @@ const Maintenance = () => {
         ))}
 
         <motion.div
-          className="absolute left-[-24%] top-[16%] h-[2px] w-[18rem] origin-center rounded-full mix-blend-screen sm:w-[24rem]"
+          className="absolute right-[2%] top-[-8%] h-[2px] w-[18rem] origin-center rounded-full mix-blend-screen sm:w-[24rem]"
           style={{
             background:
               "linear-gradient(90deg, rgba(236,247,230,0) 0%, rgba(236,247,230,0.4) 18%, rgba(228,255,176,0.92) 56%, rgba(255,255,255,1) 100%)",
@@ -143,26 +143,39 @@ const Maintenance = () => {
             transformOrigin: "center",
           }}
           animate={{
-            x: ["0vw", "132vw"],
-            y: ["0vh", "18vh"],
-            rotate: [16, 16, 16, 16, 16],
-            opacity: [0, 0, 0.95, 0.32, 0],
-            scaleX: [0.72, 0.96, 1, 1.04, 1.08],
+            x: ["0vw", "-8vw", "-16vw", "-22vw", "-28vw"],
+            y: ["0vh", "10vh", "26vh", "48vh", "74vh"],
+            rotate: [-58, -48, -34, -14, 8],
+            opacity: [0, 0.26, 0.95, 0.54, 0.12],
+            scaleX: [0.6, 0.88, 1.12, 1, 0.76],
           }}
           transition={cometTransition}
         />
 
         <motion.div
-          className="absolute left-[-24%] top-[16%] h-[0.45rem] w-[0.45rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
+          className="absolute right-[2%] top-[-8%] h-[0.55rem] w-[0.55rem] rounded-full bg-[#f4f7e8] mix-blend-screen"
           style={{
             boxShadow:
               "0 0 16px rgba(244,247,232,0.95), 0 0 36px rgba(163,255,84,0.8), 0 0 60px rgba(163,255,84,0.4)",
           }}
           animate={{
-            x: ["0vw", "132vw"],
-            y: ["0vh", "18vh"],
-            opacity: [0, 0, 1, 0.24, 0],
-            scale: [0.6, 0.9, 1.4, 0.9, 0.7],
+            x: ["0vw", "-8vw", "-16vw", "-22vw", "-28vw"],
+            y: ["0vh", "10vh", "26vh", "48vh", "74vh"],
+            opacity: [0, 0.34, 1, 0.44, 0.08],
+            scale: [0.45, 0.88, 1.52, 1.08, 0.72],
+          }}
+          transition={cometTransition}
+        />
+
+        <motion.div
+          className="absolute bottom-[8%] right-[17%] h-[8rem] w-[8rem] rounded-full mix-blend-screen blur-[36px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(244,247,232,0.42) 0%, rgba(180,255,82,0.24) 28%, rgba(122,255,70,0.08) 52%, transparent 76%)",
+          }}
+          animate={{
+            opacity: [0, 0, 0.08, 0.42, 0.14, 0],
+            scale: [0.32, 0.4, 0.54, 1.3, 1.06, 0.72],
           }}
           transition={cometTransition}
         />
