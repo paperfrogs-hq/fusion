@@ -14,7 +14,7 @@ const Waitlist = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: import("react").FormEvent) => {
     e.preventDefault();
     if (!email) return;
 

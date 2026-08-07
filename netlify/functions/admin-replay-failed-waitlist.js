@@ -57,9 +57,33 @@ exports.handler = async (event) => {
     };
   }
 
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error("admin-replay-failed-waitlist: missing Supabase env vars");
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: "Server configuration error" }),
+    };
+  }
+
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { persistSession: false },
   });
+
+  const { data: session, error: sessionError } = await supabase
+    .from("admin_sessions")
+    .select("id")
+    .eq("session_token", body.adminToken)
+    .gt("expires_at", new Date().toISOString())
+    .maybeSingle();
+
+  if (sessionError || !session) {
+    return {
+      statusCode: 401,
+      headers,
+      body: JSON.stringify({ error: "Admin session expired. Please sign in again." }),
+    };
+  }
 
   const { data: row, error: lookupError } = await supabase
     .from("waitlist_failed_signups")

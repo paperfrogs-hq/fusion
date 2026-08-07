@@ -43,9 +43,7 @@ exports.handler = async (event) => {
     const m = String(event.headers.authorization).match(/^Bearer\s+(.+)$/i);
     if (m) adminToken = m[1];
   }
-  if (!adminToken && event.queryStringParameters?.adminToken) {
-    adminToken = event.queryStringParameters.adminToken;
-  }
+  // Intentionally do not accept admin tokens via query string (URLs are commonly logged).
 
   if (!adminToken) {
     return {
