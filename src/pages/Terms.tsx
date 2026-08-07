@@ -213,7 +213,7 @@ const SectionHeader = ({
   icon: Icon,
 }: {
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: import("react").ComponentType<{ className?: string }>;
 }) => (
   <header className="flex items-baseline gap-4">
     <span aria-hidden="true" className="h-px flex-1 bg-rule" />
