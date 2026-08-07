@@ -7,6 +7,7 @@ import { Building2, Shield, CheckCircle, Clock, ArrowLeft, ExternalLink } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 interface Organization {
   id: string;
@@ -34,16 +35,21 @@ export default function OrgPage() {
 
       try {
         const response = await fetch(`/.netlify/functions/get-org-by-slug?slug=${encodeURIComponent(slug)}`);
-        const data = await response.json();
+        let data: any = null;
+        try {
+          data = await response.json();
+        } catch {
+          data = null;
+        }
 
         if (!response.ok) {
-          throw new Error(data.error || 'Organization not found');
+          throw new Error(safeFunctionErrorMessage(data, 'Organization not found.'));
         }
 
         setOrganization(data.organization);
       } catch (err: any) {
         console.error('Fetch org error:', err);
-        setError(err.message || 'Failed to load organization');
+        setError(safeErrorMessage(err, { logTag: 'org-page-fetch', fallback: 'Failed to load organization.' }));
       } finally {
         setLoading(false);
       }

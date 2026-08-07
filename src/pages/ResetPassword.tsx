@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Lock, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -60,15 +61,20 @@ export default function ResetPassword() {
         })
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to reset password');
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to reset password. Please try again.'));
       }
 
       setSuccess(true);
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      setError(safeErrorMessage(err, { logTag: 'reset-password', fallback: 'Something went wrong. Please try again.' }));
     } finally {
       setLoading(false);
     }

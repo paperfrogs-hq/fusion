@@ -10,6 +10,7 @@ import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { getCurrentUser, setOrganizations } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function CreateOrganization() {
   const navigate = useNavigate();
@@ -62,32 +63,41 @@ export default function CreateOrganization() {
         })
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create organization');
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to create organization. Please try again.'));
       }
 
       toast.success('Organization created successfully!');
-      
+
       // Fetch updated organizations list
       const orgsResponse = await fetch('/.netlify/functions/get-user-organizations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id })
       });
-      
+
       if (orgsResponse.ok) {
-        const orgsData = await orgsResponse.json();
-        if (orgsData.organizations) {
-          setOrganizations(orgsData.organizations);
+        try {
+          const orgsData = await orgsResponse.json();
+          if (orgsData.organizations) {
+            setOrganizations(orgsData.organizations);
+          }
+        } catch {
+          // ignore malformed org payload
         }
       }
-      
+
       navigate('/client/select-org');
     } catch (error: any) {
       console.error('Create org error:', error);
-      toast.error(error.message || 'Failed to create organization');
+      toast.error(safeErrorMessage(error, { logTag: 'create-organization', fallback: 'Failed to create organization. Please try again.' }));
     } finally {
       setLoading(false);
     }

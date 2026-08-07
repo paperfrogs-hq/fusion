@@ -7,6 +7,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getCurrentOrganization, setCurrentOrganization } from '../lib/client-auth';
@@ -165,7 +166,8 @@ export default function ClientCheckout() {
         }),
       });
 
-      const result = await response.json();
+      let result: any = null;
+      try { result = await response.json(); } catch { result = null; }
 
       if (response.ok) {
         // Update org in localStorage with active billing status
@@ -177,15 +179,15 @@ export default function ClientCheckout() {
             plan_type: planCode,
           });
         }
-        
+
         toast.success('Subscription activated successfully!');
         navigate('/client/dashboard');
       } else {
-        toast.error(result.error || 'Payment failed. Please try again.');
+        toast.error(safeFunctionErrorMessage(result, 'Payment failed. Please try again.'));
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error('An error occurred. Please try again.');
+      toast.error(safeErrorMessage(error, { logTag: 'client-checkout', fallback: 'Payment failed. Please try again.' }));
     } finally {
       setProcessing(false);
     }

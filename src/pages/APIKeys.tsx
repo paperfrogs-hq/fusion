@@ -26,6 +26,7 @@ import ClientLayout from '../components/client/ClientLayout';
 import CreateAPIKeyModal from '../components/client/CreateAPIKeyModal';
 import { getCurrentOrganization, getCurrentEnvironment, getCurrentUser, canManageAPIKeys } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 interface APIKey {
   id: string;
@@ -67,21 +68,27 @@ export default function APIKeys() {
       const response = await fetch('/.netlify/functions/get-api-keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           organizationId: org.id,
-          environmentId: env.id 
+          environmentId: env.id
         }),
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setApiKeys(data.apiKeys || []);
+        try {
+          const data = await response.json();
+          setApiKeys(data.apiKeys || []);
+        } catch {
+          setApiKeys([]);
+        }
       } else {
-        toast.error('Failed to load API keys');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to load API keys.'));
       }
     } catch (error) {
       console.error('Failed to load API keys:', error);
-      toast.error('Failed to load API keys');
+      toast.error(safeErrorMessage(error, { logTag: 'api-keys-load', fallback: 'Failed to load API keys.' }));
     } finally {
       setLoading(false);
     }
@@ -103,25 +110,29 @@ export default function APIKeys() {
       const response = await fetch('/.netlify/functions/rotate-api-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           keyId,
-          organizationId: org?.id 
+          organizationId: org?.id
         }),
       });
 
       if (response.ok) {
-        const data = await response.json();
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
         toast.success('API key rotated successfully');
         // Show the new key
-        alert(`New API Key (save this, it won't be shown again):\n\n${data.newKey}`);
+        if (data?.newKey) {
+          alert(`New API Key (save this, it won't be shown again):\n\n${data.newKey}`);
+        }
         loadAPIKeys();
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to rotate key');
+        let error: any = null;
+        try { error = await response.json(); } catch { error = null; }
+        toast.error(safeFunctionErrorMessage(error, 'Failed to rotate key.'));
       }
     } catch (error) {
       console.error('Rotate key error:', error);
-      toast.error('Failed to rotate key');
+      toast.error(safeErrorMessage(error, { logTag: 'api-keys-rotate', fallback: 'Failed to rotate key.' }));
     }
   };
 
@@ -134,9 +145,9 @@ export default function APIKeys() {
       const response = await fetch('/.netlify/functions/revoke-api-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           keyId,
-          organizationId: org?.id 
+          organizationId: org?.id
         }),
       });
 
@@ -144,12 +155,13 @@ export default function APIKeys() {
         toast.success('API key revoked successfully');
         loadAPIKeys();
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to revoke key');
+        let error: any = null;
+        try { error = await response.json(); } catch { error = null; }
+        toast.error(safeFunctionErrorMessage(error, 'Failed to revoke key.'));
       }
     } catch (error) {
       console.error('Revoke key error:', error);
-      toast.error('Failed to revoke key');
+      toast.error(safeErrorMessage(error, { logTag: 'api-keys-revoke', fallback: 'Failed to revoke key.' }));
     }
   };
 

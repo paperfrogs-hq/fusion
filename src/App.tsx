@@ -4,12 +4,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import APC from "./pages/APC";
+import Waitlist from "./pages/Waitlist";
 import Whitepaper from "./pages/Whitepaper";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
+import PaperfrogsHQ from "./pages/PaperfrogsHQ";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserIndex from "./pages/UserIndex";
@@ -82,11 +85,14 @@ const App = () => (
           <Suspense fallback={<LoadingPage />}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/apc" element={<APC />} />
+              <Route path="/waitlist" element={<Waitlist />} />
               <Route path="/whitepaper" element={<Whitepaper />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/paperfrogs-hq" element={<PaperfrogsHQ />} />
               <Route path="/admin" element={<AdminLogin />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />

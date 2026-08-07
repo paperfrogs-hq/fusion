@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import ClientLayout from '../components/client/ClientLayout';
 import { getCurrentUser } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function SecuritySettings() {
   const user = getCurrentUser();
@@ -61,17 +62,22 @@ export default function SecuritySettings() {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to change password');
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to change password. Please try again.'));
       }
 
       toast.success('Password changed successfully');
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (error: any) {
       console.error('Password change error:', error);
-      toast.error(error.message || 'Failed to change password');
+      toast.error(safeErrorMessage(error, { logTag: 'security-change-password', fallback: 'Failed to change password. Please try again.' }));
     } finally {
       setLoading(false);
     }

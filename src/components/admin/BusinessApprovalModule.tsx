@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { logAdminAction } from "@/lib/admin-auth";
+import { safeErrorMessage, safeFunctionErrorMessage } from "@/lib/safe-error";
 import {
   Dialog,
   DialogContent,
@@ -69,19 +70,20 @@ const BusinessApprovalModule = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
       console.log("Business approval fetch response:", data);
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch businesses");
+        throw new Error(safeFunctionErrorMessage(data, "Failed to fetch pending business accounts."));
       }
 
-      setPendingBusinesses(data.businesses || []);
+      setPendingBusinesses(data?.businesses || []);
     } catch (error) {
       console.error("Error fetching pending businesses:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch pending business accounts",
+        description: safeErrorMessage(error, { logTag: "admin-business-approval-fetch", fallback: "Failed to fetch pending business accounts." }),
         variant: "destructive",
       });
     } finally {
@@ -104,14 +106,15 @@ const BusinessApprovalModule = () => {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to approve business");
+        throw new Error(safeFunctionErrorMessage(data, "Failed to approve this business."));
       }
 
       // Send approval emails to all users
-      for (const user of data.users || []) {
+      for (const user of data?.users || []) {
         try {
           await fetch("/.netlify/functions/send-approval-email", {
             method: "POST",
@@ -131,7 +134,7 @@ const BusinessApprovalModule = () => {
       // Log admin action
       await logAdminAction("business_approved", "organization", business.id, {
         name: business.name,
-        users: (data.users || []).map((u: any) => u.email),
+        users: (data?.users || []).map((u: any) => u.email),
       });
 
       toast({
@@ -145,7 +148,7 @@ const BusinessApprovalModule = () => {
       console.error("Error approving business:", error);
       toast({
         title: "Error",
-        description: "Failed to approve business account",
+        description: safeErrorMessage(error, { logTag: "admin-business-approval-approve", fallback: "Failed to approve this business." }),
         variant: "destructive",
       });
     } finally {
@@ -177,14 +180,15 @@ const BusinessApprovalModule = () => {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to reject business");
+        throw new Error(safeFunctionErrorMessage(data, "Failed to reject this business."));
       }
 
       // Send rejection emails to all users
-      for (const user of data.users || []) {
+      for (const user of data?.users || []) {
         try {
           await fetch("/.netlify/functions/send-approval-email", {
             method: "POST",
@@ -206,7 +210,7 @@ const BusinessApprovalModule = () => {
       await logAdminAction("business_rejected", "organization", selectedBusiness.id, {
         name: selectedBusiness.name,
         reason: rejectReason,
-        users: (data.users || []).map((u: any) => u.email),
+        users: (data?.users || []).map((u: any) => u.email),
       });
 
       toast({
@@ -220,7 +224,7 @@ const BusinessApprovalModule = () => {
       console.error("Error rejecting business:", error);
       toast({
         title: "Error",
-        description: "Failed to reject business account",
+        description: safeErrorMessage(error, { logTag: "admin-business-approval-reject", fallback: "Failed to reject this business." }),
         variant: "destructive",
       });
     } finally {

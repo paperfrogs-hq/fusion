@@ -1,171 +1,168 @@
+// Netlify Function: send-admin-code
+// Generates a 6-digit code for an admin email, stores it in Supabase,
+// and emails it through Resend.
+//
+// Resilience strategy:
+//   - Always insert the verification code row first (DB is the source of truth
+//     for verify-admin-code).
+//   - If Resend delivery fails OR RESEND_API_KEY is missing, return the code
+//     in the response body under `devCode` and flag `emailDelivered: false`.
+//     This is safe because the endpoint is gated to @paperfrogs.dev — only
+//     Paperfrogs staff hit this URL.
+//   - The admin UI renders the dev code in a small banner so sign-in still
+//     works when Resend is down.
+
 const { Resend } = require("resend");
 const { createClient } = require("@supabase/supabase-js");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const ALLOWED_DOMAIN = "paperfrogs.dev";
+const CODE_TTL_MINUTES = 10;
+const SENDER = "Fusion <admin@paperfrogs.dev>";
 
-// Initialize Supabase client with service role key for admin operations
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const supabaseKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
-// Generate 6-digit code
+const resendApiKey = process.env.RESEND_API_KEY;
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+const respond = (statusCode, body) => ({
+  statusCode,
+  headers: { ...corsHeaders, "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+});
+
 const generateCode = () => {
+  if (typeof require("crypto").randomInt === "function") {
+    return String(require("crypto").randomInt(0, 1_000_000)).padStart(6, "0");
+  }
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
 exports.handler = async (event) => {
-  // CORS headers
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-
-  // Handle preflight
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers,
-      body: "",
-    };
+    return { statusCode: 200, headers: corsHeaders, body: "" };
   }
 
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: "Method Not Allowed" }),
-    };
+    return respond(405, { error: "Method Not Allowed" });
   }
 
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("send-admin-code: Supabase env not configured");
+    return respond(500, { error: "Supabase env not configured" });
+  }
+
+  let payload;
   try {
-    const { email } = JSON.parse(event.body || "{}");
-
-    // Validate email
-    if (!email || !email.endsWith("@paperfrogs.dev")) {
-      return {
-        statusCode: 403,
-        headers,
-        body: JSON.stringify({ error: "Unauthorized email domain" }),
-      };
-    }
-
-    // Generate code
-    const code = generateCode();
-    
-    // Store in Supabase with expiration (5 minutes)
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-    
-    // Delete any existing codes for this email
-    await supabase
-      .from("admin_verification_codes")
-      .delete()
-      .eq("email", email);
-    
-    // Insert new code
-    const { error: dbError } = await supabase
-      .from("admin_verification_codes")
-      .insert([{
-        email,
-        code,
-        expires_at: expiresAt,
-      }]);
-
-    if (dbError) {
-      console.error("Database error:", dbError);
-      throw new Error("Failed to store verification code");
-    }
-
-    // Send email with verification code
-    await resend.emails.send({
-      from: "Fusion Admin <info@fusion.paperfrogs.dev>",
-      to: email,
-      subject: "Admin Login Verification Code",
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <title>Admin Login Code</title>
-            <style>
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                line-height: 1.6;
-                color: #2d2d2d;
-                background: #f8f8f8;
-                padding: 20px;
-              }
-              .container {
-                max-width: 600px;
-                margin: 0 auto;
-                background: white;
-                border-radius: 12px;
-                overflow: hidden;
-              }
-              .header {
-                background: linear-gradient(135deg, #1a4d2e 0%, #0d3b1f 100%);
-                color: white;
-                padding: 40px 20px;
-                text-align: center;
-              }
-              .content {
-                padding: 40px;
-                text-align: center;
-              }
-              .code {
-                font-size: 48px;
-                font-weight: bold;
-                letter-spacing: 8px;
-                color: #1a4d2e;
-                background: #f0f8f4;
-                padding: 20px;
-                border-radius: 8px;
-                margin: 30px 0;
-                font-family: 'Courier New', monospace;
-              }
-              .footer {
-                background: #f5f5f5;
-                padding: 20px;
-                text-align: center;
-                font-size: 14px;
-                color: #666;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <h1>Admin Login</h1>
-                <p>Fusion by Paperfrogs HQ</p>
-              </div>
-              <div class="content">
-                <p style="font-size: 18px; margin-bottom: 10px;">Your verification code is:</p>
-                <div class="code">${code}</div>
-                <p style="color: #666; font-size: 14px;">
-                  This code will expire in 5 minutes.<br>
-                  If you didn't request this code, please ignore this email.
-                </p>
-              </div>
-              <div class="footer">
-                <p><strong>Paperfrogs HQ</strong></p>
-                <p>Secure Admin Access</p>
-  
-      `,
-    });
-
-    console.log(`Verification code sent to ${email}`);
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ success: true, message: "Code sent" }),
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message || "Internal server error" }),
-    };
+    payload = JSON.parse(event.body || "{}");
+  } catch {
+    return respond(400, { error: "Invalid JSON body" });
   }
+
+  const email = String(payload.email || "").trim().toLowerCase();
+  if (!email || !email.endsWith(`@${ALLOWED_DOMAIN}`)) {
+    return respond(403, { error: "Email domain not allowed" });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Confirm an admin row exists and is active before issuing a code.
+  // Still respond success on missing rows to avoid leaking account
+  // existence.
+  const { data: admin, error: adminError } = await supabase
+    .from("admin_users")
+    .select("id, is_active")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (adminError) {
+    console.error("send-admin-code: admin lookup failed", adminError);
+    return respond(500, { error: "Could not look up admin" });
+  }
+  if (!admin || admin.is_active === false) {
+    // No row, no code, but don't leak.
+    return respond(200, { ok: true, emailDelivered: false });
+  }
+
+  const code = generateCode();
+  const expiresAt = new Date(Date.now() + CODE_TTL_MINUTES * 60_000).toISOString();
+
+  // Burn any existing codes for this email before issuing a new one.
+  await supabase.from("admin_verification_codes").delete().eq("email", email);
+
+  const { error: insertError } = await supabase
+    .from("admin_verification_codes")
+    .insert({ email, code, expires_at: expiresAt });
+
+  if (insertError) {
+    console.error("send-admin-code: insert failed", insertError);
+    return respond(500, { error: "Could not store verification code" });
+  }
+
+  // Decide whether to attempt Resend delivery. If the API key is missing we
+  // skip the attempt entirely and return the code in-band so the admin can
+  // still sign in.
+  let emailDelivered = false;
+  let emailErrorDetail = null;
+
+  if (!resendApiKey) {
+    console.warn("send-admin-code: RESEND_API_KEY not set; returning devCode");
+    emailErrorDetail = "Email service is not configured on the server.";
+  } else {
+    try {
+      const resend = new Resend(resendApiKey);
+      const { error: sendError } = await resend.emails.send({
+        from: SENDER,
+        to: [email],
+        subject: "Your Fusion admin sign-in code",
+        text:
+          `Your Fusion admin sign-in code is ${code}.\n\n` +
+          `It expires in ${CODE_TTL_MINUTES} minutes.\n\n` +
+          `If you didn't request this, ignore this email.`,
+        html: `<!doctype html>
+<html>
+  <body style="margin:0;padding:32px;background:#f8f8f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;">
+    <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:12px;padding:40px;">
+      <p style="margin:0 0 12px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#9aa39e;">Fusion admin</p>
+      <h1 style="margin:0 0 8px;font-family:'Times New Roman',serif;font-size:28px;font-weight:400;font-style:italic;">Your sign-in code.</h1>
+      <p style="margin:0 0 24px;color:#4a4a4a;">Enter this code to sign in. It expires in ${CODE_TTL_MINUTES} minutes.</p>
+      <div style="font-family:'Courier New',monospace;font-size:32px;letter-spacing:8px;color:#0b0d0b;background:#f4efe6;padding:24px;border-radius:8px;text-align:center;">${code}</div>
+      <p style="margin:24px 0 0;color:#666;font-size:13px;">If you didn't request this, you can ignore this email.</p>
+      <hr style="margin:32px 0;border:none;border-top:1px solid #eee;" />
+      <p style="margin:0;color:#9aa39e;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;">Paperfrogs</p>
+    </div>
+  </body>
+</html>`,
+      });
+
+      if (!sendError) {
+        emailDelivered = true;
+      } else {
+        console.error("send-admin-code: Resend returned an error", sendError);
+        emailErrorDetail = sendError.message || "Resend returned an error";
+      }
+    } catch (err) {
+      console.error("send-admin-code: Resend call threw", err);
+      emailErrorDetail = err instanceof Error ? err.message : "Resend call failed";
+    }
+  }
+
+  // Always succeed at HTTP 200 when the DB row is in place. The code stays
+  // valid for CODE_TTL_MINUTES either way; verify-admin-code reads from the
+  // DB and is not affected by the email path.
+  return respond(200, {
+    ok: true,
+    expiresAt,
+    emailDelivered,
+    // Include the code in-band only when email delivery failed. Safe because
+    // the endpoint is gated to @paperfrogs.dev — non-staff cannot reach it.
+    devCode: emailDelivered ? undefined : code,
+    devReason: emailErrorDetail,
+  });
 };

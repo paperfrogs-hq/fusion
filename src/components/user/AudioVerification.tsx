@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Upload, CheckCircle2, AlertTriangle, XCircle, Loader2, Music, Calendar, User } from 'lucide-react';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function AudioVerification() {
   const [file, setFile] = useState<File | null>(null);
@@ -73,16 +74,17 @@ export default function AudioVerification() {
         })
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Verification failed');
+        throw new Error(safeFunctionErrorMessage(data, 'Verification failed. Please try again.'));
       }
 
       setResult(data);
     } catch (err: any) {
       console.error('Verification error:', err);
-      setError(err.message || 'Failed to verify audio');
+      setError(safeErrorMessage(err, { logTag: 'audio-verification', fallback: 'Could not verify that audio file. Try again in a moment.' }));
     } finally {
       setVerifying(false);
     }

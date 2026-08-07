@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { logAdminAction } from "@/lib/admin-auth";
+import { safeErrorMessage, safeFunctionErrorMessage } from "@/lib/safe-error";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface OrganizationStats {
@@ -58,18 +59,19 @@ const ClientManagementModule = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch organizations");
+        throw new Error(safeFunctionErrorMessage(data, "Failed to fetch registered clients."));
       }
 
-      setOrganizations(data.organizations || []);
+      setOrganizations(data?.organizations || []);
     } catch (error) {
       console.error("Error fetching organizations:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch registered clients",
+        description: safeErrorMessage(error, { logTag: "admin-client-management-fetch", fallback: "Failed to fetch registered clients." }),
         variant: "destructive",
       });
     } finally {
@@ -89,10 +91,11 @@ const ClientManagementModule = () => {
         body: JSON.stringify({ action, organizationId: orgId }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
 
       if (!response.ok) {
-        throw new Error(data.error || `Failed to ${actionText} organization`);
+        throw new Error(safeFunctionErrorMessage(data, `Failed to ${actionText} this organization.`));
       }
 
       await logAdminAction(`organization_${action}d`, "organization", orgId, { name: orgName });
@@ -107,7 +110,7 @@ const ClientManagementModule = () => {
       console.error(`Error ${actionText}ing organization:`, error);
       toast({
         title: "Error",
-        description: `Failed to ${actionText} organization`,
+        description: safeErrorMessage(error, { logTag: `admin-client-management-${action}`, fallback: `Failed to ${actionText} this organization.` }),
         variant: "destructive",
       });
     } finally {

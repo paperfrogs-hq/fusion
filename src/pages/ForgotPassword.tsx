@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function ForgotPassword() {
   const [searchParams] = useSearchParams();
@@ -30,15 +31,20 @@ export default function ForgotPassword() {
         body: JSON.stringify({ email, userType })
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send reset link');
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to send reset link. Please try again.'));
       }
 
       setSuccess(true);
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      setError(safeErrorMessage(err, { logTag: 'forgot-password', fallback: 'Something went wrong. Please try again.' }));
     } finally {
       setLoading(false);
     }

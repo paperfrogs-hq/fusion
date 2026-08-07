@@ -5,6 +5,7 @@ import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 import UserPaymentMethodModal from '../components/user/UserPaymentMethodModal';
 import {
   Dialog,
@@ -66,13 +67,21 @@ export default function UserSubscription() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setSubscription(data.subscription);
-        setPlan(data.plan);
+        try {
+          const data = await response.json();
+          setSubscription(data.subscription);
+          setPlan(data.plan);
+        } catch {
+          // ignore malformed payload
+        }
+      } else {
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to load subscription details.'));
       }
     } catch (error) {
       console.error('Failed to load subscription:', error);
-      toast.error('Failed to load subscription details');
+      toast.error(safeErrorMessage(error, { logTag: 'subscription-load', fallback: 'Failed to load subscription details.' }));
     } finally {
       setLoading(false);
     }
@@ -100,12 +109,13 @@ export default function UserSubscription() {
         loadSubscription();
         setShowCancelDialog(false);
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to cancel subscription');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to cancel subscription.'));
       }
     } catch (error) {
       console.error('Cancel error:', error);
-      toast.error('Failed to cancel subscription');
+      toast.error(safeErrorMessage(error, { logTag: 'subscription-cancel', fallback: 'Failed to cancel subscription.' }));
     } finally {
       setCanceling(false);
     }

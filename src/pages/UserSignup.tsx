@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Loader2, Lock, Mail, Sparkles, User, Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function UserSignup() {
   const [searchParams] = useSearchParams();
@@ -73,18 +74,21 @@ export default function UserSignup() {
         })
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        const errorMsg = data.error || 'Signup failed';
-        const detailMsg = data.details ? ` (${data.details})` : '';
-        throw new Error(errorMsg + detailMsg);
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to create account. Please try again.'));
       }
 
       setSuccess(true);
       // Don't auto-redirect, let user read the message
     } catch (err: any) {
-      setError(err.message || 'Failed to create account. Please try again.');
+      setError(safeErrorMessage(err, { logTag: 'user-signup', fallback: 'Failed to create account. Please try again.' }));
     } finally {
       setLoading(false);
     }

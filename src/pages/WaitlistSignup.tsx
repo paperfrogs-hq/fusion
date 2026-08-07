@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Building2, CheckCircle2, Eye, EyeOff, Loader2, User } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function WaitlistSignup() {
   const navigate = useNavigate();
@@ -50,17 +51,22 @@ export default function WaitlistSignup() {
         body: JSON.stringify({ token }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Invalid invitation');
+        throw new Error(safeFunctionErrorMessage(data, 'This invitation link is invalid or has expired.'));
       }
 
       setVerified(true);
       setSignupType(data.signupType || 'client');
       setFormData((prev) => ({ ...prev, email: data.email }));
     } catch (err: any) {
-      setVerifyError(err.message || 'Invalid or expired invitation');
+      setVerifyError(safeErrorMessage(err, { logTag: 'waitlist-invite-verify', fallback: 'Invalid or expired invitation.' }));
     } finally {
       setVerifying(false);
     }
@@ -115,10 +121,15 @@ export default function WaitlistSignup() {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create account');
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to create account. Please try again.'));
       }
 
       await fetch('/.netlify/functions/use-waitlist-invite', {
@@ -133,7 +144,7 @@ export default function WaitlistSignup() {
         navigate('/client/login?registered=true');
       }
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      setError(safeErrorMessage(err, { logTag: 'waitlist-signup', fallback: 'Something went wrong. Please try again.' }));
     } finally {
       setLoading(false);
     }

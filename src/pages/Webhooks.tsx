@@ -28,6 +28,7 @@ import CreateWebhookModal from '../components/client/CreateWebhookModal';
 import WebhookDeliveryLog from '../components/client/WebhookDeliveryLog';
 import { getCurrentOrganization, getCurrentEnvironment, getCurrentUser, canManageWebhooks } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 interface Webhook {
   id: string;
@@ -76,14 +77,20 @@ export default function Webhooks() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setWebhooks(data.webhooks || []);
+        try {
+          const data = await response.json();
+          setWebhooks(data.webhooks || []);
+        } catch {
+          setWebhooks([]);
+        }
       } else {
-        toast.error('Failed to load webhooks');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to load webhooks.'));
       }
     } catch (error) {
       console.error('Failed to load webhooks:', error);
-      toast.error('Failed to load webhooks');
+      toast.error(safeErrorMessage(error, { logTag: 'webhooks-load', fallback: 'Failed to load webhooks.' }));
     } finally {
       setLoading(false);
     }
@@ -94,7 +101,7 @@ export default function Webhooks() {
       const response = await fetch('/.netlify/functions/update-webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           webhookId,
           updates: { is_active: !currentState }
         }),
@@ -104,11 +111,13 @@ export default function Webhooks() {
         toast.success(`Webhook ${!currentState ? 'enabled' : 'disabled'}`);
         loadWebhooks();
       } else {
-        toast.error('Failed to update webhook');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to update webhook.'));
       }
     } catch (error) {
       console.error('Toggle webhook error:', error);
-      toast.error('Failed to update webhook');
+      toast.error(safeErrorMessage(error, { logTag: 'webhooks-toggle', fallback: 'Failed to update webhook.' }));
     }
   };
 
@@ -123,12 +132,13 @@ export default function Webhooks() {
       if (response.ok) {
         toast.success('Test webhook sent successfully');
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to send test webhook');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to send test webhook.'));
       }
     } catch (error) {
       console.error('Test webhook error:', error);
-      toast.error('Failed to send test webhook');
+      toast.error(safeErrorMessage(error, { logTag: 'webhooks-test', fallback: 'Failed to send test webhook.' }));
     }
   };
 
@@ -148,11 +158,13 @@ export default function Webhooks() {
         toast.success('Webhook deleted successfully');
         loadWebhooks();
       } else {
-        toast.error('Failed to delete webhook');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to delete webhook.'));
       }
     } catch (error) {
       console.error('Delete webhook error:', error);
-      toast.error('Failed to delete webhook');
+      toast.error(safeErrorMessage(error, { logTag: 'webhooks-delete', fallback: 'Failed to delete webhook.' }));
     }
   };
 

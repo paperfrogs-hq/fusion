@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -33,22 +34,27 @@ export default function VerifyEmail() {
         body: JSON.stringify({ token, email })
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (response.ok) {
         setStatus('success');
-        setMessage(data.message || 'Email verified successfully!');
+        setMessage(data?.message || 'Email verified successfully!');
         // Redirect to login after 3 seconds
         setTimeout(() => {
           navigate('/user/login');
         }, 3000);
       } else {
         setStatus('error');
-        setMessage(data.error || 'Verification failed');
+        setMessage(safeFunctionErrorMessage(data, 'We could not verify this email link. Request a fresh link and try again.'));
       }
     } catch (error) {
       setStatus('error');
-      setMessage('Failed to verify email. Please try again.');
+      setMessage(safeErrorMessage(error, { logTag: 'verify-email', fallback: 'Failed to verify email. Please try again.' }));
     }
   };
 
