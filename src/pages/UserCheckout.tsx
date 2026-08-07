@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { supabase } from '../lib/supabase-client';
@@ -106,7 +107,7 @@ export default function UserCheckout() {
 
     try {
       const userId = localStorage.getItem('fusion_user_id');
-      
+
       const response = await fetch('/.netlify/functions/create-user-subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,17 +119,18 @@ export default function UserCheckout() {
         }),
       });
 
-      const result = await response.json();
+      let result: any = null;
+      try { result = await response.json(); } catch { result = null; }
 
       if (response.ok) {
         toast.success('Your 14-day trial has started!');
         navigate('/user/dashboard');
       } else {
-        toast.error(result.error || 'Failed to start trial. Please try again.');
+        toast.error(safeFunctionErrorMessage(result, 'Failed to start trial. Please try again.'));
       }
     } catch (error) {
       console.error('Trial activation error:', error);
-      toast.error('An error occurred. Please try again.');
+      toast.error(safeErrorMessage(error, { logTag: 'user-checkout-trial', fallback: 'Failed to start trial. Please try again.' }));
     } finally {
       setProcessing(false);
     }

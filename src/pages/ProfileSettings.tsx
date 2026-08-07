@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ClientLayout from '../components/client/ClientLayout';
 import { getCurrentUser, setCurrentUser } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function ProfileSettings() {
   const user = getCurrentUser();
@@ -57,10 +58,15 @@ export default function ProfileSettings() {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to update profile');
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to update profile. Please try again.'));
       }
 
       // Update local storage
@@ -76,7 +82,7 @@ export default function ProfileSettings() {
       toast.success('Profile updated successfully');
     } catch (error: any) {
       console.error('Update profile error:', error);
-      toast.error(error.message || 'Failed to update profile');
+      toast.error(safeErrorMessage(error, { logTag: 'profile-update', fallback: 'Failed to update profile. Please try again.' }));
     } finally {
       setLoading(false);
     }

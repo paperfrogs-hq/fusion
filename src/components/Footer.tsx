@@ -1,54 +1,48 @@
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import { Container } from "@/components/ui/container";
 
+const links = [
+  { label: "APC", path: "/apc" },
+  { label: "Waitlist", path: "/waitlist" },
+  { label: "Paperfrogs HQ", path: "/paperfrogs-hq" },
+  { label: "Terms", path: "/terms" },
+  { label: "Privacy", path: "/privacy" },
+];
+
 const Footer = () => {
-  const navigate = useNavigate();
-
-  const handleNavigation = (path: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate(path);
-  };
-
-  const links = [
-    { label: "Whitepaper", path: "/whitepaper" },
-    { label: "Contact", path: "/contact" },
-    { label: "Privacy", path: "/privacy" },
-    { label: "Terms", path: "/terms" },
-  ];
-
   return (
-    <footer className="relative border-t border-border/80 py-12 sm:py-14">
+    <footer className="relative border-t border-rule py-14 sm:py-16">
       <Container wide>
-        <motion.div
-          className="surface-panel flex flex-col gap-8 p-7 lg:flex-row lg:items-center lg:justify-between"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.35 }}
-        >
-          <div className="flex items-center">
-            <img src="/Logo.png" alt="Fusion logo" className="fusion-logo-lockup h-14 w-[210px] shrink-0 sm:h-16 sm:w-[240px]" />
+        <div className="flex flex-col gap-10">
+          <div className="flex flex-wrap items-center justify-between gap-y-4">
+            <div className="flex items-baseline gap-3">
+              <span className="font-serif text-2xl italic text-foreground">Fusion</span>
+              <span aria-hidden="true" className="block h-3 w-px bg-rule" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
+                by Paperfrogs
+              </span>
+            </div>
+
+            <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              {links.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.path}
+                  className="link-underline text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
           </div>
 
-          <nav className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            {links.map((link) => (
-              <a
-                key={link.label}
-                href={link.path}
-                onClick={handleNavigation(link.path)}
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
+          <div className="hairline" />
 
-          <div className="text-sm text-muted-foreground">
-            <p>© 2026 Fusion. All rights reserved.</p>
-            <p className="mt-1 text-xs uppercase tracking-[0.14em]">Built by Paperfrogs HQ</p>
-          </div>
-        </motion.div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/60">
+            Fusion · A trust layer for AI audio
+          </p>
+        </div>
       </Container>
     </footer>
   );

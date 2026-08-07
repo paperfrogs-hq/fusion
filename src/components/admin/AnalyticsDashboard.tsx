@@ -1,339 +1,370 @@
 // Analytics Dashboard Overview Module
+// Editorial admin dashboard. Live Supabase counts only. No fake stats.
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Activity, Shield, TrendingUp, Users, FileAudio, AlertTriangle, BarChart3, PieChart, Clock, Server, Database, Zap } from "lucide-react";
+
 import { supabase } from "@/lib/supabase-client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import TOTPSetup from "./TOTPSetup";
+import { logAdminAction } from "@/lib/admin-auth";
+import { safeErrorMessage } from "@/lib/safe-error";
+
+interface Snapshot {
+  waitlist: number;
+  waitlistConfirmed: number;
+  waitlistLast24h: number;
+  individualCreators: number;
+  businessClients: number;
+  audioFiles: number;
+  verifiedFiles: number;
+  pendingFiles: number;
+  tamperDetections: number;
+  recentAuditEvents: number;
+  lastSignupAt: string | null;
+}
+
+const EMPTY_SNAPSHOT: Snapshot = {
+  waitlist: 0,
+  waitlistConfirmed: 0,
+  waitlistLast24h: 0,
+  individualCreators: 0,
+  businessClients: 0,
+  audioFiles: 0,
+  verifiedFiles: 0,
+  pendingFiles: 0,
+  tamperDetections: 0,
+  recentAuditEvents: 0,
+  lastSignupAt: null,
+};
+
+const formatRelative = (iso: string | null): string => {
+  if (!iso) return "never";
+  const ms = Date.now() - new Date(iso).getTime();
+  if (Number.isNaN(ms)) return "unknown";
+  const min = Math.floor(ms / 60000);
+  if (min < 1) return "just now";
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const d = Math.floor(hr / 24);
+  return `${d}d ago`;
+};
+
+const formatJoined = (iso: string | null): string => {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleString("en-US", {
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const pad = (n: number): string => String(n).padStart(2, "0");
 
 const AnalyticsDashboard = () => {
-  const [stats, setStats] = useState({
-    totalWaitlist: 0,
-    totalMessages: 0,
-    totalUsers: 0,
-    totalAudioFiles: 0,
-    verifiedFiles: 0,
-    pendingFiles: 0,
-    activeClients: 0,
-    tamperDetections: 0,
-    successRate: "0%"
-  });
+  const [snapshot, setSnapshot] = useState<Snapshot>(EMPTY_SNAPSHOT);
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastFetchedAt, setLastFetchedAt] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchSnapshot = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      const { count: waitlistCount } = await supabase
-        .from("early_access_signups")
-        .select("*", { count: "exact", head: true });
+      const [
+        waitlistRes,
+        waitlistConfirmedRes,
+        waitlistLast24hRes,
+        individualRes,
+        clientRes,
+        audioRes,
+        verifiedRes,
+        pendingRes,
+        tamperRes,
+        auditRes,
+        lastSignupRes,
+      ] = await Promise.all([
+        supabase.from("early_access_signups").select("*", { count: "exact", head: true }),
+        supabase
+          .from("early_access_signups")
+          .select("*", { count: "exact", head: true })
+          .eq("confirmed", true),
+        supabase
+          .from("early_access_signups")
+          .select("*", { count: "exact", head: true })
+          .gt(
+            "created_at",
+            new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          ),
+        supabase
+          .from("users")
+          .select("*", { count: "exact", head: true })
+          .neq("user_type", "client"),
+        supabase
+          .from("users")
+          .select("*", { count: "exact", head: true })
+          .eq("user_type", "client"),
+        supabase.from("user_audio_files").select("*", { count: "exact", head: true }),
+        supabase
+          .from("user_audio_files")
+          .select("*", { count: "exact", head: true })
+          .eq("provenance_status", "verified"),
+        supabase
+          .from("user_audio_files")
+          .select("*", { count: "exact", head: true })
+          .eq("provenance_status", "pending"),
+        supabase
+          .from("audio_registry")
+          .select("*", { count: "exact", head: true })
+          .eq("tamper_detected", true),
+        supabase
+          .from("admin_audit_log")
+          .select("*", { count: "exact", head: true })
+          .gt(
+            "timestamp",
+            new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          ),
+        supabase
+          .from("early_access_signups")
+          .select("created_at")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
 
-      const { count: messagesCount } = await supabase
-        .from("contact_messages")
-        .select("*", { count: "exact", head: true });
+      // Treat network/RLS failures as zero rather than crashing the page.
+      const safe = (res: { count: number | null } | null) => res?.count ?? 0;
 
-      // Fetch total users count
-      const { count: usersCount } = await supabase
-        .from("users")
-        .select("*", { count: "exact", head: true });
-
-      // Fetch clients count separately (assuming clients have user_type='client')
-      const { count: clientsCount } = await supabase
-        .from("users")
-        .select("*", { count: "exact", head: true })
-        .eq("user_type", "client");
-
-      // Fetch audio files count
-      const { count: audioCount } = await supabase
-        .from("user_audio_files")
-        .select("*", { count: "exact", head: true });
-
-      // Fetch verified audio count
-      const { count: verifiedCount } = await supabase
-        .from("user_audio_files")
-        .select("*", { count: "exact", head: true })
-        .eq("provenance_status", "verified");
-
-      // Fetch pending audio count
-      const { count: pendingCount } = await supabase
-        .from("user_audio_files")
-        .select("*", { count: "exact", head: true })
-        .eq("provenance_status", "pending");
-
-      // Fetch tamper detections
-      const { count: tamperCount } = await supabase
-        .from("audio_registry")
-        .select("*", { count: "exact", head: true })
-        .eq("provenance_status", "tampered");
-
-      // Calculate success rate
-      const successRate = audioCount && verifiedCount 
-        ? Math.round((verifiedCount / audioCount) * 100) 
-        : 0;
-
-      setStats({
-        totalWaitlist: waitlistCount || 0,
-        totalMessages: messagesCount || 0,
-        totalUsers: (usersCount || 0) - (clientsCount || 0), // Users only (excluding clients)
-        totalAudioFiles: audioCount || 0,
-        verifiedFiles: verifiedCount || 0,
-        activeClients: clientsCount || 0,
-        tamperDetections: tamperCount || 0,
-        successRate: `${successRate}%`,
-        pendingFiles: pendingCount || 0
+      setSnapshot({
+        waitlist: safe(waitlistRes),
+        waitlistConfirmed: safe(waitlistConfirmedRes),
+        waitlistLast24h: safe(waitlistLast24hRes),
+        individualCreators: safe(individualRes),
+        businessClients: safe(clientRes),
+        audioFiles: safe(audioRes),
+        verifiedFiles: safe(verifiedRes),
+        pendingFiles: safe(pendingRes),
+        tamperDetections: safe(tamperRes),
+        recentAuditEvents: safe(auditRes),
+        lastSignupAt: lastSignupRes?.created_at ?? null,
       });
-    } catch (error) {
-      console.error("Error fetching stats:", error);
+      setLastFetchedAt(new Date().toISOString());
+    } catch (err) {
+      setError(safeErrorMessage(err, { logTag: "analytics-dashboard", fallback: "Could not load the live snapshot. The team has been notified." }));
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const statCards = [
-    { label: "Registered Users", value: stats.totalUsers, icon: Users, color: "text-indigo-500", description: "Individual users (creators)" },
-    { label: "Active Clients", value: stats.activeClients, icon: Activity, color: "text-orange-500", description: "Business clients" },
-    { label: "Total Audio Files", value: stats.totalAudioFiles, icon: FileAudio, color: "text-purple-500", description: "Songs uploaded" },
-    { label: "Verified Files", value: stats.verifiedFiles, icon: Shield, color: "text-green-500", description: "Successfully verified" },
-    { label: "Pending Verification", value: stats.pendingFiles, icon: AlertTriangle, color: "text-yellow-500", description: "Awaiting verification" },
-    { label: "Tamper Detections", value: stats.tamperDetections, icon: AlertTriangle, color: "text-red-500", description: "Hack attempts detected" },
-    { label: "Verification Success", value: stats.successRate, icon: TrendingUp, color: "text-teal-500", description: "Success rate" },
-    { label: "Waitlist", value: stats.totalWaitlist, icon: Users, color: "text-blue-500", description: "Early access signups" },
+  useEffect(() => {
+    fetchSnapshot();
+  }, []);
+
+  const successRate =
+    snapshot.audioFiles > 0
+      ? Math.round((snapshot.verifiedFiles / snapshot.audioFiles) * 100)
+      : null;
+
+  const TILES = [
+    {
+      label: "Waitlist",
+      value: snapshot.waitlist,
+      hint: `${snapshot.waitlistLast24h} in the last 24h · ${snapshot.waitlistConfirmed} confirmed`,
+    },
+    {
+      label: "Individual creators",
+      value: snapshot.individualCreators,
+      hint: "User portal accounts (non-client)",
+    },
+    {
+      label: "Business clients",
+      value: snapshot.businessClients,
+      hint: "Client portal organizations / accounts",
+    },
+    {
+      label: "Audio files",
+      value: snapshot.audioFiles,
+      hint: `${snapshot.verifiedFiles} verified · ${snapshot.pendingFiles} pending`,
+    },
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold gradient-text">Fusion Control Plane</h2>
-        <p className="text-muted-foreground mt-2">
-          Cryptographic infrastructure for audio provenance and verification
-        </p>
-      </div>
+    <div className="space-y-10">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+            Overview · Live snapshot
+          </p>
+          <h2 className="mt-2 font-serif text-2xl font-light italic tracking-tight text-foreground">
+            Welcome back.
+          </h2>
+          <p className="mt-2 max-w-measure-64 font-serif text-sm italic text-muted-foreground">
+            Counts are pulled directly from Supabase. Refresh any time to re-query.
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          {lastFetchedAt && (
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
+              Updated {formatRelative(lastFetchedAt)}
+            </p>
+          )}
+          <button
+            onClick={fetchSnapshot}
+            disabled={isLoading}
+            className="link-underline font-serif text-xs italic text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+          >
+            {isLoading ? "Refreshing…" : "Refresh"}
+          </button>
+        </div>
+      </header>
 
-      {/* 2FA Setup Section */}
-      <TOTPSetup />
+      {error && (
+        <div className="rounded-lg border border-ember/40 bg-ember/5 px-4 py-3 font-serif text-xs italic text-ember">
+          {error}
+        </div>
+      )}
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="users" className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Users
-          </TabsTrigger>
-          <TabsTrigger value="audio" className="flex items-center gap-2">
-            <FileAudio className="w-4 h-4" />
-            Audio
-          </TabsTrigger>
-          <TabsTrigger value="performance" className="flex items-center gap-2">
-            <Zap className="w-4 h-4" />
-            Performance
-          </TabsTrigger>
-        </TabsList>
+      <section className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-rule bg-rule lg:grid-cols-4">
+        {TILES.map((tile, index) => (
+          <motion.div
+            key={tile.label}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
+            className="bg-card/40 px-5 py-6"
+          >
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+              {tile.label}
+            </p>
+            <p className="mt-3 font-serif text-4xl font-light italic tabular-nums text-foreground">
+              {pad(tile.value)}
+            </p>
+            <p className="mt-3 font-serif text-xs italic leading-snug text-muted-foreground">
+              {tile.hint}
+            </p>
+          </motion.div>
+        ))}
+      </section>
 
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {statCards.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="glass rounded-xl p-6 hover:border-primary/50 transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                    <p className="text-3xl font-bold">
-                      {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
-                  </div>
-                  <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                </div>
-              </motion.div>
-            ))}
+      <section className="grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-16">
+        <div>
+          <div className="flex items-baseline justify-between">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+              Pipeline · Audio provenance
+            </p>
+            {successRate !== null && (
+              <p className="font-mono text-[10px] tabular-nums tracking-[0.22em] text-muted-foreground/80">
+                {successRate}% verified
+              </p>
+            )}
           </div>
 
-          <div className="glass rounded-xl p-6">
-            <h3 className="text-xl font-bold mb-4">System Status</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between py-2 border-b border-border/30">
-                <span className="text-sm">Database Connection</span>
-                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-600 dark:text-green-400 font-medium">
-                  Operational
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-border/30">
-                <span className="text-sm">Verification Engine</span>
-                <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 font-medium">
-                  Pending Setup
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-border/30">
-                <span className="text-sm">Cryptographic Keys</span>
-                <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 font-medium">
-                  Pending Setup
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-sm">Audit Logging</span>
-                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-600 dark:text-green-400 font-medium">
-                  Active
-                </span>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-4">
-          <div className="grid md:grid-cols-4 gap-4">
-            <div className="glass rounded-xl p-6">
-              <Users className="w-8 h-8 text-indigo-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Total Users</p>
-              <p className="text-3xl font-bold">{stats.totalUsers}</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <Activity className="w-8 h-8 text-orange-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Active Clients</p>
-              <p className="text-3xl font-bold">{stats.activeClients}</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <TrendingUp className="w-8 h-8 text-green-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Waitlist</p>
-              <p className="text-3xl font-bold">{stats.totalWaitlist}</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <Clock className="w-8 h-8 text-blue-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Messages</p>
-              <p className="text-3xl font-bold">{stats.totalMessages}</p>
-            </div>
+          <div className="mt-4 overflow-hidden rounded-xl border border-rule bg-card/40">
+            <table className="w-full border-collapse text-left">
+              <tbody>
+                <Row label="Audio files" value={snapshot.audioFiles} />
+                <Row label="Verified" value={snapshot.verifiedFiles} accent="primary" />
+                <Row label="Pending verification" value={snapshot.pendingFiles} />
+                <Row label="Tamper detections" value={snapshot.tamperDetections} accent="ember" last />
+              </tbody>
+            </table>
           </div>
 
-          <div className="glass rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">User Distribution</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between py-3 border-b border-border/30">
-                <span>Individual Creators</span>
-                <span className="text-lg font-bold">{stats.totalUsers}</span>
+          {successRate !== null && snapshot.audioFiles > 0 && (
+            <div className="mt-5">
+              <div className="h-px w-full overflow-hidden bg-rule">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${successRate}%` }}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
+                  className="h-px bg-primary"
+                />
               </div>
-              <div className="flex items-center justify-between py-3 border-b border-border/30">
-                <span>Business Clients</span>
-                <span className="text-lg font-bold">{stats.activeClients}</span>
-              </div>
-              <div className="flex items-center justify-between py-3">
-                <span>Pending Signups (Waitlist)</span>
-                <span className="text-lg font-bold">{stats.totalWaitlist}</span>
-              </div>
+              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
+                Verified rate
+              </p>
             </div>
-          </div>
-        </TabsContent>
+          )}
+        </div>
 
-        <TabsContent value="audio" className="space-y-4">
-          <div className="grid md:grid-cols-4 gap-4">
-            <div className="glass rounded-xl p-6">
-              <FileAudio className="w-8 h-8 text-purple-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Total Audio Files</p>
-              <p className="text-3xl font-bold">{stats.totalAudioFiles}</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <Shield className="w-8 h-8 text-green-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Verified</p>
-              <p className="text-3xl font-bold">{stats.verifiedFiles}</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <AlertTriangle className="w-8 h-8 text-yellow-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Pending</p>
-              <p className="text-3xl font-bold">{stats.pendingFiles}</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <AlertTriangle className="w-8 h-8 text-red-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Tampered</p>
-              <p className="text-3xl font-bold">{stats.tamperDetections}</p>
-            </div>
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+            Activity · Audit log
+          </p>
+          <div className="mt-4 overflow-hidden rounded-xl border border-rule bg-card/40">
+            <table className="w-full border-collapse text-left">
+              <tbody>
+                <Row label="Events in the last 7 days" value={snapshot.recentAuditEvents} />
+                <Row
+                  label="Last waitlist signup"
+                  value={formatJoined(snapshot.lastSignupAt)}
+                  valueIsString
+                />
+                <Row label="Last sync" value={formatRelative(lastFetchedAt)} valueIsString last />
+              </tbody>
+            </table>
           </div>
 
-          <div className="glass rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">Verification Pipeline</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span>Success Rate</span>
-                <span className="text-2xl font-bold text-green-500">{stats.successRate}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div className="bg-green-500 h-4 rounded-full" style={{ width: stats.successRate }}></div>
-              </div>
-            </div>
+          <div className="mt-8 border-t border-rule pt-6">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+              Quick actions
+            </p>
+            <ul className="mt-3 space-y-2 font-serif text-sm italic text-foreground/90">
+              <li>
+                <button
+                  onClick={() => {
+                    void logAdminAction("dashboard_refresh", "admin_dashboard");
+                    fetchSnapshot();
+                  }}
+                  className="link-underline"
+                >
+                  Refresh the snapshot
+                </button>
+              </li>
+              <li>
+                Use the sidebar to drill into Waitlist, Audit log, or Key management for the full picture.
+              </li>
+            </ul>
           </div>
-        </TabsContent>
-
-        <TabsContent value="performance" className="space-y-4">
-          <div className="grid md:grid-cols-4 gap-4">
-            <div className="glass rounded-xl p-6">
-              <Zap className="w-8 h-8 text-yellow-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Avg Response Time</p>
-              <p className="text-3xl font-bold">45ms</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <Server className="w-8 h-8 text-blue-500 mb-2" />
-              <p className="text-sm text-muted-foreground">Uptime</p>
-              <p className="text-3xl font-bold text-green-500">99.9%</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <Database className="w-8 h-8 text-purple-500 mb-2" />
-              <p className="text-sm text-muted-foreground">DB Connections</p>
-              <p className="text-3xl font-bold">12</p>
-            </div>
-            <div className="glass rounded-xl p-6">
-              <Activity className="w-8 h-8 text-teal-500 mb-2" />
-              <p className="text-sm text-muted-foreground">API Requests/hr</p>
-              <p className="text-3xl font-bold">1.2K</p>
-            </div>
-          </div>
-
-          <div className="glass rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">System Health</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between py-3 border-b border-border/30">
-                <span>CPU Usage</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '23%' }}></div>
-                  </div>
-                  <span className="text-sm">23%</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between py-3 border-b border-border/30">
-                <span>Memory Usage</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '45%' }}></div>
-                  </div>
-                  <span className="text-sm">45%</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between py-3">
-                <span>Storage Usage</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 bg-gray-200 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{ width: '67%' }}></div>
-                  </div>
-                  <span className="text-sm">67%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      <div className="glass rounded-xl p-6">
-        <h3 className="text-xl font-bold mb-4">Recent Activity</h3>
-        <p className="text-sm text-muted-foreground">
-          Activity log will show recent admin actions, system events, and security incidents.
-        </p>
-      </div>
+        </div>
+      </section>
     </div>
+  );
+};
+
+interface RowProps {
+  label: string;
+  value: number | string;
+  accent?: "primary" | "ember";
+  valueIsString?: boolean;
+  last?: boolean;
+}
+
+const Row = ({ label, value, accent, valueIsString, last }: RowProps) => {
+  const accentClass =
+    accent === "primary"
+      ? "text-primary"
+      : accent === "ember"
+        ? "text-ember"
+        : "text-foreground";
+
+  return (
+    <tr
+      className={`group transition-colors hover:bg-card/60 ${
+        last ? "" : "border-b border-rule/70"
+      }`}
+    >
+      <td className="px-4 py-3 font-serif text-sm italic text-foreground/90">
+        {label}
+      </td>
+      <td
+        className={`px-4 py-3 text-right font-mono text-sm tabular-nums ${accentClass}`}
+      >
+        {valueIsString ? value : pad(typeof value === "number" ? value : 0)}
+      </td>
+    </tr>
   );
 };
 

@@ -37,6 +37,7 @@ import {
 import ClientLayout from '../components/client/ClientLayout';
 import { getCurrentOrganization, getCurrentEnvironment } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 interface Report {
   id: string;
@@ -140,12 +141,17 @@ export default function Reports() {
         window.URL.revokeObjectURL(url);
         toast.success('Report downloaded successfully');
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to generate report');
+        let data: any = null;
+        try {
+          data = await response.json();
+        } catch {
+          data = null;
+        }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to generate report. Please try again.'));
       }
     } catch (error) {
       console.error('Report generation error:', error);
-      toast.error('Failed to generate report');
+      toast.error(safeErrorMessage(error, { logTag: 'reports-generate', fallback: 'Failed to generate report. Please try again.' }));
     } finally {
       setGenerating(null);
     }

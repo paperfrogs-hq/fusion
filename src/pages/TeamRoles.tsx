@@ -34,6 +34,7 @@ import InviteMemberModal from '../components/client/InviteMemberModal';
 import RolePermissionsTable from '../components/client/RolePermissionsTable';
 import { getCurrentOrganization, getCurrentUser, canManageTeam } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 interface TeamMember {
   id: string;
@@ -88,17 +89,25 @@ export default function TeamRoles() {
       ]);
 
       if (membersRes.ok) {
-        const data = await membersRes.json();
-        setMembers(data.members || []);
+        try {
+          const data = await membersRes.json();
+          setMembers(data.members || []);
+        } catch {
+          setMembers([]);
+        }
       }
 
       if (invitesRes.ok) {
-        const data = await invitesRes.json();
-        setInvitations(data.invitations || []);
+        try {
+          const data = await invitesRes.json();
+          setInvitations(data.invitations || []);
+        } catch {
+          setInvitations([]);
+        }
       }
     } catch (error) {
       console.error('Failed to load team data:', error);
-      toast.error('Failed to load team data');
+      toast.error(safeErrorMessage(error, { logTag: 'team-roles-load', fallback: 'Failed to load team data.' }));
     } finally {
       setLoading(false);
     }
@@ -109,10 +118,10 @@ export default function TeamRoles() {
       const response = await fetch('/.netlify/functions/update-member-role', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           organizationId: org?.id,
           memberId,
-          newRole 
+          newRole
         }),
       });
 
@@ -120,12 +129,13 @@ export default function TeamRoles() {
         toast.success('Role updated successfully');
         loadTeamData();
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to update role');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to update role.'));
       }
     } catch (error) {
       console.error('Update role error:', error);
-      toast.error('Failed to update role');
+      toast.error(safeErrorMessage(error, { logTag: 'team-roles-update', fallback: 'Failed to update role.' }));
     }
   };
 
@@ -136,9 +146,9 @@ export default function TeamRoles() {
       const response = await fetch('/.netlify/functions/remove-team-member', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           organizationId: org?.id,
-          memberId 
+          memberId
         }),
       });
 
@@ -146,12 +156,13 @@ export default function TeamRoles() {
         toast.success('Member removed successfully');
         loadTeamData();
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to remove member');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to remove member.'));
       }
     } catch (error) {
       console.error('Remove member error:', error);
-      toast.error('Failed to remove member');
+      toast.error(safeErrorMessage(error, { logTag: 'team-roles-remove', fallback: 'Failed to remove member.' }));
     }
   };
 
@@ -167,11 +178,13 @@ export default function TeamRoles() {
         toast.success('Invitation cancelled');
         loadTeamData();
       } else {
-        toast.error('Failed to cancel invitation');
+        let data: any = null;
+        try { data = await response.json(); } catch { data = null; }
+        toast.error(safeFunctionErrorMessage(data, 'Failed to cancel invitation.'));
       }
     } catch (error) {
       console.error('Cancel invitation error:', error);
-      toast.error('Failed to cancel invitation');
+      toast.error(safeErrorMessage(error, { logTag: 'team-roles-cancel', fallback: 'Failed to cancel invitation.' }));
     }
   };
 

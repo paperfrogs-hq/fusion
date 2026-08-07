@@ -2,9 +2,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// Enhanced error logging for production debugging
 window.addEventListener('error', (event) => {
-  console.error('❌ Global error:', event.error);
+  console.error('Global error:', event.error);
   console.error('Error details:', {
     message: event.message,
     filename: event.filename,
@@ -14,16 +13,7 @@ window.addEventListener('error', (event) => {
 });
 
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('❌ Unhandled promise rejection:', event.reason);
-});
-
-// Log environment check
-console.log('🚀 Initializing Fusion...');
-console.log('Environment check:', {
-  hasSupabaseUrl: !!import.meta.env.VITE_SUPABASE_URL,
-  hasSupabaseKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY,
-  mode: import.meta.env.MODE,
-  prod: import.meta.env.PROD
+  console.error('Unhandled promise rejection:', event.reason);
 });
 
 // Render app
@@ -32,38 +22,28 @@ try {
   if (!rootElement) {
     throw new Error("Root element '#root' not found in DOM");
   }
-  
-  console.log('✓ Root element found, mounting React app...');
+
   createRoot(rootElement).render(<App />);
-  console.log('✓ React app mounted successfully');
-  
+
 } catch (error) {
-  console.error('❌ Failed to initialize app:', error);
-  
-  // Show detailed error UI
-  const errorHtml = `
-    <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-family: system-ui; padding: 20px;">
-      <div style="max-width: 600px; background: rgba(0,0,0,0.3); padding: 2rem; border-radius: 1rem; backdrop-filter: blur(10px);">
-        <h1 style="font-size: 2rem; margin-bottom: 1rem;">⚠️ Application Error</h1>
-        <p style="margin-bottom: 1rem; opacity: 0.9;">The application failed to initialize. This usually means:</p>
-        <ul style="margin: 1rem 0; padding-left: 1.5rem; opacity: 0.9;">
-          <li>Environment variables are not set in Netlify</li>
-          <li>Build failed to complete properly</li>
-          <li>JavaScript bundle failed to load</li>
-        </ul>
-        <button onclick="window.location.reload()" style="background: white; color: #667eea; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; margin-right: 1rem;">
-          Refresh Page
-        </button>
-        <button onclick="window.location.href='/env-check.html'" style="background: rgba(255,255,255,0.2); color: white; padding: 0.75rem 1.5rem; border: 1px solid white; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">
-          Check Environment
-        </button>
-        <details style="margin-top: 2rem; opacity: 0.9;">
-          <summary style="cursor: pointer; margin-bottom: 1rem;">Technical Details</summary>
-          <pre style="background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 0.5rem; overflow: auto; font-size: 0.875rem; white-space: pre-wrap; word-break: break-word;">${error instanceof Error ? `${error.name}: ${error.message}\n\nStack:\n${error.stack}` : String(error)}</pre>
-        </details>
+  console.error('Failed to initialize app:', error);
+
+  // Show a generic fallback. Do not render the raw error message or
+  // stack trace, those can leak environment paths, table names, and
+  // internal details to anyone who hits the page during a bad deploy.
+  const fallbackHtml = `
+    <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0B0D0B; color: #F4EFE6; font-family: ui-sans-serif, system-ui, sans-serif; padding: 20px;">
+      <div style="max-width: 520px; text-align: left;">
+        <p style="font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.6; margin-bottom: 1.25rem;">Fusion</p>
+        <h1 style="font-family: Georgia, serif; font-weight: 300; font-size: 2.25rem; line-height: 1.1; margin-bottom: 1rem;">Something went sideways on launch.</h1>
+        <p style="opacity: 0.8; margin-bottom: 1.75rem;">The app failed to initialize. A refresh usually clears it. If it does not, the studio has been notified.</p>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button onclick="window.location.reload()" style="background: #B6FF00; color: #0B0D0B; padding: 0.75rem 1.5rem; border: none; border-radius: 9999px; cursor: pointer; font-weight: 600;">Refresh page</button>
+          <a href="mailto:hello@paperfrogs.dev" style="background: transparent; color: #F4EFE6; padding: 0.75rem 1.5rem; border: 1px solid rgba(244,239,230,0.3); border-radius: 9999px; cursor: pointer; font-weight: 500; text-decoration: none;">Email the studio</a>
+        </div>
       </div>
     </div>
   `;
-  
-  document.body.innerHTML = errorHtml;
+
+  document.body.innerHTML = fallbackHtml;
 }

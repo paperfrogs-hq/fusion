@@ -14,11 +14,18 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        display: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
       },
       colors: {
         white: "#EAEAEA",
+        paper: "#F4EFE6",
+        ink: "#0B0D0B",
+        graphite: "#1A1C1A",
+        ember: "#E8743B",
+        rule: "#EAEAEA14",
         neutral: {
           50: "#f4f7f5",
           100: "#e7ece8",
@@ -99,6 +106,17 @@ export default {
         "2xl": "1.5rem",
         "3xl": "2rem",
       },
+      maxWidth: {
+        "measure-64": "64ch",
+        "measure-70": "70ch",
+        "measure-80": "80ch",
+      },
+      fontSize: {
+        "display": ["clamp(2.75rem, 5vw, 4.5rem)", { lineHeight: "1.02", letterSpacing: "-0.025em" }],
+        "display-lg": ["clamp(3.25rem, 6vw, 5.5rem)", { lineHeight: "1.0", letterSpacing: "-0.03em" }],
+        "prose": ["1.0625rem", { lineHeight: "1.7" }],
+        "prose-lg": ["1.1875rem", { lineHeight: "1.65" }],
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -132,6 +150,10 @@ export default {
           "0%, 100%": { boxShadow: "0 0 30px -10px hsl(var(--primary) / 0.5)" },
           "50%": { boxShadow: "0 0 60px -10px hsl(var(--primary) / 0.8)" },
         },
+        "rule-grow": {
+          from: { width: "0" },
+          to: { width: "2rem" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -142,11 +164,12 @@ export default {
         "scale-in": "scale-in 0.5s ease-out forwards",
         float: "float 6s ease-in-out infinite",
         glow: "glow 3s ease-in-out infinite",
+        "rule-grow": "rule-grow 0.6s ease-out forwards",
       },
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'gradient-mesh': 'linear-gradient(135deg, hsl(var(--primary) / 0.1) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, hsl(var(--accent) / 0.15) 0%, transparent 50%)',
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "gradient-mesh": "linear-gradient(135deg, hsl(var(--primary) / 0.1) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, hsl(var(--accent) / 0.15) 0%, transparent 50%)",
       },
     },
   },

@@ -4,32 +4,12 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Activity,
-  AlertTriangle,
-  BarChart3,
-  Building2,
-  ChevronRight,
-  Database,
-  FileAudio,
-  FileText,
-  Home,
-  Key,
-  Lock,
-  LogOut,
-  Menu,
-  Music,
-  Search,
-  Shield,
-  Users,
-  X,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { clearSession, getSession } from "@/lib/admin-auth";
-import { Badge } from "@/components/ui/badge";
+import { LogOut, Menu, Search, X } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { clearSession, getSession } from "@/lib/admin-auth";
 import type { AdminUser } from "@/types/admin";
 
 const AuditLogModule = lazy(() => import("@/components/admin/AuditLogModule"));
@@ -67,32 +47,31 @@ type Module =
 interface NavigationItem {
   id: Module;
   label: string;
-  icon: LucideIcon;
   permission?: string;
 }
 
 const ACTIVE_MODULE_STORAGE_KEY = "fusion_admin_active_module";
 
 const NAVIGATION_ITEMS: NavigationItem[] = [
-  { id: "overview", label: "Overview", icon: BarChart3 },
-  { id: "audit-log", label: "Audit Log", icon: FileText, permission: "read_audit_log" },
-  { id: "key-management", label: "Key Management", icon: Key, permission: "key_management" },
-  { id: "audio-provenance", label: "Audio Provenance", icon: FileAudio, permission: "provenance_management" },
-  { id: "user-audio", label: "User Audio Files", icon: Music, permission: "read_analytics" },
-  { id: "users", label: "User Management", icon: Users, permission: "client_management" },
-  { id: "clients", label: "Clients", icon: Users, permission: "client_management" },
-  { id: "business-approvals", label: "Business Approvals", icon: Building2, permission: "client_management" },
-  { id: "verification-policy", label: "Verification Policy", icon: Shield, permission: "verification_control" },
-  { id: "security", label: "Security Monitor", icon: Shield, permission: "security_incidents" },
-  { id: "incidents", label: "Incidents", icon: AlertTriangle, permission: "security_incidents" },
-  { id: "analytics", label: "Analytics", icon: Activity, permission: "read_analytics" },
-  { id: "compliance", label: "Compliance", icon: Lock, permission: "compliance" },
-  { id: "system-control", label: "System Control", icon: Database, permission: "system_control" },
-  { id: "waitlist", label: "Waitlist", icon: Users },
+  { id: "overview", label: "Overview" },
+  { id: "audit-log", label: "Audit log", permission: "read_audit_log" },
+  { id: "key-management", label: "Key management", permission: "key_management" },
+  { id: "audio-provenance", label: "Audio provenance", permission: "provenance_management" },
+  { id: "user-audio", label: "User audio files", permission: "read_analytics" },
+  { id: "users", label: "User management", permission: "client_management" },
+  { id: "clients", label: "Clients", permission: "client_management" },
+  { id: "business-approvals", label: "Business approvals", permission: "client_management" },
+  { id: "verification-policy", label: "Verification policy", permission: "verification_control" },
+  { id: "security", label: "Security monitor", permission: "security_incidents" },
+  { id: "incidents", label: "Incidents", permission: "security_incidents" },
+  { id: "analytics", label: "Analytics", permission: "read_analytics" },
+  { id: "compliance", label: "Compliance", permission: "compliance" },
+  { id: "system-control", label: "System control", permission: "system_control" },
+  { id: "waitlist", label: "Waitlist" },
 ];
 
 const MODULE_DESCRIPTIONS: Record<Module, string> = {
-  overview: "Platform health, events, and system-wide status.",
+  overview: "Platform health, recent events, and system-wide status.",
   "audit-log": "Immutable timeline of administrative actions and operations.",
   "key-management": "Manage cryptographic keys, lifecycle, and policy controls.",
   "audio-provenance": "Track provenance records and verification artifacts.",
@@ -194,12 +173,7 @@ const AdminDashboard = () => {
   }, [activeModule, visibleNavItems]);
 
   const activeModuleItem = visibleNavItems.find((item) => item.id === activeModule);
-
-  const permissionSummary = useMemo(() => {
-    const permissions = admin?.role?.permissions ?? [];
-    if (permissions.includes("*")) return "All permissions";
-    return `${permissions.length} permission${permissions.length === 1 ? "" : "s"}`;
-  }, [admin?.role?.permissions]);
+  const activeIndex = filteredNavItems.findIndex((item) => item.id === activeModule);
 
   const handleLogout = () => {
     clearSession();
@@ -216,8 +190,8 @@ const AdminDashboard = () => {
   const renderModule = () => (
     <Suspense
       fallback={
-        <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-border bg-secondary/50 px-6">
-          <p className="text-sm text-muted-foreground">Loading module...</p>
+        <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-rule bg-card/60 px-6">
+          <p className="font-serif text-sm italic text-muted-foreground">Loading module...</p>
         </div>
       }
     >
@@ -242,54 +216,67 @@ const AdminDashboard = () => {
   if (!admin) return null;
 
   const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={cn("space-y-3", mobile ? "p-4" : "p-4 md:p-5")}>
+    <div className={cn("flex h-full flex-col", mobile ? "p-5" : "")}>
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground/70"
+          aria-hidden="true"
+        />
         <Input
           value={navQuery}
           onChange={(e) => setNavQuery(e.target.value)}
-          placeholder="Search modules..."
-          className="h-10 pl-9 text-sm"
+          placeholder="Search modules"
+          className="h-9 rounded-lg border border-rule bg-card/40 pl-9 font-mono text-xs text-foreground placeholder:text-muted-foreground/60 focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/30"
         />
       </div>
 
-      <nav className="space-y-1">
-        {filteredNavItems.map((item) => {
-          const Icon = item.icon;
+      <nav className="mt-6 flex-1 space-y-px">
+        {filteredNavItems.map((item, index) => {
           const isActive = activeModule === item.id;
+          const num = String(index + 1).padStart(2, "0");
 
           return (
             <button
               key={item.id}
               onClick={() => setModule(item.id, mobile)}
               className={cn(
-                "group flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-all duration-200",
+                "group relative flex w-full items-baseline gap-3 border-l py-2.5 pl-4 pr-3 text-left transition-colors",
                 isActive
-                  ? "border-primary/45 bg-primary/15 text-foreground shadow-[0_0_24px_-16px_rgba(182,255,0,0.85)]"
-                  : "border-transparent text-muted-foreground hover:border-border/80 hover:bg-secondary/75 hover:text-foreground",
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:border-rule hover:text-foreground",
               )}
             >
-              <Icon
+              <span
                 className={cn(
-                  "h-[18px] w-[18px] transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+                  "font-mono text-[10px] tracking-[0.18em] transition-colors",
+                  isActive ? "text-primary" : "text-muted-foreground/60 group-hover:text-muted-foreground",
                 )}
-              />
-              <span className="text-sm font-medium">{item.label}</span>
-              <ChevronRight
-                className={cn(
-                  "ml-auto h-4 w-4 transition-transform",
-                  isActive ? "translate-x-0 text-primary" : "-translate-x-1 text-muted-foreground/60",
-                )}
-              />
+              >
+                {num}
+              </span>
+              <span className="font-serif text-sm italic leading-tight">{item.label}</span>
             </button>
           );
         })}
       </nav>
 
       {filteredNavItems.length === 0 && (
-        <div className="rounded-xl border border-border/80 bg-secondary/60 px-3.5 py-3 text-sm text-muted-foreground">
+        <div className="rounded-lg border border-rule bg-card/40 px-3.5 py-3 font-serif text-xs italic text-muted-foreground">
           No modules match "{navQuery}".
+        </div>
+      )}
+
+      {mobile && (
+        <div className="mt-6 border-t border-rule pt-5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
+            Signed in as
+          </p>
+          <p className="mt-1 truncate font-serif text-sm italic text-foreground">{admin.email}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{admin.role?.name || "User"}</p>
+          <Button onClick={handleLogout} variant="outline" size="sm" className="mt-4 w-full">
+            <LogOut className="mr-2 h-3.5 w-3.5" />
+            Logout
+          </Button>
         </div>
       )}
     </div>
@@ -298,87 +285,89 @@ const AdminDashboard = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-mesh opacity-70" />
-        <div className="absolute inset-0 bg-animated-grid opacity-15" />
-        <div className="absolute left-[-120px] top-[16%] h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
-        <div className="absolute bottom-[-160px] right-[-40px] h-96 w-96 rounded-full bg-accent/10 blur-[140px]" />
+        <div className="absolute inset-0 bg-radial-gradient opacity-40" />
       </div>
 
       <div className="relative z-10 flex min-h-screen">
-        <aside className="hidden border-r border-border/80 bg-card/70 backdrop-blur-xl lg:flex lg:w-[300px] lg:flex-col xl:w-[320px]">
-          <div className="border-b border-border/75 px-6 py-6">
-            <img src="/shortIcon.png" alt="Fusion Logo" className="fusion-logo-lockup h-9 w-9 rounded-lg" />
-            <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Admin Control Plane</p>
+        <aside className="hidden w-[280px] shrink-0 flex-col border-r border-rule bg-card/40 backdrop-blur-md lg:flex">
+          <div className="flex h-16 items-baseline gap-3 border-b border-rule px-5">
+            <span className="font-serif text-lg italic text-foreground">Fusion</span>
+            <span aria-hidden="true" className="block h-3 w-px bg-rule" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+              Admin
+            </span>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto px-5 py-5">
             <NavLinks />
           </div>
 
-          <div className="border-t border-border/75 p-5">
-            <div className="rounded-2xl border border-border/80 bg-secondary/65 px-4 py-3.5">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Signed in as</p>
-              <p className="mt-1.5 truncate text-sm font-medium text-foreground">{admin.email}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{admin.role?.name || "User"}</p>
-            </div>
-            <Button onClick={handleLogout} variant="outline" className="mt-3 h-10 w-full" size="sm">
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
+          <div className="border-t border-rule p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
+              Signed in as
+            </p>
+            <p className="mt-1 truncate font-serif text-sm italic text-foreground">{admin.email}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{admin.role?.name || "User"}</p>
+            <button
+              onClick={handleLogout}
+              className="link-underline mt-3 inline-flex items-baseline gap-1.5 font-serif text-xs italic text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <LogOut className="h-3 w-3 self-center" aria-hidden="true" />
+              <span>Logout</span>
+            </button>
           </div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-40 border-b border-border/80 bg-background/78 backdrop-blur-xl">
-            <div className="mx-auto flex w-full max-w-[1500px] items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <header className="sticky top-0 z-40 border-b border-rule bg-background/85 backdrop-blur-md">
+            <div className="flex items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
               <button
                 onClick={() => setMobileMenuOpen(true)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border/85 bg-secondary/60 text-foreground transition-colors hover:bg-secondary lg:hidden"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-rule bg-card/40 text-foreground transition-colors hover:bg-secondary lg:hidden"
                 aria-label="Open menu"
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4" />
               </button>
 
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Admin Workspace</p>
-                <h1 className="truncate text-lg font-semibold text-foreground sm:text-xl">
+              <div className="flex min-w-0 flex-1 items-baseline gap-3">
+                <span className="hidden font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70 sm:inline">
+                  Admin /
+                </span>
+                <h1 className="truncate font-serif text-lg italic text-foreground sm:text-xl">
                   {activeModuleItem?.label || "Overview"}
                 </h1>
+                <span className="hidden font-mono text-[10px] tracking-[0.18em] text-muted-foreground/60 sm:inline">
+                  {String((activeIndex ?? 0) + 1).padStart(2, "0")}
+                </span>
               </div>
 
-              <div className="hidden items-center gap-2 xl:flex">
-                <Badge variant="secondary">{permissionSummary}</Badge>
-                <Badge variant={admin.totp_enabled ? "default" : "outline"}>
-                  {admin.totp_enabled ? "MFA Enabled" : "MFA Recommended"}
-                </Badge>
-                {sessionTimeLeft && <Badge variant="outline">Session {sessionTimeLeft}</Badge>}
-              </div>
-
-              <div className="hidden items-center gap-2 sm:flex">
-                <Button variant="ghost" size="sm" className="h-10" onClick={() => navigate("/")}>
-                  <Home className="mr-2 h-4 w-4" />
-                  Site
-                </Button>
-                <Badge className="hidden md:inline-flex">{admin.role?.name || "User"}</Badge>
-                <div className="hidden text-right md:block">
-                  <p className="text-sm font-medium text-foreground">{admin.email}</p>
-                  <p className="text-xs text-muted-foreground">Secure session active</p>
-                </div>
-                <Button onClick={handleLogout} variant="outline" className="h-10 lg:hidden" size="sm">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
+              <div className="hidden items-baseline gap-4 lg:flex">
+                {sessionTimeLeft && (
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
+                    Session · {sessionTimeLeft}
+                  </span>
+                )}
+                {admin.totp_enabled && (
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
+                    MFA on
+                  </span>
+                )}
+                <span className="font-serif text-sm italic text-muted-foreground">
+                  {admin.email}
+                </span>
               </div>
             </div>
           </header>
 
           <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto w-full max-w-[1500px] px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
-              <div className="mb-5 rounded-2xl border border-border/80 bg-secondary/45 px-4 py-3 sm:px-5">
-                <p className="text-sm text-muted-foreground">{MODULE_DESCRIPTIONS[activeModule]}</p>
-              </div>
+            <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+              <p className="max-w-measure-64 font-serif text-base italic leading-snug text-muted-foreground">
+                {MODULE_DESCRIPTIONS[activeModule]}
+              </p>
 
-              <section className="surface-panel p-3 sm:p-4 lg:p-6">{renderModule()}</section>
+              <div className="mt-6 hairline" />
+
+              <section className="mt-6 surface-panel p-4 sm:p-5 lg:p-6">{renderModule()}</section>
             </div>
           </main>
         </div>
@@ -397,48 +386,31 @@ const AdminDashboard = () => {
                 aria-label="Close menu overlay"
               />
               <motion.aside
-                initial={{ x: -24, opacity: 0 }}
+                initial={{ x: -16, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -24, opacity: 0 }}
+                exit={{ x: -16, opacity: 0 }}
                 transition={{ duration: 0.18 }}
-                className="relative flex h-full w-[86%] max-w-[340px] flex-col border-r border-border bg-card"
+                className="relative flex h-full w-[88%] max-w-[360px] flex-col border-r border-rule bg-card"
               >
-                <div className="border-b border-border px-4 py-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <img
-                        src="/shortIcon.png"
-                        alt="Fusion Logo"
-                        className="fusion-logo-lockup h-9 w-9 rounded-lg"
-                      />
-                      <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                        Admin Control Plane
-                      </p>
-                    </div>
-                    <button
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-secondary/60 text-foreground"
-                      onClick={() => setMobileMenuOpen(false)}
-                      aria-label="Close menu"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+                <div className="flex h-16 items-center justify-between border-b border-rule px-5">
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-serif text-lg italic text-foreground">Fusion</span>
+                    <span aria-hidden="true" className="block h-3 w-px bg-rule" />
+                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+                      Admin
+                    </span>
                   </div>
+                  <button
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-rule bg-card/40 text-foreground"
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-label="Close menu"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="min-h-0 flex-1 overflow-y-auto py-5">
                   <NavLinks mobile />
-                </div>
-
-                <div className="border-t border-border p-4">
-                  <div className="rounded-xl border border-border/80 bg-secondary/60 px-3.5 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Signed in as</p>
-                    <p className="mt-1 truncate text-sm font-medium text-foreground">{admin.email}</p>
-                    <p className="text-xs text-muted-foreground">{admin.role?.name || "User"}</p>
-                  </div>
-                  <Button onClick={handleLogout} variant="outline" className="mt-3 h-10 w-full" size="sm">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </Button>
                 </div>
               </motion.aside>
             </motion.div>

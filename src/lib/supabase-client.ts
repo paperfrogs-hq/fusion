@@ -9,66 +9,91 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-key'
 );
 
-export const addEmailToWaitlist = async (email: string) => {
-  try {
-    if (!email || !email.includes("@")) {
-      throw new Error("Invalid email address");
-    }
+export interface AddToWaitlistInput {
+  email: string;
+  source?: string;
+}
 
-    console.log("Adding email to waitlist:", email);
+export interface AddToWaitlistResult {
+  status: "created" | "duplicate" | "queued";
+}
 
-    // Insert directly into Supabase
-    const { data, error } = await supabase
-      .from("early_access_signups")
-      .insert([
-        {
-          email: email.toLowerCase().trim(),
-          confirmed: true,
-          created_at: new Date().toISOString(),
-        }
-      ]);
+const ALLOWED_SOURCES = new Set([
+  "waitlist_page",
+  "home_page",
+  "footer",
+  "whitepaper",
+]);
 
-    if (error) {
-      console.error("Supabase error:", error);
-      
-      // Check for duplicate key error
-      if (error.code === "23505" || error.message.includes("duplicate") || error.message.includes("already exists")) {
-        throw new Error("duplicate");
-      }
-      
-      throw new Error(error.message || "Failed to join waitlist");
-    }
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    console.log("Email registered successfully:", email, data);
+export const addEmailToWaitlist = async (
+  emailOrInput: string | AddToWaitlistInput,
+): Promise<AddToWaitlistResult> => {
+  const input: AddToWaitlistInput =
+    typeof emailOrInput === "string" ? { email: emailOrInput } : emailOrInput;
 
-    // Send welcome email via Netlify function (non-blocking)
-    try {
-      console.log("Sending welcome email...");
-      const emailResponse = await fetch("/.netlify/functions/send-welcome", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: email.toLowerCase().trim() }),
-      });
+  const normalized = (input.email ?? "").trim().toLowerCase();
 
-      if (!emailResponse.ok) {
-        console.warn("Failed to send welcome email, but signup was successful");
-      } else {
-        console.log("Welcome email sent successfully");
-      }
-    } catch (emailError) {
-      // Don't fail the whole operation if email fails
-      console.warn("Email sending failed:", emailError);
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    console.error("Error adding email to waitlist:", error);
-    throw error;
+  if (!normalized || !EMAIL_RE.test(normalized) || normalized.length > 320) {
+    throw new Error("Please enter a valid email.");
   }
+
+  const source =
+    typeof input.source === "string" && ALLOWED_SOURCES.has(input.source)
+      ? input.source
+      : "waitlist_page";
+
+  const userAgent =
+    typeof window !== "undefined" ? window.navigator?.userAgent ?? null : null;
+
+  let response: Response;
+  try {
+    response = await fetch("/.netlify/functions/add-to-waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: normalized, source, userAgent }),
+    });
+  } catch (err) {
+    // Network / CORS / DNS — the user is probably offline or behind a proxy.
+    console.error("[waitlist-insert] network failure", err);
+    throw new Error("Network hiccup. Check your connection and try again.");
+  }
+
+  let body: any = null;
+  try {
+    body = await response.json();
+  } catch {
+    body = null;
+  }
+
+  if (response.status === 200 && body?.status === "duplicate") {
+    return { status: "duplicate" };
+  }
+
+  if (response.status === 200 && body?.status === "created") {
+    return { status: "created" };
+  }
+
+  // 202 — primary insert failed but we captured the lead into the fallback
+  // table. Surface as a soft success so the user does not see an error toast
+  // and the team can replay from the admin panel.
+  if (response.status === 202 && body?.status === "queued") {
+    return { status: "queued" };
+  }
+
+  if (response.status === 400) {
+    throw new Error(body?.error || "Please enter a valid email.");
+  }
+
+  // 5xx, network failures after fetch returned, unexpected shape — surface a
+  // helpful retry message instead of leaking server detail.
+  console.error("[waitlist-insert] unexpected response", { status: response.status, body });
+  throw new Error(
+    "Could not save your email just now. Please try again in a moment, or email hello@paperfrogs.dev if it keeps failing.",
+  );
 };

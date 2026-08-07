@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Building2, Clock, Eye, EyeOff, Loader2, Lock, Mail, Sparkles, User } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function ClientSignup() {
   const navigate = useNavigate();
@@ -72,20 +73,21 @@ export default function ClientSignup() {
         body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Signup failed');
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to create account. Please try again.'));
       }
 
       setSuccess(true);
     } catch (err: any) {
       console.error('Signup error:', err);
-      if (err.message === 'Failed to fetch') {
-        setError('Network error. Please check your connection and try again.');
-      } else {
-        setError(err.message || 'Failed to create account. Please try again.');
-      }
+      setError(safeErrorMessage(err, { logTag: 'client-signup', fallback: 'Failed to create account. Please try again.' }));
     } finally {
       setLoading(false);
     }

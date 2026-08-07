@@ -21,6 +21,7 @@ import { Progress } from '@/components/ui/progress';
 import ClientLayout from '../components/client/ClientLayout';
 import { getCurrentOrganization, getCurrentEnvironment, getCurrentUser } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 interface VerificationResult {
   id: string;
@@ -184,29 +185,30 @@ export default function VerifyAudio() {
       ));
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Verification failed');
+        let errorData: any = null;
+        try { errorData = await response.json(); } catch { errorData = null; }
+        throw new Error(safeFunctionErrorMessage(errorData, 'Verification failed. Please try again.'));
       }
 
       const data = await response.json();
-      
-      setQueue(prev => prev.map(q => 
-        q.id === queuedFile.id ? { 
-          ...q, 
-          status: 'completed', 
-          progress: 100, 
-          result: data.verification 
+
+      setQueue(prev => prev.map(q =>
+        q.id === queuedFile.id ? {
+          ...q,
+          status: 'completed',
+          progress: 100,
+          result: data.verification
         } : q
       ));
 
       return data.verification;
     } catch (error: any) {
-      setQueue(prev => prev.map(q => 
-        q.id === queuedFile.id ? { 
-          ...q, 
-          status: 'error', 
-          progress: 0, 
-          error: error.message 
+      setQueue(prev => prev.map(q =>
+        q.id === queuedFile.id ? {
+          ...q,
+          status: 'error',
+          progress: 0,
+          error: safeErrorMessage(error, { logTag: 'verify-audio', fallback: 'Verification failed for this file.' })
         } : q
       ));
       return null;

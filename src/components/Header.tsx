@@ -1,232 +1,185 @@
-import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
 import { Container } from "@/components/ui/container";
 
 const Header = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const [activeSection, setActiveSection] = useState<string>("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const navItems: Array<{ label: string; sectionId?: string; path?: string }> = [
-    { label: "How It Works", sectionId: "how-it-works" },
-    { label: "Solutions", sectionId: "solutions" },
-    { label: "Features", sectionId: "features" },
-    { label: "Pricing", path: "/pricing" },
-  ];
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const sections = navItems
-      .map((item) => item.sectionId)
-      .filter((sectionId): sectionId is string => Boolean(sectionId));
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    const handleScroll = () => {
-      let currentSection = "";
-
-      if (location.pathname === "/") {
-        for (const sectionId of sections) {
-          const element = document.getElementById(sectionId);
-          if (element) {
-            const rect = element.getBoundingClientRect();
-            if (rect.top <= 180) {
-              currentSection = sectionId;
-            }
-          }
-        }
-      }
-
-      setActiveSection(currentSection);
-      setIsScrolled(window.scrollY > 16);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
+  useEffect(() => {
+    setMenuOpen(false);
   }, [location.pathname]);
 
-  useEffect(() => {
-    if (location.pathname !== "/" || !location.hash) return;
-
-    const targetId = location.hash.replace("#", "");
-    const scrollToTarget = () => {
-      const element = document.getElementById(targetId);
-      if (!element) return;
-
-      const headerOffset = 104;
-      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-    };
-
-    const timer = window.setTimeout(scrollToTarget, 50);
-    return () => window.clearTimeout(timer);
-  }, [location.pathname, location.hash]);
-
-  const handleNavClick =
-    ({ sectionId, path }: { sectionId?: string; path?: string }) =>
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    setMobileMenuOpen(false);
-
-    if (path) {
-      navigate(path);
-      return;
-    }
-
-    if (!sectionId) return;
-
-    if (location.pathname !== "/") {
-      navigate(`/#${sectionId}`);
-      return;
-    }
-
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const headerOffset = 104;
-      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const getLinkClass = (isActive: boolean) => {
-    return `relative px-3 py-2 text-sm font-medium transition-colors ${
-      isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-    }`;
-  };
+  const onHome = location.pathname === "/";
+  const onAPC = location.pathname === "/apc";
 
   return (
     <motion.header
       className="fixed inset-x-0 top-0 z-50"
-      initial={{ y: -24, opacity: 0 }}
+      initial={{ y: -10, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <Container className="pt-4">
-        <div
-          className={`flex h-16 items-center justify-between rounded-2xl border px-4 transition-all duration-300 sm:h-[72px] sm:px-6 ${
-            isScrolled
-              ? "border-border bg-background/72 shadow-[0_20px_40px_-28px_rgba(0,0,0,0.95)] backdrop-blur-xl"
-              : "border-transparent bg-transparent"
-          }`}
-        >
-          <a href="/" className="flex items-center">
-            <img
-              src="/Logo.png"
-              alt="Fusion"
-              className="fusion-logo-lockup h-auto w-[150px] shrink-0"
-            />
-          </a>
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-x-0 bottom-0 h-px bg-rule transition-opacity duration-300 ${
+          scrolled || menuOpen ? "opacity-100" : "opacity-0"
+        }`}
+      />
 
-          <nav className="hidden items-center gap-2 md:flex">
-            {navItems.map((item) => {
-              const sectionId = item.sectionId ?? "";
-              const isActive = item.path ? location.pathname === item.path : activeSection === sectionId;
-              return (
-                <a
-                  key={item.label}
-                  href={item.path ?? `#${sectionId}`}
-                  onClick={handleNavClick(item)}
-                  className={`group ${getLinkClass(isActive)}`}
-                >
-                  {item.label}
-                  <span
-                    className={`absolute inset-x-3 bottom-1 h-px bg-primary transition-transform duration-200 group-hover:scale-x-100 ${
-                      isActive ? "scale-x-100" : "scale-x-0"
-                    }`}
-                  />
-                </a>
-              );
-            })}
-          </nav>
-
-          <div className="hidden items-center gap-2 md:flex">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/user/login")}>User</Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5 border-primary/70 bg-primary/10 text-primary hover:border-[#C8FF2F] hover:bg-primary/15 hover:text-[#C8FF2F]"
-              onClick={() => navigate("/client/login")}
-            >
-              <Building2 className="h-3.5 w-3.5" />
-              Enterprise
-            </Button>
-          </div>
-
-          <button
-            onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground md:hidden"
-            aria-label="Toggle menu"
+      <Container wide>
+        <div className="relative flex h-16 items-center justify-between sm:h-[72px]">
+          <Link
+            to="/"
+            aria-label="Fusion, home"
+            className="group flex items-baseline gap-2.5"
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
+            <span className="font-serif text-[22px] italic leading-none text-foreground">
+              Fusion
+            </span>
+            <span className="hidden font-serif text-[11px] italic leading-none text-muted-foreground/70 sm:inline">
+              {onHome ? "trust for AI audio" : "by Paperfrogs"}
+            </span>
+          </Link>
 
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.22 }}
-              className="mt-2 md:hidden"
+          <div className="flex items-center gap-7 sm:gap-9">
+            <Link
+              to="/apc"
+              className="group relative hidden items-baseline gap-1.5 md:inline-flex"
             >
-              <div className="rounded-xl border border-border bg-card/95 p-4 backdrop-blur-xl">
-                <nav className="flex flex-col gap-1">
-                  {navItems.map((item) => {
-                    const sectionId = item.sectionId ?? "";
-                    const isActive = item.path ? location.pathname === item.path : activeSection === sectionId;
-                    return (
-                      <a
-                        key={item.label}
-                        href={item.path ?? `#${sectionId}`}
-                        onClick={handleNavClick(item)}
-                        className={`rounded-md px-3 py-2 text-sm ${
-                          isActive
-                            ? "bg-primary/15 text-primary"
-                            : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              <span
+                aria-hidden="true"
+                className={`block h-px w-3 origin-left transition-transform duration-300 ${
+                  onAPC
+                    ? "scale-x-100 bg-primary"
+                    : "scale-x-0 bg-foreground/40 group-hover:scale-x-100"
+                }`}
+              />
+              <span
+                className={`relative text-sm transition-colors duration-200 ${
+                  onAPC ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+                }`}
+              >
+                APC
+                <span
+                  aria-hidden="true"
+                  className={`pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left bg-foreground/70 transition-transform duration-300 ${
+                    onAPC ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                />
+              </span>
+            </Link>
+
+            <Link
+              to="/waitlist"
+              className="group hidden font-serif text-sm italic text-foreground sm:inline-flex"
+            >
+              <span className="link-underline">Join the waitlist</span>
+              <span
+                aria-hidden="true"
+                className="ml-1.5 inline-block transition-transform duration-200 group-hover:translate-x-1"
+              >
+                →
+              </span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              className="-mr-2 inline-flex h-9 items-center gap-2 px-2 font-serif text-sm italic text-muted-foreground transition-colors hover:text-foreground md:hidden"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+            >
+              <span className="text-[11px] not-italic uppercase tracking-[0.22em]">
+                {menuOpen ? "Close" : "Menu"}
+              </span>
+              <span aria-hidden="true" className="relative inline-block h-3 w-4">
+                <span
+                  className={`absolute left-0 top-1 block h-px w-4 bg-current transition-transform duration-300 ${
+                    menuOpen ? "translate-y-[3px] rotate-45" : ""
+                  }`}
+                />
+                <span
+                  className={`absolute left-0 top-2 block h-px w-4 bg-current transition-opacity duration-200 ${
+                    menuOpen ? "opacity-0" : "opacity-100"
+                  }`}
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+      </Container>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            key="mobile"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+            className="md:hidden"
+          >
+            <div className="border-t border-rule bg-background/95 backdrop-blur-xl">
+              <Container wide>
+                <nav className="flex flex-col py-7">
+                  <Link
+                    to="/apc"
+                    className="group flex items-baseline justify-between border-b border-rule py-5"
+                  >
+                    <span className="flex items-baseline gap-4">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
+                        01
+                      </span>
+                      <span
+                        className={`font-serif text-2xl italic leading-none ${
+                          onAPC ? "text-foreground" : "text-foreground/90 group-hover:text-foreground"
                         }`}
                       >
-                        {item.label}
-                      </a>
-                    );
-                  })}
+                        APC
+                      </span>
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="font-serif text-base text-muted-foreground transition-transform duration-200 group-hover:translate-x-1"
+                    >
+                      →
+                    </span>
+                  </Link>
+
+                  <div className="mt-7 flex items-center justify-between">
+                    <Link
+                      to="/waitlist"
+                      className="group font-serif text-lg italic text-foreground"
+                    >
+                      <span className="link-underline">Join the waitlist</span>
+                      <span
+                        aria-hidden="true"
+                        className="ml-2 inline-block transition-transform duration-200 group-hover:translate-x-1"
+                      >
+                        →
+                      </span>
+                    </Link>
+                    <span className="font-serif text-[11px] italic text-muted-foreground/70">
+                      by Paperfrogs
+                    </span>
+                  </div>
                 </nav>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      navigate("/user/login");
-                    }}
-                  >
-                    User
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5 border-primary/70 bg-primary/10 text-primary hover:border-[#C8FF2F] hover:bg-primary/15 hover:text-[#C8FF2F]"
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      navigate("/client/login");
-                    }}
-                  >
-                    <Building2 className="h-3.5 w-3.5" />
-                    Enterprise
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Container>
+              </Container>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase-client";
 import { logAdminAction } from "@/lib/admin-auth";
+import { safeErrorMessage, safeFunctionErrorMessage } from "@/lib/safe-error";
 
 interface UserSubscription {
   id: string;
@@ -180,7 +181,7 @@ const UserManagementModule = () => {
       console.log("Delete response:", result);
 
       if (!response.ok) {
-        throw new Error(result.error || result.details || "Failed to delete user");
+        throw new Error(safeFunctionErrorMessage(result, "Could not delete that user. Try again in a moment."));
       }
 
       await logAdminAction("user_deleted", "user", userId);
@@ -196,7 +197,10 @@ const UserManagementModule = () => {
       console.error("Delete user error:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete user. Check console for details.",
+        description: safeErrorMessage(error, {
+          logTag: "admin-user-delete",
+          fallback: "Could not delete that user. Try again in a moment.",
+        }),
         variant: "destructive",
       });
     }
@@ -246,7 +250,10 @@ const UserManagementModule = () => {
       console.error("Send email error:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to send email",
+        description: safeErrorMessage(error, {
+          logTag: "admin-user-email",
+          fallback: "Could not send that email. Try again in a moment.",
+        }),
         variant: "destructive",
       });
     } finally {

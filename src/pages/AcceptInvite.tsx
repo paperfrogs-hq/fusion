@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { getCurrentUser, setOrganizations } from '../lib/client-auth';
 import { toast } from 'sonner';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 interface Invitation {
   id: string;
@@ -46,21 +47,31 @@ export default function AcceptInvite() {
 
       try {
         const response = await fetch(`/.netlify/functions/get-invitation?token=${encodeURIComponent(token)}`);
-        const data = await response.json();
+        let data: any = null;
+        try {
+          data = await response.json();
+        } catch {
+          data = null;
+        }
 
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to load invitation');
+          throw new Error(safeFunctionErrorMessage(data, 'Failed to load invitation. The link may be invalid or expired.'));
         }
 
         setInvitation(data.invitation);
 
         // Check if the invited email is registered
         const checkResponse = await fetch(`/.netlify/functions/check-email-exists?email=${encodeURIComponent(data.invitation.email)}`);
-        const checkData = await checkResponse.json();
-        setEmailRegistered(checkData.exists || false);
+        let checkData: any = null;
+        try {
+          checkData = await checkResponse.json();
+        } catch {
+          checkData = null;
+        }
+        setEmailRegistered(checkData?.exists || false);
       } catch (err: any) {
         console.error('Fetch invitation error:', err);
-        setError(err.message || 'Failed to load invitation');
+        setError(safeErrorMessage(err, { logTag: 'accept-invite-fetch', fallback: 'Failed to load invitation. The link may be invalid or expired.' }));
       } finally {
         setLoading(false);
       }
@@ -90,13 +101,18 @@ export default function AcceptInvite() {
         })
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to accept invitation');
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
       }
 
-      toast.success(data.message || 'Invitation accepted!');
+      if (!response.ok) {
+        throw new Error(safeFunctionErrorMessage(data, 'Failed to accept invitation. Please try again.'));
+      }
+
+      toast.success(data?.message || 'Invitation accepted!');
 
       // Refresh organizations list
       const orgsResponse = await fetch('/.netlify/functions/get-user-organizations', {
@@ -106,9 +122,13 @@ export default function AcceptInvite() {
       });
 
       if (orgsResponse.ok) {
-        const orgsData = await orgsResponse.json();
-        if (orgsData.organizations) {
-          setOrganizations(orgsData.organizations);
+        try {
+          const orgsData = await orgsResponse.json();
+          if (orgsData.organizations) {
+            setOrganizations(orgsData.organizations);
+          }
+        } catch {
+          // ignore malformed org payload
         }
       }
 
@@ -116,7 +136,7 @@ export default function AcceptInvite() {
       navigate('/client/select-org');
     } catch (err: any) {
       console.error('Accept invitation error:', err);
-      toast.error(err.message || 'Failed to accept invitation');
+      toast.error(safeErrorMessage(err, { logTag: 'accept-invite', fallback: 'Failed to accept invitation. Please try again.' }));
     } finally {
       setAccepting(false);
     }

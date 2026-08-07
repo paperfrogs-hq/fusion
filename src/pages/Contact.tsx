@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Container } from "@/components/ui/container";
+import { safeErrorMessage, safeFunctionErrorMessage } from "@/lib/safe-error";
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -60,14 +61,14 @@ const Contact = () => {
       } else {
         setSubmitStatus({
           type: "error",
-          message: data.error || "Failed to send message. Please try again.",
+          message: safeFunctionErrorMessage(data, "Failed to send message. Please try again."),
         });
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Contact submit error:", error);
       setSubmitStatus({
         type: "error",
-        message: "An error occurred. Please try again.",
+        message: safeErrorMessage(error, { logTag: "contact-form", fallback: "Failed to send message. Please try again." }),
       });
     } finally {
       setIsSubmitting(false);

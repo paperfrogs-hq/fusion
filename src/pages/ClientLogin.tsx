@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Building2, CheckCircle2, Loader2, Lock, Mail, ShieldCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function ClientLogin() {
   const navigate = useNavigate();
@@ -51,15 +52,20 @@ export default function ClientLogin() {
         })
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        if (data.requires2FA) {
+        if (data?.requires2FA) {
           // 2FA is enabled, show 2FA input
           setShow2FA(true);
           setError('');
         } else {
-          throw new Error(data.error || 'Login failed');
+          throw new Error(safeFunctionErrorMessage(data, 'Invalid email or password.'));
         }
         setLoading(false);
         return;
@@ -95,7 +101,7 @@ export default function ClientLogin() {
         throw new Error('No organization access');
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in. Please check your credentials.');
+      setError(safeErrorMessage(err, { logTag: 'client-login', fallback: 'Failed to sign in. Please check your credentials.' }));
     } finally {
       setLoading(false);
     }

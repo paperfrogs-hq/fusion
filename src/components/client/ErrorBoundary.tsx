@@ -45,14 +45,9 @@ export default class ErrorBoundary extends React.Component<Props, State> {
               </h2>
               <p className="text-neutral-400 mb-6">
                 We encountered an unexpected error. Please try refreshing the page.
+                If this keeps happening, reach the studio at
+                {" "}<a href="mailto:hello@paperfrogs.dev" className="underline">hello@paperfrogs.dev</a>.
               </p>
-              {this.state.error && (
-                <div className="bg-neutral-800 rounded-lg p-4 mb-6 text-left">
-                  <p className="text-xs font-mono text-red-300 break-all">
-                    {this.state.error.message}
-                  </p>
-                </div>
-              )}
               <Button onClick={this.handleReset} className="w-full">
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh Page

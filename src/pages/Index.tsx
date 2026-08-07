@@ -1,200 +1,226 @@
-import { ArrowRight, Building2, CheckCircle2, ShieldCheck, User } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import Header from "@/components/Header";
+
 import Footer from "@/components/Footer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import Header from "@/components/Header";
+import { Container } from "@/components/ui/container";
 
 const Index = () => {
-  const valueCards = [
-    {
-      title: "Authentic Proof",
-      description: "Generate tamper-evident verification records for every submitted audio file.",
-    },
-    {
-      title: "Fast Workflow",
-      description: "From upload to verification report in minutes with a clean operational flow.",
-    },
-    {
-      title: "Operational Control",
-      description: "Role-based access and clear governance for teams handling sensitive media.",
-    },
-  ];
-
-  const steps = [
-    "Upload audio and metadata",
-    "Run verification and policy checks",
-    "Share reports and provenance records",
-  ];
-
   return (
     <div className="relative min-h-screen bg-background">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-animated-grid opacity-15" />
-        <div className="absolute -left-20 top-16 h-[300px] w-[300px] rounded-full bg-primary/10 blur-[120px] sm:-left-24 sm:top-20 sm:h-[420px] sm:w-[420px] sm:blur-[140px]" />
-        <div className="absolute -right-16 bottom-16 h-[280px] w-[280px] rounded-full bg-accent/10 blur-[110px] sm:-right-24 sm:bottom-24 sm:h-[380px] sm:w-[380px] sm:blur-[130px]" />
-      </div>
-
       <Header />
 
-      <main className="relative z-10 px-4 pb-20 pt-28 sm:px-6 sm:pt-32">
-        <div className="mx-auto max-w-6xl space-y-14">
-          <section className="grid items-center gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-            <div className="space-y-6">
-              <Badge>Audio Trust Platform</Badge>
+      <main className="relative z-10">
+        <section className="relative overflow-hidden pb-20 pt-28 sm:pb-24 sm:pt-32 lg:min-h-[88vh] lg:pb-32 lg:pt-36">
+          <div className="pointer-events-none absolute inset-0 bg-radial-gradient opacity-60" />
+          <div className="pointer-events-none absolute -right-32 top-10 h-[28rem] w-[28rem] rounded-full bg-primary/10 blur-[140px]" />
+          <div className="pointer-events-none absolute -left-40 bottom-0 h-72 w-72 rounded-full bg-accent/10 blur-[120px]" />
+
+          <Container wide>
+            <div className="grid items-end gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
               <div>
-                <h1 className="text-4xl font-semibold leading-tight text-foreground sm:text-5xl lg:text-6xl">
-                  Protect audio credibility
-                  <span className="gradient-text block">without added complexity</span>
-                </h1>
-                <p className="mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-                  Fusion helps individuals and organizations verify audio authenticity, maintain clear provenance records,
-                  and move faster with confidence.
-                </p>
-              </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="flex items-baseline gap-3 font-serif text-sm italic text-muted-foreground"
+                >
+                  <span className="text-foreground/85">Fusion</span>
+                  <span aria-hidden="true" className="block h-px w-10 bg-rule" />
+                  <span className="font-mono text-[11px] not-italic uppercase tracking-[0.22em] text-muted-foreground/70">
+                    00 · 2026
+                  </span>
+                </motion.div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <Button asChild variant="hero" size="lg">
-                  <Link to="/pricing">
-                    View Pricing
-                    <ArrowRight className="h-4 w-4" />
+                <motion.h1
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, ease: "easeOut", delay: 0.08 }}
+                  className="mt-10 max-w-[16ch] font-serif text-[clamp(3rem,7.5vw,6.25rem)] font-light leading-[0.98] tracking-[-0.03em] text-foreground"
+                >
+                  A trust layer,{" "}
+                  <span className="font-serif italic text-foreground/90">written</span>
+                  <br />
+                  <span className="font-serif italic text-foreground/90">into</span> the audio.
+                </motion.h1>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, ease: "easeOut", delay: 0.2 }}
+                  className="mt-12 max-w-measure-64"
+                >
+                  <p className="text-prose text-foreground/85">
+                    Fusion signs audio so anyone can verify where it came from. The engine is
+                    called APC. Both are in private testing.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, ease: "easeOut", delay: 0.32 }}
+                  className="mt-14 flex items-end gap-6"
+                >
+                  <Link
+                    to="/waitlist"
+                    className="group inline-flex items-baseline gap-2 font-serif text-lg italic text-foreground"
+                  >
+                    <span className="link-underline">Join the waitlist</span>
+                    <span
+                      aria-hidden="true"
+                      className="inline-block translate-y-px transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-px"
+                    >
+                      →
+                    </span>
                   </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg">
-                  <Link to="/user/signup">Get Started</Link>
-                </Button>
+                  <span className="hidden font-serif text-xs italic text-muted-foreground/70 sm:inline">
+                    one email when it's ready
+                  </span>
+                </motion.div>
               </div>
-            </div>
 
-            <div className="surface-panel relative overflow-hidden p-6 sm:p-8">
-              <div className="pointer-events-none absolute right-0 top-0 h-20 w-20 rounded-bl-2xl border-b border-l border-primary/25" />
-              <img src="/shortIcon.png" alt="Fusion Icon" className="fusion-logo-lockup h-11 w-11 rounded-xl" />
-              <h2 className="mt-5 text-2xl font-semibold text-foreground">Verification Snapshot</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Minimal setup, strong trust signals, and reliable records for audit-ready workflows.
-              </p>
-
-              <div className="mt-6 space-y-3">
-                {["Hash integrity confirmation", "Metadata consistency checks", "Downloadable verification report"].map((item) => (
-                  <div key={item} className="flex items-start gap-3 rounded-xl border border-border/80 bg-secondary/55 p-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                    <p className="text-sm text-foreground">{item}</p>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.18 }}
+                className="hidden lg:block"
+                aria-hidden="true"
+              >
+                <div className="relative flex flex-col items-end text-right">
+                  <span className="font-serif text-[10rem] font-light italic leading-none text-foreground/85">
+                    01
+                  </span>
+                  <div className="mt-4 flex items-center gap-3 font-serif text-xs italic text-muted-foreground/70">
+                    <span className="block h-px w-10 bg-rule" />
+                    <span>first proof of concept</span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section id="solutions" className="space-y-5">
-            <div>
-              <Badge className="mb-3">Solutions</Badge>
-              <h2 className="text-3xl font-semibold text-foreground">Built for practical verification work</h2>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-            {valueCards.map((card) => (
-              <div key={card.title} className="surface-panel p-6">
-                <h3 className="text-lg font-semibold text-foreground">{card.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{card.description}</p>
-              </div>
-            ))}
-            </div>
-          </section>
-
-          <section id="how-it-works" className="surface-panel p-6 sm:p-8">
-            <h2 className="text-2xl font-semibold text-foreground">How It Works</h2>
-            <div className="mt-5 grid gap-3 md:grid-cols-3">
-              {steps.map((step, index) => (
-                <div key={step} className="rounded-xl border border-border/80 bg-secondary/55 p-4">
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Step {index + 1}</p>
-                  <p className="mt-2 text-sm font-medium text-foreground">{step}</p>
+                  <p className="mt-6 max-w-[24ch] font-serif text-[11px] italic leading-relaxed text-muted-foreground/70">
+                    We will let you know the moment there is something worth trying.
+                  </p>
                 </div>
-              ))}
+              </motion.div>
             </div>
-          </section>
+          </Container>
+        </section>
 
-          <section id="features" className="space-y-5">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <Badge className="mb-3">Features</Badge>
-                <h2 className="text-3xl font-semibold text-foreground">Core capabilities at a glance</h2>
-                <p className="mt-2 text-sm text-muted-foreground">A focused stack for trust, verification, and operations.</p>
-              </div>
-            </div>
+        <div className="hairline mx-auto max-w-[1240px]" />
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="surface-panel p-6">
-                <h3 className="text-xl font-semibold text-foreground">Verification Engine</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Metadata checks, integrity confirmation, and consistent report generation.
+        <section className="relative py-16 sm:py-20 lg:py-24">
+          <Container>
+            <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_14rem] md:items-start">
+              <div className="max-w-measure-64">
+                <p className="font-serif text-xs italic uppercase tracking-[0.22em] text-muted-foreground/80">
+                  Status
+                </p>
+                <p className="mt-3 font-serif text-xl italic leading-snug text-foreground">
+                  We are not shipping yet.
+                </p>
+                <p className="mt-3 text-prose text-muted-foreground">
+                  We are a small team, working in private. No demo calls, no SDR funnel. One
+                  quiet email when the engine is ready.
                 </p>
               </div>
-              <div className="surface-panel p-6">
-                <h3 className="text-xl font-semibold text-foreground">Role-Based Access</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Separate user and enterprise workflows with governed access controls.
+              <div className="md:text-right">
+                <Link
+                  to="/apc"
+                  className="group inline-flex items-baseline gap-2 font-serif text-sm italic text-foreground"
+                >
+                  <span className="link-underline">Read about APC</span>
+                  <span
+                    aria-hidden="true"
+                    className="inline-block transition-transform duration-200 group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </Link>
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        <div className="hairline mx-auto max-w-[1240px]" />
+
+        <section className="relative py-16 sm:py-24 lg:py-32">
+          <Container>
+            <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.55, ease: "easeOut" }}
+                className="flex flex-col"
+              >
+                <p className="font-serif text-sm italic text-muted-foreground">
+                  04 <span className="mx-3 inline-block h-px w-6 align-middle bg-rule" />
+                  About
                 </p>
-              </div>
-            </div>
-          </section>
-
-          <section className="space-y-5">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <Badge className="mb-3">Pricing</Badge>
-                <h2 className="text-3xl font-semibold text-foreground">Simple plan paths</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Choose the track that matches your usage model.</p>
-              </div>
-              <Button asChild variant="outline">
-                <Link to="/pricing">Compare All Pricing</Link>
-              </Button>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="surface-panel p-6">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-secondary text-primary">
-                  <User className="h-5 w-5" />
+                <h2 className="mt-6 max-w-[14ch] font-serif text-[clamp(2rem,4.4vw,3.25rem)] font-light leading-[1.04] tracking-[-0.025em] text-foreground">
+                  A small studio{" "}
+                  <span className="font-serif italic text-foreground/90">building trust</span>{" "}
+                  for the AI era.
+                </h2>
+                <div className="mt-10 flex items-center gap-4">
+                  <span className="font-serif text-base italic text-foreground">Paperfrogs</span>
+                  <span aria-hidden="true" className="block h-px w-10 bg-rule" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
+                    Lab · est. 2024
+                  </span>
                 </div>
-                <h3 className="mt-4 text-xl font-semibold text-foreground">Individual</h3>
-                <p className="mt-1 text-sm text-muted-foreground">For creators and independent professionals.</p>
-                <p className="mt-4 text-3xl font-semibold text-foreground">$9<span className="text-base text-muted-foreground"> / month start</span></p>
-                <Button asChild variant="hero" className="mt-5 w-full">
-                  <Link to="/user/pricing">View Individual Plans</Link>
-                </Button>
-              </div>
+              </motion.div>
 
-              <div className="surface-panel p-6">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-secondary text-primary">
-                  <Building2 className="h-5 w-5" />
-                </div>
-                <h3 className="mt-4 text-xl font-semibold text-foreground">Enterprise</h3>
-                <p className="mt-1 text-sm text-muted-foreground">For teams and platform-scale operations.</p>
-                <p className="mt-4 text-3xl font-semibold text-foreground">$99<span className="text-base text-muted-foreground"> / month start</span></p>
-                <Button asChild variant="hero" className="mt-5 w-full">
-                  <Link to="/business/pricing">View Enterprise Plans</Link>
-                </Button>
-              </div>
-            </div>
-          </section>
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.08 }}
+                className="max-w-measure-64"
+              >
+                <p className="text-prose text-foreground/90">
+                  Paperfrogs is a small product studio. We work on the parts of AI infrastructure
+                  that nobody else wants to pick up: provenance, watermarking, audit, and the
+                  quiet plumbing that decides whether a piece of media can be trusted.
+                </p>
+                <p className="mt-5 text-prose text-muted-foreground">
+                  Fusion is the first product to come out of that work. APC is the engine inside
+                  it. Everything we ship is signed, auditable, and reversible when it has to be.
+                </p>
+                <p className="mt-5 text-prose text-muted-foreground">
+                  We answer our own email.
+                </p>
 
-          <section className="surface-panel p-6 sm:p-8">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-semibold text-foreground">Ready to start?</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Set up your workflow and begin verification in a few minutes.</p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild variant="hero">
-                  <Link to="/user/signup">
-                    Get Started
-                    <ShieldCheck className="h-4 w-4" />
+                <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Link
+                    to="/paperfrogs-hq"
+                    className="group inline-flex items-baseline gap-2 font-serif text-base italic text-foreground"
+                  >
+                    <span className="link-underline">Visit Paperfrogs HQ</span>
+                    <span
+                      aria-hidden="true"
+                      className="inline-block transition-transform duration-200 group-hover:translate-x-1"
+                    >
+                      →
+                    </span>
                   </Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link to="/contact">Talk to Team</Link>
-                </Button>
-              </div>
+                  <a
+                    href="https://paperfrogs.dev"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-baseline gap-2 font-serif text-sm italic text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <span className="link-underline">paperfrogs.dev</span>
+                    <span
+                      aria-hidden="true"
+                      className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    >
+                      ↗
+                    </span>
+                  </a>
+                </div>
+              </motion.div>
             </div>
-          </section>
-        </div>
+          </Container>
+        </section>
       </main>
 
       <Footer />

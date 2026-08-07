@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Check, X } from "lucide-react";
 import { getSession } from "@/lib/admin-auth";
+import { safeErrorMessage, safeFunctionErrorMessage } from "@/lib/safe-error";
 
 const TOTPSetup = () => {
   const [step, setStep] = useState<"setup" | "verify">("setup");
@@ -30,19 +31,20 @@ const TOTPSetup = () => {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to generate 2FA setup");
+        throw new Error(safeFunctionErrorMessage(data, "Could not start the 2FA setup. Try again in a moment."));
       }
 
-      setSecret(data.secret);
-      setQrCode(data.qrCode);
+      setSecret(data?.secret || "");
+      setQrCode(data?.qrCode || "");
       setStep("verify");
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to generate 2FA setup",
+        description: safeErrorMessage(error, { logTag: "admin-totp-generate", fallback: "Could not start the 2FA setup. Try again in a moment." }),
         variant: "destructive",
       });
     } finally {
@@ -67,10 +69,11 @@ const TOTPSetup = () => {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to enable 2FA");
+        throw new Error(safeFunctionErrorMessage(data, "Could not enable 2FA. Check the code and try again."));
       }
 
       toast({
@@ -83,13 +86,13 @@ const TOTPSetup = () => {
       setSecret("");
       setQrCode("");
       setVerificationCode("");
-      
+
       // Reload page to update session
       setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to enable 2FA",
+        description: safeErrorMessage(error, { logTag: "admin-totp-enable", fallback: "Could not enable 2FA. Check the code and try again." }),
         variant: "destructive",
       });
     } finally {
@@ -116,10 +119,11 @@ const TOTPSetup = () => {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { data = null; }
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to disable 2FA");
+        throw new Error(safeFunctionErrorMessage(data, "Could not disable 2FA. Try again in a moment."));
       }
 
       toast({
@@ -127,13 +131,13 @@ const TOTPSetup = () => {
         description: "Two-factor authentication has been disabled",
         variant: "destructive",
       });
-      
+
       // Reload page to update session
       setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to disable 2FA",
+        description: safeErrorMessage(error, { logTag: "admin-totp-disable", fallback: "Could not disable 2FA. Try again in a moment." }),
         variant: "destructive",
       });
     } finally {

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Fingerprint, Loader2, Lock, Mail, Sparkles } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { safeErrorMessage, safeFunctionErrorMessage } from '@/lib/safe-error';
 
 export default function UserLogin() {
   const navigate = useNavigate();
@@ -43,10 +44,15 @@ export default function UserLogin() {
         body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(safeFunctionErrorMessage(data, 'Invalid email or password.'));
       }
 
       // Store session token and user data
@@ -70,7 +76,7 @@ export default function UserLogin() {
         navigate('/user/dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in. Please check your credentials.');
+      setError(safeErrorMessage(err, { logTag: 'user-login', fallback: 'Failed to sign in. Please check your credentials.' }));
     } finally {
       setLoading(false);
     }

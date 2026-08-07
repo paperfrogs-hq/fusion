@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Upload, File, CheckCircle2, XCircle, Loader2, Music } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
+import { safeErrorMessage } from '@/lib/safe-error';
 
 interface AudioUploadProps {
   userId: string;
@@ -192,10 +193,10 @@ export default function AudioUpload({ userId, onUploadComplete }: AudioUploadPro
 
     } catch (err: any) {
       console.error('Upload failed:', err);
-      const errorMessage = err.message || 'Failed to upload audio';
+      const errorMessage = safeErrorMessage(err, { logTag: 'audio-upload', fallback: 'Could not upload that file. Try a smaller audio file or try again in a moment.' });
       setError(errorMessage);
       setUploadProgress(0);
-      
+
       // Log detailed error info for debugging
       if (err.details) console.error('Error details:', err.details);
       if (err.hint) console.error('Error hint:', err.hint);

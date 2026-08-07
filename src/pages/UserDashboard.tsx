@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Upload, Music, Shield, LogOut, Key, User, Download, Trash2, Eye, EyeOff, Copy, CheckCircle2, XCircle, Clock, Camera, Zap, ArrowRight, Crown, RefreshCw, Search } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
+import { safeErrorMessage } from '@/lib/safe-error';
 import AudioUpload from '@/components/user/AudioUpload';
 import AudioVerification from '@/components/user/AudioVerification';
 import UserTrialExpiredModal from '@/components/user/UserTrialExpiredModal';
@@ -188,7 +189,7 @@ export default function UserDashboard() {
 
       toast({ title: 'Downloaded', description: `${file.original_filename} downloaded successfully` });
     } catch (error: any) {
-      toast({ title: 'Download failed', description: error.message, variant: 'destructive' });
+      toast({ title: 'Download failed', description: safeErrorMessage(error, { logTag: 'user-dashboard-download', fallback: 'Could not download this file. Try again in a moment.' }), variant: 'destructive' });
     }
   };
 
@@ -206,7 +207,7 @@ export default function UserDashboard() {
       toast({ title: 'Deleted', description: `${filename} deleted successfully` });
       loadAudioFiles(user.id);
     } catch (error: any) {
-      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+      toast({ title: 'Delete failed', description: safeErrorMessage(error, { logTag: 'user-dashboard-delete', fallback: 'Could not delete this file. Try again in a moment.' }), variant: 'destructive' });
     }
   };
 
@@ -233,7 +234,7 @@ export default function UserDashboard() {
       setEditingProfile(false);
       toast({ title: 'Profile updated', description: 'Your profile has been updated successfully' });
     } catch (error: any) {
-      toast({ title: 'Update failed', description: error.message, variant: 'destructive' });
+      toast({ title: 'Update failed', description: safeErrorMessage(error, { logTag: 'user-dashboard-profile', fallback: 'Could not update your profile. Try again in a moment.' }), variant: 'destructive' });
     }
   };
 
@@ -302,7 +303,7 @@ export default function UserDashboard() {
           toast({ title: 'Success', description: 'Profile picture updated successfully' });
         } catch (error: any) {
           console.error('Update error:', error);
-          toast({ title: 'Upload failed', description: error.message, variant: 'destructive' });
+          toast({ title: 'Upload failed', description: safeErrorMessage(error, { logTag: 'user-dashboard-avatar', fallback: 'Could not upload that picture. Try a smaller image.' }), variant: 'destructive' });
         } finally {
           setUploadingPicture(false);
         }
@@ -314,7 +315,7 @@ export default function UserDashboard() {
       reader.readAsDataURL(file);
     } catch (error: any) {
       console.error('Upload error:', error);
-      toast({ title: 'Upload failed', description: error.message, variant: 'destructive' });
+      toast({ title: 'Upload failed', description: safeErrorMessage(error, { logTag: 'user-dashboard-avatar', fallback: 'Could not upload that picture. Try a smaller image.' }), variant: 'destructive' });
       setUploadingPicture(false);
     }
   };
